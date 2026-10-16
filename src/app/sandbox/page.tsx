@@ -17,6 +17,8 @@ import CADCanvas from '@/components/cad/cad-canvas';
 import VesselArchetypes from '@/components/cad/vessel-archetypes';
 import VesselStudio from '@/components/cad/vessel-studio';
 import FileDialog from '@/components/io/file-dialog';
+import ProBadge from '@/components/ui/pro-badge';
+import { useProStatus } from '@/lib/pro-status';
 import { useCADStore } from '@/store/cad-store';
 import { saveWorkspaceLocally, loadWorkspaceLocally } from '@/lib/storage';
 
@@ -32,6 +34,7 @@ export default function SandboxPage() {
   const setCameraPreset = useCADStore((s) => s.setCameraPreset);
   const undo = useCADStore((s) => s.undo);
   const redo = useCADStore((s) => s.redo);
+  const { isPro } = useProStatus();
 
   // Load from local storage on initial mount, then guarantee the vessel piece.
   useEffect(() => {

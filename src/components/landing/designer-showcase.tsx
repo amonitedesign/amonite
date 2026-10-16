@@ -387,7 +387,7 @@ export default function DesignerShowcase() {
           {/* Caption Tag */}
           <div className="relative z-10 mt-3 flex items-center gap-2 text-[10px] font-mono text-[#70695e] dark:text-[#8a8276] bg-[#dfd9cd]/50 dark:bg-[#1f1e1b]/70 px-3 py-1 rounded-full border border-[#d6cfc2] dark:border-[#2a2824]">
             <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: activeItem.palette.accent }} />
-            <span>Parametric Brep &middot; {activeItem.fabrication.material}</span>
+            <span>Watertight Solid &middot; {activeItem.fabrication.material}</span>
           </div>
         </div>
 

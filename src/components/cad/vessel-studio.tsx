@@ -59,7 +59,7 @@ export default function VesselStudio(): React.JSX.Element {
   const undo = useCADStore((s) => s.undo);
   const redo = useCADStore((s) => s.redo);
 
-  const [isKilnOpen, setIsKilnOpen] = useState(true);
+  const [isKilnOpen, setIsKilnOpen] = useState(false);
   const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
 
   const vessel = nodes.find((n) => n.id === vesselId)?.vessel;
@@ -89,7 +89,7 @@ export default function VesselStudio(): React.JSX.Element {
   };
 
   return (
-    <div className="w-80 rounded-xl border border-white/[0.08] bg-[#1a1612]/95 p-4 shadow-2xl backdrop-blur-md max-h-[calc(100vh-100px)] overflow-y-auto scrollbar-thin">
+    <div className="w-80 rounded-xl border border-white/[0.08] bg-[#1a1612]/95 p-4 shadow-2xl backdrop-blur-md max-h-[calc(100vh-120px)] overflow-y-auto [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.14)_transparent]">
       {/* Header bar with undo/redo */}
       <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
         <div className="flex items-center gap-1.5">
@@ -258,8 +258,9 @@ export default function VesselStudio(): React.JSX.Element {
         </div>
       </div>
 
-      {/* 1-Click "Etsy Collection Batch Generator" — The Money Feature */}
-      <div className="mt-4 pt-3 border-t border-white/[0.08] space-y-2">
+      {/* 1-Click "Etsy Collection Batch Generator" — The Money Feature.
+          Sticky so it never scrolls out of reach below the fold. */}
+      <div className="sticky bottom-0 -mx-4 -mb-4 mt-4 space-y-2 border-t border-white/[0.08] bg-[#1a1612]/95 px-4 pt-3 pb-4 backdrop-blur-md">
         <button
           type="button"
           onClick={handleGenerateEtsyCollection}

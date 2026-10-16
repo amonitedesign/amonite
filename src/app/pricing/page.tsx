@@ -16,12 +16,12 @@ import { Separator } from '@/components/ui/separator';
 
 const FAQS = [
   {
-    q: 'Is the free tier really free for client work?',
-    a: 'Free covers non-commercial use: your own rooms, learning, and experiments. As soon as you bill a client for a plan, you need Pro or Studio — that license gate is what keeps the free tier sustainable.',
+    q: 'Is the free tier really free for commercial work?',
+    a: 'Free covers personal experimentation, hobby prints, and learning. As soon as you list finished pieces or digital STLs on Etsy or sell to clients, Pro provides the verified commercial selling license.',
   },
   {
-    q: 'Do my clients need a paid seat to view a room?',
-    a: 'No. Viewers are free on every tier. On Studio they can also comment; on Pro they get a clean read-only link.',
+    q: 'Do my clients or studio viewers need a paid seat?',
+    a: 'No. Viewers are free on every tier. On Studio they can review shared pieces; on Pro they get a clean read-only link.',
   },
   {
     q: 'When does billing actually start?',
@@ -29,7 +29,7 @@ const FAQS = [
   },
   {
     q: 'What happens to my local projects if I never pay?',
-    a: 'Nothing. Local projects live in your browser storage forever, with unlimited local work and full exporters on every tier.',
+    a: 'Nothing. Local pieces live in your browser storage forever, with unlimited local work and full STL exporters on every tier.',
   },
 ];
 
@@ -45,7 +45,7 @@ export default function PricingPage() {
         {/* Hero */}
         <div className="max-w-2xl">
           <div className="text-[11px] uppercase tracking-widest text-zinc-500 dark:text-slate-400 mb-4 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 dark:bg-cyan-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#c96f4b]" />
             <span>Pricing // Plans for every stage of the project</span>
           </div>
           <h1 className="font-display text-4xl sm:text-5xl font-extrabold text-zinc-950 dark:text-white tracking-tight leading-[1.08]">
@@ -124,7 +124,7 @@ export default function PricingPage() {
       {/* Footer */}
       <footer className="mt-auto border-t border-zinc-200 dark:border-white/[0.08] bg-zinc-50 dark:bg-[#060709] py-8 px-4 sm:px-6 text-xs text-zinc-500 font-mono">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-zinc-900 dark:text-slate-300 font-bold">AMONITE CAD</span>
+          <span className="text-zinc-900 dark:text-slate-300 font-bold">AMONITE // The 3D Studio for Minimalist Interior Decor</span>
           <div className="flex items-center gap-6">
             <Link href="/sandbox" className="hover:text-zinc-900 dark:hover:text-slate-300 transition-colors">
               Studio Sandbox

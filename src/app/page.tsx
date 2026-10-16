@@ -44,6 +44,24 @@ export default function LandingPage() {
             A dedicated digital studio for boutique makers and interior decorators. Generate infinite, print-ready variations of fluted vases, ribbed planters, and lighting shells for your Etsy shop or design client—ready for continuous extrusion, clay printing, and slip-casting.
           </p>
 
+          {/* Action Triggers: Immediate Gallery Primary Buttons */}
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link
+              href="/sandbox"
+              className="px-6 py-3 rounded-lg bg-[#1a1917] hover:bg-[#2c2a26] text-[#fcfbf9] dark:bg-[#ece8df] dark:hover:bg-[#ffffff] dark:text-[#161513] font-semibold transition-colors flex items-center gap-2 text-sm"
+            >
+              <span>Open Studio Sandbox</span>
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+
+            <button
+              onClick={() => setIsWaitlistOpen(true)}
+              className="px-6 py-3 rounded-lg border border-[#ded9cf] dark:border-[#2d2b27] hover:border-[#b8b1a3] dark:hover:border-[#47433d] bg-transparent text-[#262421] dark:text-[#cfc9be] transition-colors text-sm font-semibold"
+            >
+              Join Pro Waitlist
+            </button>
+          </div>
+
           {/* Object Studio Telemetry Specs */}
           <div className="mt-10 grid grid-cols-2 sm:grid-cols-4 gap-6 w-full pt-6 border-t border-[#e6e2da] dark:border-[#262421]">
             <div>
@@ -62,24 +80,6 @@ export default function LandingPage() {
               <div className="text-[10px] text-[#857d72] dark:text-[#787166] uppercase tracking-widest font-semibold">PRODUCTION SPEED</div>
               <div className="text-sm font-bold text-[#1e1c19] dark:text-[#e8e4dc] mt-0.5">Instant STL in 0s</div>
             </div>
-          </div>
-
-          {/* Action Triggers: Quiet Gallery Buttons */}
-          <div className="mt-10 flex flex-wrap items-center gap-4">
-            <Link
-              href="/sandbox"
-              className="px-6 py-3 rounded-lg bg-[#1a1917] hover:bg-[#2c2a26] text-[#fcfbf9] dark:bg-[#ece8df] dark:hover:bg-[#ffffff] dark:text-[#161513] font-semibold transition-colors flex items-center gap-2 text-sm"
-            >
-              <span>Open Studio Sandbox</span>
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-
-            <button
-              onClick={() => setIsWaitlistOpen(true)}
-              className="px-6 py-3 rounded-lg border border-[#ded9cf] dark:border-[#2d2b27] hover:border-[#b8b1a3] dark:hover:border-[#47433d] bg-transparent text-[#262421] dark:text-[#cfc9be] transition-colors text-sm font-semibold"
-            >
-              Join Pro Waitlist
-            </button>
           </div>
         </div>
       </section>
@@ -108,30 +108,38 @@ export default function LandingPage() {
         {/* Asymmetric Bento Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          {/* Tile 1: Primary Wide Tile (8 cols) - Parametric Ribs & Etsy Variations */}
+          {/* Tile 1: Primary Wide Tile (8 cols) - Tactile Morphology & Physical Specs */}
           <div className="lg:col-span-8 p-6 sm:p-8 rounded-xl bg-[#f4f1eb] dark:bg-[#181715] border border-[#e3dfd6] dark:border-[#262421] flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between text-xs text-[#70695e] dark:text-[#8a8276] mb-4 pb-3 border-b border-[#e3dfd6] dark:border-[#262421]">
                 <span className="flex items-center gap-2">
                   <Box className="w-4 h-4 text-[#8f643f] dark:text-[#d4a373]" />
-                  <span className="font-semibold text-[#1e1c19] dark:text-[#dcd8d0] uppercase tracking-wider">PROCEDURAL MORPHOLOGY</span>
+                  <span className="font-semibold text-[#1e1c19] dark:text-[#dcd8d0] uppercase tracking-wider">TACTILE MORPHOLOGY</span>
                 </span>
-                <span className="font-mono text-[10px]">PARAMETRIC RIBS &middot; CONTINUOUS LOFTS</span>
+                <span className="font-mono text-[10px]">ORGANIC FLUTING &middot; CONTINUOUS WALLS</span>
               </div>
               <h3 className="text-lg font-bold text-[#141311] dark:text-[#f2efe9] tracking-tight font-display">
                 Infinite product variations for Etsy shops &amp; bespoke interiors
               </h3>
               <p className="mt-2 text-xs sm:text-sm text-[#5e574d] dark:text-[#a8a194] leading-relaxed max-w-2xl">
-                Sculpt fluted vases, ribbed Nordic planters, organic bowls, and twisted lamp shells with intuitive parametric sliders. Seamlessly adjust rib count, wave amplitude, neck taper, and rotational twist to produce distinctive collections in minutes without manual CAD drafting.
+                Sculpt fluted vases, ribbed Nordic planters, organic bowls, and twisted lamp shells with intuitive tactile sliders. Seamlessly adjust rib count, wave amplitude, neck taper, and rotational twist to produce distinctive collections in minutes without manual CAD drafting.
               </p>
             </div>
 
-            {/* Monospace Spec Callout */}
-            <div className="mt-6 p-4 rounded-lg bg-[#ebe7de] dark:bg-[#201e1b] border border-[#ded9ce] dark:border-[#282622] text-[11px] font-mono text-[#423d35] dark:text-[#c4bdb1] space-y-1 overflow-x-auto">
-              <div className="text-[#857d72] dark:text-[#787166]">{'// Parametric vase profile parameters'}</div>
-              <div className="text-[#141311] dark:text-[#ece8df]">fluted vase · base 85 mm · wall 1.2 mm · 18 ribs · twist 24° · neck 32 mm</div>
-              <div className="text-[#857d72] dark:text-[#787166]">{'// Direct Slicer export'}</div>
-              <div className="text-[#141311] dark:text-[#ece8df]">export watertight-vessel.stl · vase-mode ready (spiralize outer contour)</div>
+            {/* Spec Feature Row: Physical Fabrication Specifications */}
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 font-mono">
+              <div className="p-3 rounded-lg bg-[#ebe7de] dark:bg-[#201e1b] border border-[#ded9ce] dark:border-[#282622]">
+                <div className="text-xs font-semibold text-[#1e1c19] dark:text-[#ece8df]">1-Click Etsy Drop</div>
+                <div className="text-[10px] text-[#70695e] dark:text-[#8a8276] mt-0.5">ZIP of 6 scaled STLs + listing mockups</div>
+              </div>
+              <div className="p-3 rounded-lg bg-[#ebe7de] dark:bg-[#201e1b] border border-[#ded9ce] dark:border-[#282622]">
+                <div className="text-xs font-semibold text-[#1e1c19] dark:text-[#ece8df]">Vase Mode Certified</div>
+                <div className="text-[10px] text-[#70695e] dark:text-[#8a8276] mt-0.5">Continuous single-wall extrusion, zero z-seam</div>
+              </div>
+              <div className="p-3 rounded-lg bg-[#ebe7de] dark:bg-[#201e1b] border border-[#ded9ce] dark:border-[#282622]">
+                <div className="text-xs font-semibold text-[#1e1c19] dark:text-[#ece8df]">Kiln Compensation</div>
+                <div className="text-[10px] text-[#70695e] dark:text-[#8a8276] mt-0.5">Pre-scaled +8% to +15% for ceramic shrinkage</div>
+              </div>
             </div>
           </div>
 

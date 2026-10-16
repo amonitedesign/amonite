@@ -39,51 +39,50 @@ export const TIERS: TierInfo[] = [
   {
     id: 'free',
     name: 'Free',
-    tagline: 'Plan rooms locally, no account, no tracking.',
+    tagline: 'Shape minimal decor locally with zero account or tracking.',
     monthly: 0,
     annual: 0,
     cta: 'Open sandbox',
     features: [
-      'Unlimited local projects',
-      'Floor-plan + 3D viewport',
-      'DXF / SVG / STL export',
-      '3 cloud projects · 25 MB',
-      'Non-commercial license',
+      '4 Architectural base archetypes',
+      'Infinite parametric fluting & rib controls',
+      'Watertight single-vessel STL export',
+      'Local auto-save in private browser storage',
+      'Non-commercial personal license',
     ],
   },
   {
     id: 'pro',
     name: 'Pro',
-    tagline: 'For solo designers billing clients.',
+    tagline: 'For boutique makers, Etsy sellers & ceramicists.',
     monthly: 20,
     annual: 16,
     cta: 'Notify me',
     featured: true,
     badge: 'Most popular',
     features: [
-      'Everything in Free, commercial license',
-      'Unlimited cloud projects · 50 GB',
-      'Cloud sync across devices',
-      'Material libraries + cut lists',
-      'Client share links',
-      'Render + AI credit pool',
-      'Priority support',
+      'Everything in Free, commercial selling license',
+      '1-Click Etsy Collection Generator (6 STLs + mockups)',
+      'Ceramic Kiln Shrinkage Tool (Stoneware & Porcelain)',
+      'Studio mockup PNG renders for Etsy listings',
+      'Single-wall spiralize Vase Mode certified',
+      'Priority maker support',
     ],
   },
   {
     id: 'studio',
     name: 'Studio',
-    tagline: 'For practices. Viewers always free.',
+    tagline: 'For decor practices, lighting brands & ceramics teams.',
     monthly: 30,
     annual: 24,
     cta: 'Talk to us',
     features: [
-      'Everything in Pro, per editor',
-      'Team workspace + roles',
-      'Unlimited client links + commenting',
-      'Consolidated billing',
-      'Advanced CAM toolpaths',
-      'Dedicated support',
+      'Everything in Pro, per studio member',
+      'Modular multi-part lighting shells & lampshades',
+      'Custom batch clay shrinkage recipes',
+      'Direct vector DXF + SVG 2D elevations',
+      'Shared studio collection presets',
+      'Dedicated onboarding & custom tooling',
     ],
   },
 ];
@@ -116,43 +115,47 @@ export default function PricingTiles({
             data-testid={`tier-${tier.id}`}
             className={
               tier.featured
-                ? 'border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.15)] md:-translate-y-6'
+                ? 'border-[#c96f4b]/50 shadow-xl shadow-[#c96f4b]/5 md:-translate-y-6'
                 : 'md:translate-y-2'
             }
           >
             <CardHeader>
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-2 text-muted-foreground">
-                  <Icon className="size-4" />
-                  <span className="text-xs font-semibold uppercase tracking-widest">
+                  <Icon className="size-4 text-[#c96f4b]" />
+                  <span className="text-xs font-semibold uppercase tracking-widest font-mono">
                     {tier.name}
                   </span>
                 </span>
-                {tier.badge && <Badge variant="default">{tier.badge}</Badge>}
+                {tier.badge && (
+                  <Badge variant="default" className="bg-[#c96f4b] hover:bg-[#b86240] text-white font-mono text-[10px]">
+                    {tier.badge}
+                  </Badge>
+                )}
               </div>
-              <CardTitle className="pt-2 text-3xl font-bold">
+              <CardTitle className="pt-2 text-3xl font-bold font-display">
                 {priceLabel(tier, period)}
                 {tier.monthly > 0 && (
-                  <span className="text-sm font-normal text-muted-foreground">
+                  <span className="text-sm font-normal text-muted-foreground font-mono">
                     {' '}
                     / mo{period === 'annual' ? ', billed annually' : ''}
                   </span>
                 )}
               </CardTitle>
-              <CardDescription>{tier.tagline}</CardDescription>
+              <CardDescription className="text-xs leading-relaxed">{tier.tagline}</CardDescription>
             </CardHeader>
             <CardContent>
               <Separator className="mb-4" />
               <ul className="space-y-2.5">
                 {tier.features.map((f) => (
                   <li key={f} className="flex items-start gap-2 text-[13px]">
-                    <RiCheckLine className="mt-0.5 size-4 shrink-0 text-cyan-500" />
-                    <span>{f}</span>
+                    <RiCheckLine className="mt-0.5 size-4 shrink-0 text-[#c96f4b]" />
+                    <span className="leading-snug">{f}</span>
                   </li>
                 ))}
               </ul>
               {tier.id !== 'free' && (
-                <p className="mt-4 text-[11px] text-muted-foreground">
+                <p className="mt-4 text-[11px] text-muted-foreground font-mono">
                   Coming soon — join the queue and we&apos;ll open billing for
                   your plan first.
                 </p>
@@ -169,7 +172,7 @@ export default function PricingTiles({
               ) : (
                 <Button
                   variant={tier.featured ? 'default' : 'outline'}
-                  className="w-full"
+                  className={tier.featured ? 'w-full bg-[#c96f4b] hover:bg-[#b86240] text-white font-medium' : 'w-full'}
                   onClick={() => onSelectPlan(tier.id)}
                 >
                   {tier.cta}

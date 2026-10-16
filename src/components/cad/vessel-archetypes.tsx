@@ -60,7 +60,7 @@ export default function VesselArchetypes(): React.JSX.Element {
   const active = vessel?.vessel?.archetype ?? 'fluted-vase';
 
   return (
-    <div className="w-60 rounded-xl border border-white/[0.07] bg-[#1e1a15]/95 p-3 shadow-2xl backdrop-blur-md">
+    <div className="w-60 rounded-xl border border-white/[0.07] bg-[#1e1a15]/95 p-3 shadow-2xl backdrop-blur-md max-h-[calc(100vh-148px)] overflow-y-auto">
       <p className="px-1 pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[#a89e8d]">
         Base forms
       </p>

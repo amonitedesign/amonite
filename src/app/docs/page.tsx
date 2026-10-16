@@ -40,7 +40,7 @@ export default function DocsPage() {
             Amonite CAD Architecture & Reference
           </h1>
           <p className="text-zinc-600 dark:text-zinc-400 text-xs sm:text-sm mt-3 max-w-3xl leading-relaxed">
-            Engineering documentation and formal specification for the Amonite browser CAD/CAM micro-SaaS workspace. Covers client-side WebGL calculations, coordinate frames, hotkey registries, Brep solid generation, and vector interchange formats.
+            Engineering documentation and formal specification for the Amonite browser atelier. Covers client-side WebGL calculations, coordinate frames, hotkey registries, watertight solid generation, and vector interchange formats.
           </p>
           <div className="mt-6 flex items-center gap-4">
             <Link

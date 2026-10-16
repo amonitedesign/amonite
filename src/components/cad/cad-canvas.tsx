@@ -17,7 +17,47 @@ const EDGE_COLOR = 0x8a7f6a;
 function vesselFrame(nodes: { type: string; vessel?: { height: number } }[]): { targetY: number; dist: number } {
   const vessel = nodes.find((n) => n.type === 'vessel' && n.vessel);
   const h = vessel?.vessel?.height ?? 170;
-  return { targetY: h * 0.48, dist: Math.max(220, h * 1.75) };
+  // Generous headroom: side panels cover ~560px of frame width and the
+  // pedestal sits below the vessel, so frame loose rather than tight.
+  return { targetY: h * 0.46, dist: Math.max(260, h * 2.0) };
+}
+
+function applyCameraPreset(
+  cam: THREE.Camera,
+  orbit: OrbitControls,
+  preset: string,
+  targetY: number,
+  dist: number
+): void {
+  orbit.target.set(0, targetY, 0);
+
+  switch (preset) {
+    case 'iso':
+      cam.position.set(dist * 0.62, targetY + dist * 0.45, dist * 0.72);
+      break;
+    case 'top':
+      cam.position.set(0, targetY + dist, 0.001);
+      break;
+    case 'front':
+      cam.position.set(0, targetY, dist);
+      break;
+    case 'right':
+      cam.position.set(dist, targetY, 0);
+      break;
+    case 'bottom':
+      cam.position.set(0, targetY - dist, 0.001);
+      break;
+    case 'back':
+      cam.position.set(0, targetY, -dist);
+      break;
+    case 'left':
+      cam.position.set(-dist, targetY, 0);
+      break;
+    default:
+      cam.position.set(dist * 0.62, targetY + dist * 0.45, dist * 0.72);
+      break;
+  }
+  orbit.update();
 }
 
 export default function CADCanvas({
@@ -69,7 +109,7 @@ export default function CADCanvas({
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.15;
     rendererRef.current = renderer;
@@ -97,13 +137,18 @@ export default function CADCanvas({
     const orbit = new OrbitControls(perspCamera, renderer.domElement);
     orbit.enableDamping = true;
     orbit.dampingFactor = 0.06;
-    orbit.target.set(0, 80, 0);
     orbit.minDistance = 80;
-    orbit.maxDistance = 900;
+    orbit.maxDistance = 1200;
     orbit.maxPolarAngle = Math.PI * 0.52;
     orbit.autoRotate = autoRotate;
     orbit.autoRotateSpeed = 0.75;
-    orbit.update();
+    // Frame the vessel on first mount (the preset effect only refires on
+    // preset/node changes, so without this the hard-coded camera overfills).
+    // Read the store directly: the init effect runs once by design.
+    const { targetY: initY, dist: initDist } = vesselFrame(
+      useCADStore.getState().nodes
+    );
+    applyCameraPreset(perspCamera, orbit, 'iso', initY, initDist);
     orbitControlsRef.current = orbit;
 
     // Lighting — soft architectural gallery warmth (Key + Fill + Rim + Hemisphere)
@@ -187,11 +232,40 @@ export default function CADCanvas({
         rendererRef.current.render(sceneRef.current, activeCameraRef.current);
       }
     };
+    const meshesMap = meshesMapRef.current;
     animate();
 
     return () => {
       window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
+      // Full teardown: StrictMode (and route changes) remount this effect
+      // while refs persist. Stale groups stay parented to the dead scene,
+      // so dispose everything and reset the registry — otherwise meshes
+      // silently never appear in the new scene.
+      meshesMap.forEach((group) => {
+        group.traverse((o) => {
+          const mesh = o as THREE.Mesh;
+          mesh.geometry?.dispose();
+          const material = mesh.material as
+            | THREE.Material
+            | THREE.Material[]
+            | undefined;
+          if (Array.isArray(material)) material.forEach((m) => m.dispose());
+          else material?.dispose();
+        });
+        scene.remove(group);
+      });
+      meshesMap.clear();
+      scene.traverse((o) => {
+        const mesh = o as THREE.Mesh;
+        mesh.geometry?.dispose();
+        const material = mesh.material as
+          | THREE.Material
+          | THREE.Material[]
+          | undefined;
+        if (Array.isArray(material)) material.forEach((m) => m.dispose());
+        else material?.dispose();
+      });
       renderer.dispose();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -230,33 +304,13 @@ export default function CADCanvas({
   useEffect(() => {
     if (!orbitControlsRef.current || !activeCameraRef.current) return;
     const { targetY, dist } = vesselFrame(nodes);
-    const target = new THREE.Vector3(0, targetY, 0);
-    orbitControlsRef.current.target.copy(target);
-
-    switch (activePreset) {
-      case 'iso':
-        activeCameraRef.current.position.set(dist * 0.62, targetY + dist * 0.45, dist * 0.72);
-        break;
-      case 'top':
-        activeCameraRef.current.position.set(0, targetY + dist, 0.001);
-        break;
-      case 'front':
-        activeCameraRef.current.position.set(0, targetY, dist);
-        break;
-      case 'right':
-        activeCameraRef.current.position.set(dist, targetY, 0);
-        break;
-      case 'bottom':
-        activeCameraRef.current.position.set(0, targetY - dist, 0.001);
-        break;
-      case 'back':
-        activeCameraRef.current.position.set(0, targetY, -dist);
-        break;
-      case 'left':
-        activeCameraRef.current.position.set(-dist, targetY, 0);
-        break;
-    }
-    orbitControlsRef.current.update();
+    applyCameraPreset(
+      activeCameraRef.current,
+      orbitControlsRef.current,
+      activePreset,
+      targetY,
+      dist
+    );
   }, [cameraPresetTrigger, activePreset, nodes]);
 
   // 4. Synchronize 3D Meshes from Zustand nodes
@@ -278,6 +332,12 @@ export default function CADCanvas({
     // Create or update meshes
     nodes.forEach((node) => {
       let group = currentMeshes.get(node.id);
+
+      // Re-parent guard: after a remount the registry may hold groups
+      // parented to a disposed scene (see init-effect teardown).
+      if (group && group.parent !== scene) {
+        scene.add(group);
+      }
 
       if (!group) {
         group = new THREE.Group();

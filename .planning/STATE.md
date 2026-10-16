@@ -3,7 +3,7 @@ gsd_state_version: 1.0
 milestone: v2.0
 milestone_name: "Parametric Decor Studio Pivot"
 status: in_progress
-last_updated: "2026-10-16T19:15:00.000Z"
+last_updated: "2026-10-16T20:00:00.000Z"
 progress:
   total_phases: 9
   completed_phases: 6
@@ -53,3 +53,4 @@ progress:
 - **Decision 13 (Multi-Threaded Web Worker Engine):** Offload all procedural vertex loops, wave transformations, and normal calculations to `src/workers/mesh-worker.ts` with transferable array buffers to prevent UI frame drops when scrubbing sliders at 60fps.
 - **Decision 14 (Vase-Mode & Clay Shrinkage First):** Prioritized continuous spiralize outer contour export and automatic ceramic clay shrinkage compensation (8%–15%) over legacy DXF/SVG formats.
 - **Decision 15 (Studio Visual Showcase):** Added dedicated illustrating gallery on the landing page presenting real-world decor designs with physical fabrication specifications (print time, weight, shrinkage factor, slicer settings).
+- **Decision 16 (Studio Viewport Fix + Affirmed Direction, 2026-10-16):** Diagnosed and fixed the invisible-vessel bug (StrictMode remount orphaned mesh groups in a disposed scene; verified by live scene traversal vs store) plus init camera framing and panel overflow — recorded in `docs/architecture/studio-viewport-record.md`. Affirmed the Parametric Decor Studio pivot, the screenshot-verify workflow, and the monetization track as correct and progressing — recorded in `docs/direction.md`. Hold this course through Phases 7–9.

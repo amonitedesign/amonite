@@ -140,7 +140,7 @@ describe('routes / primary smoke across the app', () => {
   it('pricing FAQ accordion expands answers', () => {
     resetStore();
     render(<PricingPage />);
-    fireEvent.click(screen.getByText('Do my clients need a paid seat to view a room?'));
+    fireEvent.click(screen.getByText('Do my clients or studio viewers need a paid seat?'));
     expect(screen.getByText(/Viewers are free on every tier/)).toBeInTheDocument();
   });
 });
