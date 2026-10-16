@@ -10,6 +10,7 @@ import LandingPage from '@/app/page';
 import DocsPage from '@/app/docs/page';
 import SandboxPage from '@/app/sandbox/page';
 import PricingPage from '@/app/pricing/page';
+import { ProStatusProvider } from '@/lib/pro-status';
 import { useCADStore } from '@/store/cad-store';
 
 function resetStore() {
@@ -110,6 +111,28 @@ describe('routes / primary smoke across the app', () => {
     const proLink = screen.getByText('Get Pro').closest('a');
     expect(proLink?.getAttribute('href')).toBe('/pricing');
     expect(screen.queryByText('Pro Early Access')).toBeNull();
+  });
+
+  it('pro users see a PRO badge instead of Get Pro in navbar + sandbox', () => {
+    resetStore();
+    render(
+      <ProStatusProvider isPro>
+        <LandingPage />
+      </ProStatusProvider>
+    );
+    expect(screen.getByTestId('pro-badge')).toBeInTheDocument();
+    expect(screen.queryByText('Get Pro')).toBeNull();
+  });
+
+  it('pro users see a PRO badge instead of Get Pro in the sandbox header', () => {
+    resetStore();
+    render(
+      <ProStatusProvider isPro>
+        <SandboxPage />
+      </ProStatusProvider>
+    );
+    expect(screen.getByTestId('pro-badge')).toBeInTheDocument();
+    expect(screen.queryByText('Get Pro')).toBeNull();
   });
 
   it('pricing page renders hero, billing toggle, and three cascading tiles', () => {

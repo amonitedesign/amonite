@@ -20,6 +20,17 @@ test('@smoke sandbox atelier shell loads with archetypes', async ({ page }) => {
   await expect(page.getByText('Reset view')).toBeVisible();
 });
 
+test('@smoke pro preview flag swaps Get Pro for PRO badge in studio', async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('amonite_pro_preview', '1');
+  });
+  await page.goto('/sandbox');
+  await expect(page.getByTestId('pro-badge')).toBeVisible();
+  await expect(page.getByRole('link', { name: /Get Pro/ })).toHaveCount(0);
+});
+
 test('@smoke docs render shortcuts and format specs', async ({ page }) => {
   await page.goto('/docs');
   await expect(page.getByText('Amonite CAD Architecture & Reference')).toBeVisible();

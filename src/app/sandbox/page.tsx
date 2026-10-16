@@ -135,13 +135,17 @@ export default function SandboxPage() {
             <HelpCircle className="w-4 h-4" />
           </Link>
 
-          <Link
-            href="/pricing"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#ede4d3] hover:bg-white text-[#221c14] font-bold transition-colors"
-          >
-            <Sparkles className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Get Pro</span>
-          </Link>
+          {isPro ? (
+            <ProBadge className="bg-[#c96f4b]/15 border-[#c96f4b]/30 text-[#f0caa3]" />
+          ) : (
+            <Link
+              href="/pricing"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#ede4d3] hover:bg-white text-[#221c14] font-bold transition-colors"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Get Pro</span>
+            </Link>
+          )}
         </div>
       </header>
 
