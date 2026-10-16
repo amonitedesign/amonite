@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useCADStore } from '@/store/cad-store';
 import { STUDIO_THEME } from '@/lib/studio-theme';
 import { VESSEL_ARCHETYPES, vesselProfileRadius } from '@/lib/vessel-geometry';
@@ -69,18 +70,42 @@ export default function VesselArchetypes(): React.JSX.Element {
 
   const vessel = nodes.find((n) => n.id === vesselId);
   const active = vessel?.vessel?.archetype ?? 'fluted-vase';
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (!isOpen) {
+    return (
+      <button
+        type="button"
+        onClick={() => setIsOpen(true)}
+        aria-expanded={false}
+        className="flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-mono text-[11px] shadow-2xl backdrop-blur-md transition-colors"
+        style={{ borderColor: t.hairline, backgroundColor: t.panelBg, color: t.inkSoft }}
+      >
+        <span className="font-semibold uppercase tracking-[0.18em]">Base forms</span>
+        <ChevronDown className="h-3 w-3" />
+      </button>
+    );
+  }
 
   return (
     <div
-      className="w-60 rounded-xl border p-3 shadow-2xl backdrop-blur-md max-h-[calc(100vh-148px)] overflow-y-auto"
+      className="w-60 rounded-lg border p-3 shadow-2xl backdrop-blur-md max-h-[calc(100vh-148px)] overflow-y-auto"
       style={{ backgroundColor: t.panelBg, borderColor: t.hairline }}
     >
-      <p
-        className="px-1 pb-2 font-mono text-[10px] font-semibold uppercase tracking-[0.18em]"
-        style={{ color: t.inkMute }}
+      <button
+        type="button"
+        onClick={() => setIsOpen(false)}
+        aria-expanded={true}
+        className="flex w-full items-center justify-between px-1 pb-2"
       >
-        Base forms
-      </p>
+        <span
+          className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em]"
+          style={{ color: t.inkMute }}
+        >
+          Base forms
+        </span>
+        <ChevronUp className="h-3 w-3" style={{ color: t.inkMute }} />
+      </button>
       <div className="flex flex-col gap-1.5">
         {ORDER.map((key) => {
           const spec = VESSEL_ARCHETYPES[key];

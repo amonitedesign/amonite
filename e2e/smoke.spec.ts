@@ -13,8 +13,9 @@ test('@smoke landing renders hero and studio entry points', async ({ page }) => 
 
 test('@smoke sandbox atelier shell loads with archetypes', async ({ page }) => {
   await page.goto('/sandbox');
-  await expect(page.getByText('AMONITE ATELIER')).toBeVisible();
-  await expect(page.getByText('Base forms')).toBeVisible();
+  await expect(page.getByText('AMONITE')).toBeVisible();
+  // Presets ship collapsed behind the Base forms rail toggle.
+  await page.getByText('Base forms').click();
   await expect(page.getByText('Fluted Vase')).toBeVisible();
   await expect(page.getByText('Shape the clay')).toBeVisible();
   await expect(page.getByText('Reset view')).toBeVisible();

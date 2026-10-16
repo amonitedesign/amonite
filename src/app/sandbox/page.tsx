@@ -5,9 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {
   FileBox,
-  Save,
   ArrowLeft,
-  HelpCircle,
   Sparkles,
   RotateCcw,
 } from 'lucide-react';
@@ -24,7 +22,6 @@ import { saveWorkspaceLocally, loadWorkspaceLocally } from '@/lib/storage';
 
 export default function SandboxPage() {
   const [isFileOpen, setIsFileOpen] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
 
   const nodes = useCADStore((s) => s.nodes);
   const viewport = useCADStore((s) => s.viewport);
@@ -52,8 +49,6 @@ export default function SandboxPage() {
     if (!autosaveEnabled) return;
     const timer = setTimeout(() => {
       saveWorkspaceLocally(nodes, viewport);
-      setIsSaved(true);
-      setTimeout(() => setIsSaved(false), 2000);
     }, 1500);
 
     return () => clearTimeout(timer);
@@ -106,35 +101,16 @@ export default function SandboxPage() {
           </Link>
 
           <div className="flex items-center gap-2">
-            <div
-              className="w-6 h-6 rounded border flex items-center justify-center p-0.5"
-              style={{ backgroundColor: t.wellBg, borderColor: t.hairline }}
-            >
-              <Image
-                src="/logo-mark.svg"
-                alt="Amonite"
-                width={20}
-                height={20}
-                className="object-contain"
-              />
-            </div>
+            <Image
+              src="/logo-mark.svg"
+              alt="Amonite"
+              width={20}
+              height={20}
+              className="object-contain"
+            />
             <span className="font-extrabold text-sm tracking-tight" style={{ color: t.ink }}>
-              AMONITE ATELIER
+              AMONITE
             </span>
-            <span
-              className="text-[10px] px-1.5 py-0.5 rounded border"
-              style={{ backgroundColor: `${t.accent}26`, color: t.accentSoft, borderColor: `${t.accent}40` }}
-            >
-              3D PRINT READY
-            </span>
-          </div>
-
-          <div
-            className="hidden sm:flex items-center gap-2 text-[11px] border-l pl-3 ml-2"
-            style={{ color: t.inkMute, borderColor: t.hairline }}
-          >
-            <Save className="w-3.5 h-3.5" style={{ color: isSaved ? '#34d399' : t.inkFaint }} />
-            <span>{!autosaveEnabled ? 'Autosave off' : isSaved ? 'Autosaved' : 'Autosave on'}</span>
           </div>
         </div>
 
@@ -150,15 +126,6 @@ export default function SandboxPage() {
           </button>
 
           <StudioSettings />
-
-          <Link
-            href="/docs"
-            className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-colors"
-            style={{ color: t.inkMute }}
-            title="Help and documentation"
-          >
-            <HelpCircle className="w-4 h-4" />
-          </Link>
 
           {isPro ? (
             <ProBadge className="bg-[#c96f4b]/15 border-[#c96f4b]/30 text-[#f0caa3]" />

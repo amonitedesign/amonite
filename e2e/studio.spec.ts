@@ -5,6 +5,7 @@ import path from 'node:path';
 
 test('archetype switch reconfigures the vessel', async ({ page }) => {
   await page.goto('/sandbox');
+  await page.getByText('Base forms').click();
   await page.getByText('Organic Bowl').click();
   // Bowl preset widens the base radius readout to 70 mm.
   await expect(page.getByText('70 mm').first()).toBeVisible();
@@ -22,7 +23,7 @@ test('slider reshapes the vessel and undo restores it', async ({ page }) => {
 test('reset view recenters the vessel', async ({ page }) => {
   await page.goto('/sandbox');
   await page.getByText('Reset view').click();
-  await expect(page.getByText('AMONITE ATELIER')).toBeVisible();
+  await expect(page.getByText('AMONITE').first()).toBeVisible();
 });
 
 test('STL download exports the printable vessel', async ({ page }) => {
@@ -70,6 +71,6 @@ test('waitlist modal validates email and confirms', async ({ page }) => {
 test('mobile viewport keeps studio operable', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/sandbox');
-  await expect(page.getByText('AMONITE ATELIER')).toBeVisible();
+  await expect(page.getByText('AMONITE').first()).toBeVisible();
   await expect(page.getByText('Files')).toBeVisible();
 });

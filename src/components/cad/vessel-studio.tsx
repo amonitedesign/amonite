@@ -7,7 +7,6 @@ import {
   Undo2,
   Sparkles,
   Flame,
-  CheckCircle2,
   Loader2,
   Layers,
   ChevronDown,
@@ -94,7 +93,7 @@ export default function VesselStudio(): React.JSX.Element {
 
   return (
     <div
-      className="w-80 rounded-xl border p-4 shadow-2xl backdrop-blur-md max-h-[calc(100vh-120px)] overflow-y-auto [scrollbar-width:thin]"
+      className="w-80 rounded-lg border p-4 shadow-2xl backdrop-blur-md max-h-[calc(100vh-120px)] overflow-y-auto [scrollbar-width:thin]"
       style={{ backgroundColor: t.panelBg, borderColor: t.hairline }}
     >
       {/* Header bar with undo/redo */}
@@ -255,21 +254,7 @@ export default function VesselStudio(): React.JSX.Element {
         )}
       </div>
 
-      {/* Printability & Slicer Certification Badge */}
-      <div className="mt-3 flex items-start gap-2 rounded-lg border border-emerald-500/20 bg-emerald-950/20 p-2.5">
-        <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400 mt-0.5" />
-        <div>
-          <p className="text-[11px] font-bold text-emerald-200">
-            Vase Mode & Print Certified
-          </p>
-          <p className="font-mono text-[9px] leading-3.5 text-emerald-300/80 mt-0.5">
-            Watertight solid · 0° Overhangs &gt; 45° · {formatMeasure(vessel.wallThickness, unit)} shell
-          </p>
-        </div>
-      </div>
-
-      {/* 1-Click "Etsy Collection Batch Generator" — The Money Feature.
-          Sticky so it never scrolls out of reach below the fold. */}
+      {/* Export actions. Sticky so they never scroll out of reach below the fold. */}
       <div
         className="sticky bottom-0 -mx-4 -mb-4 mt-4 space-y-2 border-t px-4 pt-3 pb-4 backdrop-blur-md"
         style={{ borderColor: t.hairline, backgroundColor: t.panelBg }}
@@ -278,7 +263,8 @@ export default function VesselStudio(): React.JSX.Element {
           type="button"
           onClick={handleGenerateEtsyCollection}
           disabled={isGeneratingBatch}
-          className="group relative flex w-full flex-col items-center justify-center rounded-lg bg-gradient-to-r from-[#d98560] via-[#c96f4b] to-[#b95f3b] p-3 text-center text-[#18130d] shadow-lg shadow-[#c96f4b]/20 transition-all hover:brightness-110 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+          className="group relative flex w-full flex-col items-center justify-center rounded-lg p-3 text-center transition-all active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+          style={{ backgroundColor: t.accent }}
         >
           <div className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-white">
             {isGeneratingBatch ? (
