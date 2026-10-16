@@ -1,12 +1,28 @@
+---
+gsd_state_version: 1.0
+milestone: v1.0
+milestone_name: milestone
+status: executing
+last_updated: "2026-10-16T11:19:36.493Z"
+progress:
+  total_phases: 5
+  completed_phases: 0
+  total_plans: 2
+  completed_plans: 0
+  percent: 0
+---
+
 # Amonite CAD Project State
 
 ## Current Position
+
 - **Active Phase:** Phase 1 (Project Setup & Core Viewport Foundation)
-- **Status:** Initializing project structure, WebGL viewport, Zustand state store, and public landing layout.
+- **Status:** Ready to execute
 - **Repository Branch:** `master`
 - **Primary Support:** `amoniteadmin@gmail.com`
 
 ## Architectural Decisions Log
+
 - **Decision 01 (Framework):** Selected Next.js 16 (App Router) + TypeScript + Tailwind CSS over Vite to ensure native metadata, SEO for public landing paths, modular routing, and server-side static generation.
 - **Decision 02 (Rendering Engine):** Selected Three.js WebGL hardware-accelerated viewport with a dedicated React canvas manager. Direct Three.js WebGL loop provides 120fps fluid performance without React 19 peer-dependency conflicts or reconciler bottlenecks during continuous CAD transform interactions.
 - **Decision 03 (State Management):** Zustand state store (`src/store/cad-store.ts`) adopted to decouple high-frequency mouse coordinate streams, grid snap calculations, camera modes, and mesh transforms from React component re-renders.
@@ -14,6 +30,7 @@
 - **Decision 05 (Branding):** Embedded the Ammonite spiral geometry from `Logo/IMAGE.svg` as `public/logo-mark.svg` across splash headers, viewport watermarks, and icons.
 
 ## Next Steps
+
 1. Implement the complete Zustand store (`src/store/cad-store.ts`).
 2. Build the hardware-accelerated WebGL Viewport (`src/components/cad/viewport.tsx`) with OrbitControls, TransformControls, CAD grid, camera presets, and lighting.
 3. Build the CAD Toolbar, Properties Inspector, and Layer Tree components.
