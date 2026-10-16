@@ -11,18 +11,14 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/ui/navbar';
 import WaitlistModal from '@/components/landing/waitlist-modal';
-import FileDialog from '@/components/io/file-dialog';
 import DesignerShowcase from '@/components/landing/designer-showcase';
 
 export default function LandingPage() {
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
-  const [isFileExchangeOpen, setIsFileExchangeOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-[#fbfaf7] dark:bg-[#121110] text-[#1c1a17] dark:text-[#dcd8d0] font-mono flex flex-col selection:bg-[#d4a373] selection:text-black transition-colors">
-      <Navbar
-        onOpenFileExchange={() => setIsFileExchangeOpen(true)}
-      />
+      <Navbar />
 
       {/* 3D Minimalist Object Studio Hero */}
       <section className="relative w-full pt-12 sm:pt-16 pb-16 px-4 sm:px-6 max-w-5xl mx-auto">
@@ -281,7 +277,6 @@ export default function LandingPage() {
 
       {/* Modals */}
       <WaitlistModal isOpen={isWaitlistOpen} onClose={() => setIsWaitlistOpen(false)} />
-      <FileDialog isOpen={isFileExchangeOpen} onClose={() => setIsFileExchangeOpen(false)} />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { clearWorkspaceLocally, loadWorkspaceLocally, saveWorkspaceLocally } from './storage';
+import { clearWorkspaceLocally, loadStudioSettings, loadWorkspaceLocally, saveStudioSettings, saveWorkspaceLocally, studioStorageBytes } from './storage';
 import type { CADNode, ViewportState } from './cad-types';
+import { DEFAULT_STUDIO_SETTINGS } from './cad-types';
 
 const viewport: ViewportState = {
   cameraMode: 'perspective',
@@ -88,5 +89,35 @@ describe('storage / local autosave', () => {
       throw new Error('QuotaExceededError');
     });
     expect(() => saveWorkspaceLocally(nodes, viewport)).not.toThrow();
+  });
+});
+
+describe('storage / studio settings', () => {
+  beforeEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('returns defaults when nothing is stored', () => {
+    installLocalStorageMock();
+    expect(loadStudioSettings()).toEqual(DEFAULT_STUDIO_SETTINGS);
+  });
+
+  it('round-trips settings and merges over defaults', () => {
+    installLocalStorageMock();
+    saveStudioSettings({ ...DEFAULT_STUDIO_SETTINGS, theme: 'light', rotateSpeed: 1.5 });
+    expect(loadStudioSettings()).toEqual({ ...DEFAULT_STUDIO_SETTINGS, theme: 'light', rotateSpeed: 1.5 });
+  });
+
+  it('falls back to defaults on corrupt JSON', () => {
+    const ls = installLocalStorageMock();
+    ls.getItem.mockReturnValueOnce('{{{not-json');
+    expect(loadStudioSettings()).toEqual(DEFAULT_STUDIO_SETTINGS);
+  });
+
+  it('reports bytes used across amonite keys', () => {
+    installLocalStorageMock();
+    saveWorkspaceLocally(nodes, viewport);
+    saveStudioSettings(DEFAULT_STUDIO_SETTINGS);
+    expect(studioStorageBytes()).toBeGreaterThan(100);
   });
 });

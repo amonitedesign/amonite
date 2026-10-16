@@ -10,31 +10,33 @@ import {
   HelpCircle,
   Sparkles,
   RotateCcw,
-  Play,
-  Pause,
 } from 'lucide-react';
 import CADCanvas from '@/components/cad/cad-canvas';
 import VesselArchetypes from '@/components/cad/vessel-archetypes';
 import VesselStudio from '@/components/cad/vessel-studio';
+import StudioSettings from '@/components/cad/studio-settings';
 import FileDialog from '@/components/io/file-dialog';
 import ProBadge from '@/components/ui/pro-badge';
 import { useProStatus } from '@/lib/pro-status';
+import { STUDIO_THEME } from '@/lib/studio-theme';
 import { useCADStore } from '@/store/cad-store';
 import { saveWorkspaceLocally, loadWorkspaceLocally } from '@/lib/storage';
 
 export default function SandboxPage() {
   const [isFileOpen, setIsFileOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [autoRotate, setAutoRotate] = useState(true);
 
   const nodes = useCADStore((s) => s.nodes);
   const viewport = useCADStore((s) => s.viewport);
+  const theme = useCADStore((s) => s.settings.theme);
+  const autosaveEnabled = useCADStore((s) => s.settings.autosaveEnabled);
   const loadProject = useCADStore((s) => s.loadProject);
   const ensureVessel = useCADStore((s) => s.ensureVessel);
   const setCameraPreset = useCADStore((s) => s.setCameraPreset);
   const undo = useCADStore((s) => s.undo);
   const redo = useCADStore((s) => s.redo);
   const { isPro } = useProStatus();
+  const t = STUDIO_THEME[theme].chrome;
 
   // Load from local storage on initial mount, then guarantee the vessel piece.
   useEffect(() => {
@@ -45,8 +47,9 @@ export default function SandboxPage() {
     ensureVessel();
   }, [loadProject, ensureVessel]);
 
-  // Debounced autosave
+  // Debounced autosave (honours the Workshop toggle)
   useEffect(() => {
+    if (!autosaveEnabled) return;
     const timer = setTimeout(() => {
       saveWorkspaceLocally(nodes, viewport);
       setIsSaved(true);
@@ -54,7 +57,7 @@ export default function SandboxPage() {
     }, 1500);
 
     return () => clearTimeout(timer);
-  }, [nodes, viewport]);
+  }, [nodes, viewport, autosaveEnabled]);
 
   // Keyboard shortcut listeners
   useEffect(() => {
@@ -82,19 +85,31 @@ export default function SandboxPage() {
   }, [undo, redo]);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#161310] flex flex-col font-mono text-[#ece5d8]">
+    <div
+      className="relative w-screen h-screen overflow-hidden flex flex-col font-mono"
+      style={{ backgroundColor: t.pageBg, color: t.ink }}
+    >
       {/* Top Application Bar */}
-      <header className="h-12 bg-[#1c1712] border-b border-white/[0.07] px-4 flex items-center justify-between z-30 select-none">
+      <header
+        className="h-12 border-b px-4 flex items-center justify-between z-30 select-none"
+        style={{ backgroundColor: t.headerBg, borderColor: t.hairline }}
+      >
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-2 text-[#a89e8d] hover:text-white transition-colors"
+            className="flex items-center gap-2 transition-colors"
+            style={{ color: t.inkMute }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = t.ink; }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = t.inkMute; }}
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
 
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-white/[0.05] border border-white/10 flex items-center justify-center p-0.5">
+            <div
+              className="w-6 h-6 rounded border flex items-center justify-center p-0.5"
+              style={{ backgroundColor: t.wellBg, borderColor: t.hairline }}
+            >
               <Image
                 src="/logo-mark.svg"
                 alt="Amonite"
@@ -103,17 +118,23 @@ export default function SandboxPage() {
                 className="object-contain"
               />
             </div>
-            <span className="font-extrabold text-sm tracking-tight text-white">
+            <span className="font-extrabold text-sm tracking-tight" style={{ color: t.ink }}>
               AMONITE ATELIER
             </span>
-            <span className="text-[10px] bg-[#c96f4b]/15 text-[#d98f66] px-1.5 py-0.5 rounded border border-[#c96f4b]/25">
+            <span
+              className="text-[10px] px-1.5 py-0.5 rounded border"
+              style={{ backgroundColor: `${t.accent}26`, color: t.accentSoft, borderColor: `${t.accent}40` }}
+            >
               3D PRINT READY
             </span>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 text-[11px] text-[#a89e8d] border-l border-white/[0.07] pl-3 ml-2">
-            <Save className={`w-3.5 h-3.5 ${isSaved ? 'text-emerald-400' : 'text-[#6b6257]'}`} />
-            <span>{isSaved ? 'Autosaved' : 'Autosave on'}</span>
+          <div
+            className="hidden sm:flex items-center gap-2 text-[11px] border-l pl-3 ml-2"
+            style={{ color: t.inkMute, borderColor: t.hairline }}
+          >
+            <Save className="w-3.5 h-3.5" style={{ color: isSaved ? '#34d399' : t.inkFaint }} />
+            <span>{!autosaveEnabled ? 'Autosave off' : isSaved ? 'Autosaved' : 'Autosave on'}</span>
           </div>
         </div>
 
@@ -121,15 +142,19 @@ export default function SandboxPage() {
         <div className="flex items-center gap-2 text-xs">
           <button
             onClick={() => setIsFileOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 text-[#ece5d8] transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-colors"
+            style={{ backgroundColor: t.wellBg, borderColor: t.hairline, color: t.ink }}
           >
-            <FileBox className="w-3.5 h-3.5 text-[#d98f66]" />
+            <FileBox className="w-3.5 h-3.5" style={{ color: t.accentSoft }} />
             <span>Files</span>
           </button>
 
+          <StudioSettings />
+
           <Link
             href="/docs"
-            className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[#a89e8d] hover:text-white hover:bg-white/[0.06] transition-colors"
+            className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg transition-colors"
+            style={{ color: t.inkMute }}
             title="Help and documentation"
           >
             <HelpCircle className="w-4 h-4" />
@@ -140,7 +165,10 @@ export default function SandboxPage() {
           ) : (
             <Link
               href="/pricing"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#ede4d3] hover:bg-white text-[#221c14] font-bold transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-bold transition-colors"
+              style={{ backgroundColor: t.primaryBtnBg, color: t.primaryBtnInk }}
+              onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = t.primaryBtnHover; }}
+              onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = t.primaryBtnBg; }}
             >
               <Sparkles className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Get Pro</span>
@@ -152,7 +180,7 @@ export default function SandboxPage() {
       {/* Main Studio Viewport Area */}
       <div className="relative flex-1 w-full h-[calc(100vh-48px)] overflow-hidden">
         {/* Fullscreen 3D Atelier Canvas */}
-        <CADCanvas className="absolute inset-0 z-0" autoRotate={autoRotate} />
+        <CADCanvas className="absolute inset-0 z-0" />
 
         {/* Left Side Base Form Menu */}
         <div className="absolute top-20 left-4 z-20 hidden md:block">
@@ -169,27 +197,14 @@ export default function SandboxPage() {
           <button
             type="button"
             onClick={() => setCameraPreset('iso')}
-            className="flex items-center gap-2 rounded-full border border-white/10 bg-[#1e1a15]/95 px-3.5 py-1.5 font-mono text-[11px] text-[#d8cfbd] shadow-2xl backdrop-blur-md transition-colors hover:border-white/25 hover:text-white"
+            className="flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-mono text-[11px] shadow-2xl backdrop-blur-md transition-colors"
+            style={{ borderColor: t.hairline, backgroundColor: t.panelBg, color: t.inkSoft }}
           >
             <RotateCcw className="h-3 w-3" />
             <span>Reset view</span>
           </button>
 
-          <button
-            type="button"
-            onClick={() => setAutoRotate(!autoRotate)}
-            className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-mono text-[11px] shadow-2xl backdrop-blur-md transition-colors ${
-              autoRotate
-                ? 'border-[#c96f4b]/30 bg-[#c96f4b]/15 text-[#f0caa3]'
-                : 'border-white/10 bg-[#1e1a15]/95 text-[#a89e8d] hover:text-white'
-            }`}
-            title="Toggle turntable auto-rotation"
-          >
-            {autoRotate ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-            <span>Turntable</span>
-          </button>
-
-          <span className="hidden font-mono text-[10px] text-[#6b6257] sm:inline pl-2">
+          <span className="hidden font-mono text-[10px] sm:inline pl-2" style={{ color: t.inkFaint }}>
             Drag to orbit · Scroll to zoom
           </span>
         </div>

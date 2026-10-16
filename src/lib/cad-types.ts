@@ -6,7 +6,13 @@ export type VesselArchetype =
   | 'fluted-vase'
   | 'organic-bowl'
   | 'twisted-cylinder'
-  | 'brutalist-planter';
+  | 'brutalist-planter'
+  | 'globe-bud'
+  | 'bobbin-teardrop'
+  | 'hourglass-cinch'
+  | 'scallop-channel'
+  | 'nordic-floor'
+  | 'onion-bud';
 
 export type VesselFinish = 'sandstone' | 'terracotta' | 'porcelain' | 'obsidian';
 
@@ -36,6 +42,26 @@ export type ProjectionMode = 'perspective' | 'orthographic';
 export type RenderStyle = 'shaded' | 'wireframe' | 'hidden-line';
 
 export type LengthUnit = 'mm' | 'cm' | 'm' | 'in';
+
+export type StudioThemeMode = 'dark' | 'light';
+
+export interface StudioSettings {
+  theme: StudioThemeMode;
+  autoRotate: boolean;
+  rotateSpeed: number;
+  pedestalVisible: boolean;
+  shadowsEnabled: boolean;
+  autosaveEnabled: boolean;
+}
+
+export const DEFAULT_STUDIO_SETTINGS: StudioSettings = {
+  theme: 'dark',
+  autoRotate: true,
+  rotateSpeed: 0.75,
+  pedestalVisible: true,
+  shadowsEnabled: true,
+  autosaveEnabled: true,
+};
 
 export interface Vector3Data {
   x: number;

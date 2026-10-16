@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { CADNode, TransformMode, ViewportState, AmoniteProject, PrimitiveType, VesselArchetype, VesselParams } from '@/lib/cad-types';
+import { CADNode, TransformMode, ViewportState, AmoniteProject, PrimitiveType, VesselArchetype, VesselParams, StudioSettings, StudioThemeMode } from '@/lib/cad-types';
 import { VESSEL_ARCHETYPES } from '@/lib/vessel-geometry';
+import { loadStudioSettings, saveStudioSettings } from '@/lib/storage';
 
 export const VESSEL_NODE_ID = 'vessel-1';
 
@@ -77,6 +78,12 @@ interface CADStoreState {
   beginVesselDrag: () => void;
   setVesselParams: (patch: Partial<VesselParams>) => void;
   commitVesselHistory: () => void;
+
+  // Studio settings (persisted separately from the project)
+  settings: StudioSettings;
+  setStudioTheme: (theme: StudioThemeMode) => void;
+  setSetting: <K extends keyof StudioSettings>(key: K, value: StudioSettings[K]) => void;
+  resetVesselShape: () => void;
   undo: () => void;
   redo: () => void;
   loadProject: (project: AmoniteProject) => void;
@@ -113,6 +120,7 @@ export const useCADStore = create<CADStoreState>((set, get) => ({
   redoStack: [],
   vesselId: VESSEL_NODE_ID,
   vesselDragOpen: false,
+  settings: loadStudioSettings(),
 
   addNode: (type: PrimitiveType) => {
     const id = `node-${type}-${Date.now()}`;
@@ -276,6 +284,22 @@ export const useCADStore = create<CADStoreState>((set, get) => ({
   beginVesselDrag: () => set({ vesselDragOpen: true }),
 
   commitVesselHistory: () => set({ vesselDragOpen: false }),
+
+  setStudioTheme: (theme) => {
+    set((state) => ({ settings: { ...state.settings, theme } }));
+    saveStudioSettings(get().settings);
+  },
+
+  setSetting: (key, value) => {
+    set((state) => ({ settings: { ...state.settings, [key]: value } }));
+    saveStudioSettings(get().settings);
+  },
+
+  resetVesselShape: () => {
+    const vessel = get().nodes.find((n) => n.id === get().vesselId)?.vessel;
+    if (!vessel) return;
+    get().setVesselArchetype(vessel.archetype);
+  },
 
   commitDraftAsExtrusion: () => {
     const pts = get().draftPoints;

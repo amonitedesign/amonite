@@ -6,12 +6,11 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { useCADStore } from '@/store/cad-store';
 import { createGeometryForNode } from '@/lib/geometry-engine';
 import { VESSEL_FINISHES } from '@/lib/vessel-geometry';
+import { STUDIO_THEME } from '@/lib/studio-theme';
 
 type CADTaggedObject = THREE.Object3D & { cadNodeId?: string; lastDimKey?: string };
 
-// Warm atelier stage constants.
-const STAGE_BG = 0x161310;
-const PEDESTAL_COLOR = 0x1f1b17;
+// Soft edge tint for imported vector geometry.
 const EDGE_COLOR = 0x8a7f6a;
 
 function vesselFrame(nodes: { type: string; vessel?: { height: number } }[]): { targetY: number; dist: number } {
@@ -62,7 +61,7 @@ function applyCameraPreset(
 
 export default function CADCanvas({
   className = '',
-  autoRotate = true,
+  autoRotate: propAutoRotate,
 }: {
   className?: string;
   autoRotate?: boolean;
@@ -75,6 +74,12 @@ export default function CADCanvas({
   const viewport = useCADStore((s) => s.viewport);
   const cameraPresetTrigger = useCADStore((s) => s.cameraPresetTrigger);
   const activePreset = useCADStore((s) => s.activePreset);
+  const theme = useCADStore((s) => s.settings.theme);
+  const storeAutoRotate = useCADStore((s) => s.settings.autoRotate);
+  const autoRotate = propAutoRotate !== undefined ? propAutoRotate : storeAutoRotate;
+  const rotateSpeed = useCADStore((s) => s.settings.rotateSpeed);
+  const pedestalVisible = useCADStore((s) => s.settings.pedestalVisible);
+  const shadowsEnabled = useCADStore((s) => s.settings.shadowsEnabled);
 
   // References to keep Three.js instances stable across React renders
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -84,6 +89,12 @@ export default function CADCanvas({
   const activeCameraRef = useRef<THREE.Camera | null>(null);
   const orbitControlsRef = useRef<OrbitControls | null>(null);
   const meshesMapRef = useRef<Map<string, THREE.Group>>(new Map());
+  const hemiRef = useRef<THREE.HemisphereLight | null>(null);
+  const keyRef = useRef<THREE.DirectionalLight | null>(null);
+  const fillRef = useRef<THREE.DirectionalLight | null>(null);
+  const rimRef = useRef<THREE.DirectionalLight | null>(null);
+  const pedestalRef = useRef<THREE.Mesh | null>(null);
+  const groundRef = useRef<THREE.Mesh | null>(null);
 
   // 1. Initialize Scene, Renderer, Cameras, and the atelier stage
   useEffect(() => {
@@ -93,10 +104,12 @@ export default function CADCanvas({
     const height = containerRef.current.clientHeight || 600;
     const aspect = width / height;
 
-    // Scene — warm charcoal with a breath of depth fog.
+    const initialTheme = STUDIO_THEME[useCADStore.getState().settings.theme].stage;
+
+    // Scene — atelier stage with a breath of depth fog.
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(STAGE_BG);
-    scene.fog = new THREE.Fog(STAGE_BG, 500, 1100);
+    scene.background = new THREE.Color(initialTheme.bg);
+    scene.fog = new THREE.Fog(initialTheme.bg, initialTheme.fogNear, initialTheme.fogFar);
     sceneRef.current = scene;
 
     // Renderer
@@ -111,7 +124,7 @@ export default function CADCanvas({
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.15;
+    renderer.toneMappingExposure = initialTheme.exposure;
     rendererRef.current = renderer;
 
     // Cameras — 34° portrait focal length for luxury architectural presentation
@@ -140,8 +153,8 @@ export default function CADCanvas({
     orbit.minDistance = 80;
     orbit.maxDistance = 1200;
     orbit.maxPolarAngle = Math.PI * 0.52;
-    orbit.autoRotate = autoRotate;
-    orbit.autoRotateSpeed = 0.75;
+    orbit.autoRotate = useCADStore.getState().settings.autoRotate;
+    orbit.autoRotateSpeed = useCADStore.getState().settings.rotateSpeed;
     // Frame the vessel on first mount (the preset effect only refires on
     // preset/node changes, so without this the hard-coded camera overfills).
     // Read the store directly: the init effect runs once by design.
@@ -152,10 +165,15 @@ export default function CADCanvas({
     orbitControlsRef.current = orbit;
 
     // Lighting — soft architectural gallery warmth (Key + Fill + Rim + Hemisphere)
-    const hemi = new THREE.HemisphereLight(0xfffaf0, 0x221a14, 0.95);
+    const hemi = new THREE.HemisphereLight(
+      initialTheme.hemiSky,
+      initialTheme.hemiGround,
+      initialTheme.hemiIntensity
+    );
     scene.add(hemi);
+    hemiRef.current = hemi;
 
-    const key = new THREE.DirectionalLight(0xfff6eb, 1.9);
+    const key = new THREE.DirectionalLight(initialTheme.keyColor, initialTheme.keyIntensity);
     key.position.set(130, 240, 160);
     key.castShadow = true;
     key.shadow.mapSize.width = 2048;
@@ -166,33 +184,38 @@ export default function CADCanvas({
     key.shadow.camera.bottom = -40;
     key.shadow.bias = -0.0001;
     scene.add(key);
+    keyRef.current = key;
 
-    const fill = new THREE.DirectionalLight(0xb0cce6, 0.65);
+    const fill = new THREE.DirectionalLight(initialTheme.fillColor, initialTheme.fillIntensity);
     fill.position.set(-150, 100, 110);
     scene.add(fill);
+    fillRef.current = fill;
 
     const rim = new THREE.DirectionalLight(0xffdfb4, 1.6);
     rim.position.set(20, 180, -180);
     scene.add(rim);
+    rimRef.current = rim;
 
     // Pedestal — refined studio plinth
     const pedestal = new THREE.Mesh(
       new THREE.CylinderGeometry(80, 84, 8, 64),
-      new THREE.MeshStandardMaterial({ color: PEDESTAL_COLOR, roughness: 0.88, metalness: 0.05 })
+      new THREE.MeshStandardMaterial({ color: initialTheme.pedestal, roughness: 0.88, metalness: 0.05 })
     );
     pedestal.position.y = -4;
     pedestal.receiveShadow = true;
     scene.add(pedestal);
+    pedestalRef.current = pedestal;
 
     // Ground shadow catcher.
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(1600, 1600),
-      new THREE.ShadowMaterial({ opacity: 0.35 })
+      new THREE.ShadowMaterial({ opacity: initialTheme.groundOpacity })
     );
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -8;
     ground.receiveShadow = true;
     scene.add(ground);
+    groundRef.current = ground;
 
     // Resize Handler
     const handleResize = () => {
@@ -268,7 +291,6 @@ export default function CADCanvas({
       });
       renderer.dispose();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 2. Handle Camera Mode Switches (Perspective vs Orthographic)
@@ -293,12 +315,48 @@ export default function CADCanvas({
     orbitControlsRef.current.update();
   }, [viewport.cameraMode]);
 
-  // Sync autoRotate prop changes
+  // Sync turntable settings from the store
   useEffect(() => {
     if (orbitControlsRef.current) {
       orbitControlsRef.current.autoRotate = autoRotate;
+      orbitControlsRef.current.autoRotateSpeed = rotateSpeed;
     }
-  }, [autoRotate]);
+  }, [autoRotate, rotateSpeed]);
+
+  // Re-light the stage when theme or stage toggles change (no remount).
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+    const t = STUDIO_THEME[theme].stage;
+    scene.background = new THREE.Color(t.bg);
+    if (scene.fog instanceof THREE.Fog) {
+      scene.fog.color.set(t.bg);
+      scene.fog.near = t.fogNear;
+      scene.fog.far = t.fogFar;
+    }
+    hemiRef.current?.color.set(t.hemiSky);
+    hemiRef.current?.groundColor.set(t.hemiGround);
+    if (hemiRef.current) hemiRef.current.intensity = t.hemiIntensity;
+    keyRef.current?.color.set(t.keyColor);
+    if (keyRef.current) {
+      keyRef.current.intensity = t.keyIntensity;
+      keyRef.current.castShadow = shadowsEnabled;
+    }
+    fillRef.current?.color.set(t.fillColor);
+    if (fillRef.current) fillRef.current.intensity = t.fillIntensity;
+    if (pedestalRef.current) {
+      pedestalRef.current.visible = pedestalVisible;
+      ((pedestalRef.current.material as THREE.MeshStandardMaterial).color as THREE.Color).set(t.pedestal);
+    }
+    if (groundRef.current) {
+      ((groundRef.current.material as THREE.ShadowMaterial).opacity as number) = t.groundOpacity;
+    }
+    if (rendererRef.current) {
+      rendererRef.current.shadowMap.enabled = shadowsEnabled;
+      rendererRef.current.toneMappingExposure = t.exposure;
+      rendererRef.current.shadowMap.needsUpdate = true;
+    }
+  }, [theme, pedestalVisible, shadowsEnabled]);
 
   // 3. Handle Camera Orientation Presets — framed on the vessel.
   useEffect(() => {
@@ -436,7 +494,7 @@ export default function CADCanvas({
     <div
       ref={containerRef}
       className={`relative w-full h-full overflow-hidden select-none ${className ?? ''}`}
-      style={{ background: '#161310' }}
+      style={{ background: `#${STUDIO_THEME[theme].stage.bg.toString(16).padStart(6, '0')}` }}
     >
       <canvas
         ref={canvasRef}

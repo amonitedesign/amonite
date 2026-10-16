@@ -15,10 +15,12 @@ import {
 } from 'lucide-react';
 import { useCADStore } from '@/store/cad-store';
 import { VESSEL_FINISHES } from '@/lib/vessel-geometry';
+import { STUDIO_THEME } from '@/lib/studio-theme';
+import { formatMeasure } from '@/lib/units';
 import { downloadBlob } from '@/lib/parsers/project-io';
 import { exportToSTL } from '@/lib/parsers/stl-exporter';
 import { generateEtsyBatchDrop } from '@/lib/batch-zip';
-import type { VesselFinish, VesselParams } from '@/lib/cad-types';
+import type { VesselFinish, VesselParams, LengthUnit } from '@/lib/cad-types';
 
 interface SliderDef {
   key: keyof Omit<VesselParams, 'archetype' | 'finish' | 'shrinkagePercent'>;
@@ -26,15 +28,15 @@ interface SliderDef {
   min: number;
   max: number;
   step: number;
-  format: (v: number) => string;
+  format: (v: number, unit: LengthUnit) => string;
 }
 
 const SLIDERS: SliderDef[] = [
-  { key: 'baseRadius', label: 'Base radius', min: 30, max: 80, step: 1, format: (v) => `${v} mm` },
-  { key: 'height', label: 'Height', min: 80, max: 220, step: 1, format: (v) => `${v} mm` },
-  { key: 'wallThickness', label: 'Wall thickness', min: 2, max: 8, step: 0.5, format: (v) => `${v} mm` },
+  { key: 'baseRadius', label: 'Base radius', min: 30, max: 80, step: 1, format: (v, u) => formatMeasure(v, u) },
+  { key: 'height', label: 'Height', min: 60, max: 320, step: 1, format: (v, u) => formatMeasure(v, u) },
+  { key: 'wallThickness', label: 'Wall thickness', min: 2, max: 8, step: 0.5, format: (v, u) => formatMeasure(v, u) },
   { key: 'ribCount', label: 'Rib count', min: 0, max: 48, step: 1, format: (v) => (v === 0 ? 'smooth' : `${v}`) },
-  { key: 'waveAmplitude', label: 'Wave', min: 0, max: 10, step: 0.5, format: (v) => `${v} mm` },
+  { key: 'waveAmplitude', label: 'Wave', min: 0, max: 10, step: 0.5, format: (v, u) => formatMeasure(v, u) },
   { key: 'twistAngle', label: 'Twist', min: 0, max: 180, step: 5, format: (v) => `${v}°` },
 ];
 
@@ -58,6 +60,9 @@ export default function VesselStudio(): React.JSX.Element {
   const updateNode = useCADStore((s) => s.updateNode);
   const undo = useCADStore((s) => s.undo);
   const redo = useCADStore((s) => s.redo);
+  const theme = useCADStore((s) => s.settings.theme);
+  const unit = useCADStore((s) => s.viewport.unit);
+  const t = STUDIO_THEME[theme].chrome;
 
   const [isKilnOpen, setIsKilnOpen] = useState(false);
   const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
@@ -66,7 +71,6 @@ export default function VesselStudio(): React.JSX.Element {
   if (!vessel) return <></>;
 
   const shrinkage = vessel.shrinkagePercent ?? 0;
-  const compensatedHeight = (vessel.height * (1 + shrinkage / 100)).toFixed(1);
 
   const downloadSTL = () => {
     const node = nodes.find((n) => n.id === vesselId);
@@ -89,12 +93,15 @@ export default function VesselStudio(): React.JSX.Element {
   };
 
   return (
-    <div className="w-80 rounded-xl border border-white/[0.08] bg-[#1a1612]/95 p-4 shadow-2xl backdrop-blur-md max-h-[calc(100vh-120px)] overflow-y-auto [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.14)_transparent]">
+    <div
+      className="w-80 rounded-xl border p-4 shadow-2xl backdrop-blur-md max-h-[calc(100vh-120px)] overflow-y-auto [scrollbar-width:thin]"
+      style={{ backgroundColor: t.panelBg, borderColor: t.hairline }}
+    >
       {/* Header bar with undo/redo */}
-      <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+      <div className="flex items-center justify-between pb-3" style={{ borderBottom: `1px solid ${t.hairline}` }}>
         <div className="flex items-center gap-1.5">
-          <Layers className="h-3.5 w-3.5 text-[#c96f4b]" />
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em] text-[#a89e8d]">
+          <Layers className="h-3.5 w-3.5" style={{ color: t.accent }} />
+          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: t.inkMute }}>
             Shape the clay
           </p>
         </div>
@@ -104,7 +111,8 @@ export default function VesselStudio(): React.JSX.Element {
             onClick={undo}
             disabled={undoStack.length === 0}
             title="Undo (Ctrl+Z)"
-            className="rounded-md p-1.5 text-[#a89e8d] transition-colors hover:bg-white/[0.06] hover:text-[#f2e9d8] disabled:cursor-not-allowed disabled:opacity-30"
+            className="rounded-md p-1.5 transition-colors disabled:cursor-not-allowed disabled:opacity-30"
+            style={{ color: t.inkMute }}
           >
             <Undo2 className="h-3.5 w-3.5" />
           </button>
@@ -113,7 +121,8 @@ export default function VesselStudio(): React.JSX.Element {
             onClick={redo}
             disabled={redoStack.length === 0}
             title="Redo (Ctrl+Y)"
-            className="rounded-md p-1.5 text-[#a89e8d] transition-colors hover:bg-white/[0.06] hover:text-[#f2e9d8] disabled:cursor-not-allowed disabled:opacity-30"
+            className="rounded-md p-1.5 transition-colors disabled:cursor-not-allowed disabled:opacity-30"
+            style={{ color: t.inkMute }}
           >
             <Redo2 className="h-3.5 w-3.5" />
           </button>
@@ -122,7 +131,7 @@ export default function VesselStudio(): React.JSX.Element {
 
       {/* Tactile Glaze & Material Swatches */}
       <div className="pt-3 pb-4">
-        <p className="pb-2 font-mono text-[9px] uppercase tracking-wider text-[#8a8071]">
+        <p className="pb-2 font-mono text-[9px] uppercase tracking-wider" style={{ color: t.inkFaint }}>
           Ceramic Finish & Glaze
         </p>
         <div className="grid grid-cols-4 gap-1.5">
@@ -138,11 +147,8 @@ export default function VesselStudio(): React.JSX.Element {
                 }}
                 aria-pressed={isActive}
                 title={spec.blurb}
-                className={`group flex flex-col items-center gap-1.5 rounded-lg p-2 transition-all ${
-                  isActive
-                    ? 'bg-[#c96f4b]/15 outline outline-1 outline-[#c96f4b]/50 shadow-inner'
-                    : 'hover:bg-white/[0.04]'
-                }`}
+                className="group flex flex-col items-center gap-1.5 rounded-lg p-2 transition-all"
+                style={isActive ? { backgroundColor: `${t.accent}26`, outline: `1px solid ${t.accent}66` } : undefined}
               >
                 {/* 3D Physical Material Sphere with specular glaze highlight */}
                 <span
@@ -152,11 +158,11 @@ export default function VesselStudio(): React.JSX.Element {
                     backgroundImage:
                       'radial-gradient(circle at 35% 30%, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0) 55%), radial-gradient(circle at 70% 70%, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 70%)',
                     boxShadow: isActive
-                      ? '0 0 0 2px #c96f4b, 0 4px 8px rgba(0,0,0,0.4)'
+                      ? `0 0 0 2px ${t.accent}, 0 4px 8px rgba(0,0,0,0.4)`
                       : '0 2px 5px rgba(0,0,0,0.3)',
                   }}
                 />
-                <span className={`text-[10px] tracking-tight ${isActive ? 'font-bold text-[#f2e9d8]' : 'text-[#a89e8d]'}`}>
+                <span className={`text-[10px] tracking-tight ${isActive ? 'font-bold' : ''}`} style={{ color: isActive ? t.ink : t.inkMute }}>
                   {spec.label}
                 </span>
               </button>
@@ -166,12 +172,12 @@ export default function VesselStudio(): React.JSX.Element {
       </div>
 
       {/* Hairline Parametric Sliders */}
-      <div className="flex flex-col gap-3 py-2 border-t border-white/[0.06]">
+      <div className="flex flex-col gap-3 py-2" style={{ borderTop: `1px solid ${t.hairline}` }}>
         {SLIDERS.map((s) => (
           <label key={s.key} className="block group">
             <span className="flex items-baseline justify-between text-xs">
-              <span className="text-[#d8cfbd] font-medium">{s.label}</span>
-              <span className="font-mono text-[11px] text-[#e0b99a] font-semibold">{s.format(vessel[s.key])}</span>
+              <span className="font-medium" style={{ color: t.inkSoft }}>{s.label}</span>
+              <span className="font-mono text-[11px] font-semibold" style={{ color: t.accentSoft }}>{s.format(vessel[s.key], unit)}</span>
             </span>
             <input
               type="range"
@@ -186,50 +192,52 @@ export default function VesselStudio(): React.JSX.Element {
               onKeyUp={commitVesselHistory}
               onBlur={commitVesselHistory}
               aria-label={s.label}
-              className="mt-1.5 h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-white/[0.08] accent-[#c96f4b] transition-all focus:outline-none"
+              className="mt-1.5 h-1.5 w-full cursor-pointer appearance-none rounded-lg transition-all focus:outline-none accent-[#c96f4b]"
+              style={{ backgroundColor: t.wellBg }}
             />
           </label>
         ))}
       </div>
 
       {/* Ceramic Kiln & Clay Shrinkage Tool */}
-      <div className="mt-3 rounded-lg border border-[#c96f4b]/20 bg-[#c96f4b]/[0.04] p-2.5 transition-colors">
+      <div className="mt-3 rounded-lg border p-2.5 transition-colors" style={{ borderColor: `${t.accent}33`, backgroundColor: `${t.accent}0a` }}>
         <button
           type="button"
           onClick={() => setIsKilnOpen(!isKilnOpen)}
           className="flex w-full items-center justify-between text-left"
         >
           <div className="flex items-center gap-1.5">
-            <Flame className="h-3.5 w-3.5 text-[#e07d57]" />
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-[#f0caa3]">
+            <Flame className="h-3.5 w-3.5" style={{ color: t.accentSoft }} />
+            <span className="font-mono text-[10px] font-bold uppercase tracking-wider" style={{ color: t.inkSoft }}>
               Kiln Shrinkage Tool
             </span>
           </div>
           <div className="flex items-center gap-1">
-            <span className="font-mono text-[10px] font-bold text-[#e07d57]">
+            <span className="font-mono text-[10px] font-bold" style={{ color: t.accentSoft }}>
               {shrinkage > 0 ? `+${shrinkage}%` : 'Off'}
             </span>
             {isKilnOpen ? (
-              <ChevronUp className="h-3 w-3 text-[#a89e8d]" />
+              <ChevronUp className="h-3 w-3" style={{ color: t.inkMute }} />
             ) : (
-              <ChevronDown className="h-3 w-3 text-[#a89e8d]" />
+              <ChevronDown className="h-3 w-3" style={{ color: t.inkMute }} />
             )}
           </div>
         </button>
 
         {isKilnOpen && (
-          <div className="mt-2.5 space-y-2 pt-2 border-t border-[#c96f4b]/15">
+          <div className="mt-2.5 space-y-2 pt-2" style={{ borderTop: `1px solid ${t.accent}26` }}>
             <div className="grid grid-cols-2 gap-1">
               {SHRINKAGE_PRESETS.map((preset) => (
                 <button
                   key={preset.value}
                   type="button"
                   onClick={() => setVesselParams({ shrinkagePercent: preset.value })}
-                  className={`rounded px-2 py-1 text-left text-[10px] transition-colors ${
+                  className="rounded px-2 py-1 text-left text-[10px] transition-colors"
+                  style={
                     shrinkage === preset.value
-                      ? 'bg-[#c96f4b]/25 font-bold text-[#f5dec8] border border-[#c96f4b]/40'
-                      : 'bg-white/[0.03] text-[#a89e8d] hover:bg-white/[0.07]'
-                  }`}
+                      ? { backgroundColor: `${t.accent}40`, color: t.ink, border: `1px solid ${t.accent}66`, fontWeight: 'bold' }
+                      : { backgroundColor: t.wellBg, color: t.inkMute }
+                  }
                   title={preset.blurb}
                 >
                   {preset.label}
@@ -237,9 +245,11 @@ export default function VesselStudio(): React.JSX.Element {
               ))}
             </div>
 
-            <div className="flex items-center justify-between text-[10px] font-mono text-[#a89e8d] pt-1">
-              <span>Target Fired: {vessel.height}mm</span>
-              <span className="text-[#e0b99a] font-semibold">Print Size: {compensatedHeight}mm</span>
+            <div className="flex items-center justify-between text-[10px] font-mono pt-1" style={{ color: t.inkMute }}>
+              <span>Target Fired: {formatMeasure(vessel.height, unit)}</span>
+              <span className="font-semibold" style={{ color: t.accentSoft }}>
+                Print Size: {formatMeasure(vessel.height * (1 + shrinkage / 100), unit)}
+              </span>
             </div>
           </div>
         )}
@@ -253,14 +263,17 @@ export default function VesselStudio(): React.JSX.Element {
             Vase Mode & Print Certified
           </p>
           <p className="font-mono text-[9px] leading-3.5 text-emerald-300/80 mt-0.5">
-            Watertight solid · 0° Overhangs &gt; 45° · {vessel.wallThickness}mm shell
+            Watertight solid · 0° Overhangs &gt; 45° · {formatMeasure(vessel.wallThickness, unit)} shell
           </p>
         </div>
       </div>
 
       {/* 1-Click "Etsy Collection Batch Generator" — The Money Feature.
           Sticky so it never scrolls out of reach below the fold. */}
-      <div className="sticky bottom-0 -mx-4 -mb-4 mt-4 space-y-2 border-t border-white/[0.08] bg-[#1a1612]/95 px-4 pt-3 pb-4 backdrop-blur-md">
+      <div
+        className="sticky bottom-0 -mx-4 -mb-4 mt-4 space-y-2 border-t px-4 pt-3 pb-4 backdrop-blur-md"
+        style={{ borderColor: t.hairline, backgroundColor: t.panelBg }}
+      >
         <button
           type="button"
           onClick={handleGenerateEtsyCollection}
@@ -284,9 +297,10 @@ export default function VesselStudio(): React.JSX.Element {
         <button
           type="button"
           onClick={downloadSTL}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.05] px-3 py-2 text-xs font-semibold text-[#ece5d8] transition-colors hover:bg-white/[0.1]"
+          className="flex w-full items-center justify-center gap-2 rounded-lg border px-3 py-2 text-xs font-semibold transition-colors"
+          style={{ borderColor: t.hairline, backgroundColor: t.wellBg, color: t.ink }}
         >
-          <Printer className="h-3.5 w-3.5 text-[#d98f66]" />
+          <Printer className="h-3.5 w-3.5" style={{ color: t.accentSoft }} />
           <span>Download print file (.stl)</span>
         </button>
       </div>

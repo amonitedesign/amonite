@@ -96,4 +96,15 @@ describe('vessel-geometry / parametric kernel', () => {
     geomStandard.dispose();
     geomCompensated.dispose();
   });
+
+  it('every preset leaves room for its wall (printable shells)', () => {
+    for (const spec of Object.values(VESSEL_ARCHETYPES)) {
+      const { baseRadius, wallThickness, archetype } = spec.defaults;
+      let minR = Infinity;
+      for (let i = 0; i <= 20; i++) {
+        minR = Math.min(minR, vesselProfileRadius(archetype, i / 20) * baseRadius);
+      }
+      expect(minR).toBeGreaterThan(wallThickness + 1);
+    }
+  });
 });

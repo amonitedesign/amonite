@@ -1,5 +1,6 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi, afterEach } from 'vitest';
 import { useCADStore } from '@/store/cad-store';
+import { DEFAULT_STUDIO_SETTINGS } from '@/lib/cad-types';
 
 function resetStore() {
   useCADStore.setState({
@@ -24,6 +25,9 @@ function resetStore() {
     measureActive: false,
     undoStack: [],
     redoStack: [],
+    vesselId: null,
+    vesselDragOpen: false,
+    settings: { ...DEFAULT_STUDIO_SETTINGS },
   });
 }
 
@@ -192,5 +196,72 @@ describe('cad-store / atelier vessel', () => {
     expect(st().undoStack.length).toBe(depth + 1);
     st().undo();
     expect(st().nodes.find((n) => n.id === 'vessel-1')!.vessel?.baseRadius).toBe(before);
+  });
+});
+
+describe('cad-store / studio settings', () => {
+  let store: Record<string, string>;
+  beforeEach(() => {
+    resetStore();
+    store = {};
+    const mock = {
+      getItem: (k: string) => store[k] ?? null,
+      setItem: (k: string, v: string) => {
+        store[k] = v;
+      },
+      removeItem: (k: string) => {
+        delete store[k];
+      },
+      clear: () => {
+        store = {};
+      },
+    };
+    vi.stubGlobal('window', { localStorage: mock });
+    vi.stubGlobal('localStorage', mock);
+  });
+
+  it('starts from studio defaults', () => {
+    expect(useCADStore.getState().settings).toEqual(DEFAULT_STUDIO_SETTINGS);
+  });
+
+  it('switches theme and persists it', () => {
+    const st = () => useCADStore.getState();
+    st().setStudioTheme('light');
+    expect(st().settings.theme).toBe('light');
+    expect(JSON.parse(localStorage.getItem('amonite-studio-settings')!).theme).toBe('light');
+    st().setStudioTheme('dark');
+    expect(st().settings.theme).toBe('dark');
+  });
+
+  it('toggles individual settings and persists them', () => {
+    const st = () => useCADStore.getState();
+    st().setSetting('autoRotate', false);
+    st().setSetting('rotateSpeed', 1.5);
+    st().setSetting('pedestalVisible', false);
+    st().setSetting('shadowsEnabled', false);
+    st().setSetting('autosaveEnabled', false);
+    const saved = JSON.parse(localStorage.getItem('amonite-studio-settings')!);
+    expect(saved).toMatchObject({
+      autoRotate: false,
+      rotateSpeed: 1.5,
+      pedestalVisible: false,
+      shadowsEnabled: false,
+      autosaveEnabled: false,
+    });
+  });
+
+  it('resetVesselShape restores the active archetype defaults', () => {
+    const st = () => useCADStore.getState();
+    st().ensureVessel();
+    st().beginVesselDrag();
+    st().setVesselParams({ baseRadius: 70, height: 300 });
+    st().resetVesselShape();
+    expect(st().nodes.find((n) => n.id === 'vessel-1')!.vessel).toEqual(
+      expect.objectContaining({ archetype: 'fluted-vase', baseRadius: 45, height: 170 })
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 });
