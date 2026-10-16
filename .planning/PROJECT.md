@@ -1,55 +1,55 @@
-# Project Amonite: High-Performance Browser-Based CAD/CAM Micro-SaaS
+# Project Amonite: The 3D Studio for Minimalist Interior Decor
 
-> **PIVOT NOTE (2026-10-16, PRD v1.0.0 AUTHORITATIVE):** Milestone v1.0 delivered a
-> generic CAD foundation (primitives, gizmos, DXF/SVG/STL, local persistence).
-> Direction from v1.1 onward is `docs/PRD-v1.0.0-amonite.md`: a specialized
-> browser-native parametric vase/decor studio for Etsy makers and decor
-> designers (rib/profile morphing, guaranteed-watertight STL, vase-mode).
-> Old REQ-GEOM generic scope is legacy — see `docs/REQUIREMENTS-vase.md`.
-> Open decisions (license AGPL vs MIT, orange snail vs current logo-mark,
-> `Amonite CAD` vs `Amonite — Object Studio`) are flagged in the PRD header
-> and NOT resolved here.
+> **MILESTONE v2.0 ACTIVE (2026-10-16): Parametric Decor Studio Pivot**
+> 
+> Milestone v1.0 established the foundational browser WebGL engine, Three.js viewport, client-side STL/JSON parsers, and local storage.
+> 
+> Milestone v2.0 executes the decisive pivot from an engineering-heavy CAD tool to a specialized design studio for interior decorators, ceramicists, and Etsy creators (`docs/PRD-v1.0.0-amonite.md`). Traditional CAD mechanics (boxes, spheres, XYZ coordinates, draftsmen projection views) are eliminated and replaced by intuitive, artistic controls, base archetypes, tactile parametric sliders, guaranteed watertight STL generation, vase-mode continuous extrusion, and clay shrinkage calculation.
 
 ## Executive Summary
-**Amonite** is a modern, ultra-responsive browser-based CAD/CAM workspace engineered for mechanical designers, industrial engineers, makers, and digital fabricators. Amonite delivers zero-friction CAD utility directly in the browser with no mandatory login barrier, instant hardware-accelerated 3D viewport rendering, interactive 2D drafting overlays, precision grid snapping, client-side vector math, and local persistence.
+**Amonite** is an intuitive, browser-native 3D design studio engineered exclusively for boutique 3D printing creators, Etsy makers, and interior decor designers. Instead of overwhelming users with traditional mechanical CAD tools (Fusion 360, Rhino), Amonite provides a fast, slider-driven environment to sculpt bespoke, watertight 3D vases, ribbed planters, organic bowls, and lighting shells ready for immediate physical production in clay, resin, and PLA.
 
-## Core Identity & Architecture
-- **Agent Identity:** `amonite-core-architect`
-- **Primary Support Handle:** `amoniteadmin@gmail.com`
-- **Target App Execution Mode:** Local worktree / client-side execution
-- **Public vs. Private Repository Segregation:**
-  - **Public Repo Scope:** Core browser engine, zero-auth CAD sandbox viewport, client-side geometry kernel & math utilities, DXF/SVG/STL/JSON importers & exporters, local session memory (IndexedDB/localStorage), landing page with interactive hero, technical documentation (`/docs`), early access waitlist form, CI/CD linting & validation workflows.
-  - **Out of Scope (Reserved for Premium Repo):** Authentication gateways, subscription paywalls, server-side database schemas, billing routes, multi-tenant cloud sync.
+## Core Identity & Positioning
+- **Official Headline:** "Amonite | The 3D Studio for Minimalist Interior Decor"
+- **Primary Audience:** Interior decorators, boutique Etsy shop owners, 3D print farm operators, and ceramic slip-casting makers.
+- **Value Proposition:** Generate infinite, beautiful variations for Etsy shops and decor projects in seconds with guaranteed print-ready, watertight STLs, vase-mode continuous extrusion support, and clay shrinkage compensation.
+- **Support Contact:** `amoniteadmin@gmail.com`
 
-## Technical Framework Constraints
+## Technical Framework & Architecture
 - **Language Layer:** 100% Type-Safe TypeScript (`strict: true`).
-- **Frontend Stack:** Next.js (App Router) + Tailwind CSS + Lucide Icons + Google Fonts (Inter / Outfit).
-- **Rendering Layer:** Hardware-accelerated WebGL Viewport powered by Three.js & React Three Fiber (R3F) for 3D orbital mesh manipulation, paired with precision 2D engineering grid/coordinate planes and camera projection modes (Orthographic & Perspective).
-- **State Architecture:** High-frequency, decoupled Zustand stores isolating viewport render loops, transform gizmos, vector node coordinates, snapping thresholds, and unit systems from standard React re-render cycles.
-- **Design System:** Bespoke industrial dark-mode UI (`#0a0b0d`, `#121417`, `#1a1d24`, with slate/cyan technical accents), incorporating the official `logo-mark.svg` ammonite shell iconography.
-- **Performance & Privacy:** 100% client-side geometric modifications, matrix coordinate vectors, and grid snap behaviors; privacy-preserving local persistence with zero telemetry.
+- **Frontend Stack:** Next.js (App Router) + Tailwind CSS + Lucide Icons + JetBrains Mono / Inter / Outfit fonts.
+- **Rendering Layer:** Hardware-accelerated Three.js WebGL canvas featuring studio-grade neutral lighting (ceramic glazes, matte PLA, bisque stoneware), fluid auto-rotation, and quiet, invisible controls.
+- **Computation Layer:** Multi-threaded mathematical mesh generation utilizing Web Workers (`src/workers/mesh-worker.ts`) to ensure 60fps slider fluidness even under heavy rib calculations (50+ ribs).
+- **Geometry Pipeline:** Parametric waveform generation (trigonometric profiles, twist matrices, wall offset thickness, clay shrinkage ratio scaling) yielding guaranteed manifold, watertight meshes.
+- **Privacy & Storage:** 100% client-side computing and local storage (`localStorage` / `IndexedDB`) with zero server overhead and zero telemetry.
 
-## Key Deliverables & Modules
-1. **Interactive Hero & CAD Sandbox:**
-   - 3D WebGL viewport with real-time orbital controls, isometric/ortho presets, wireframe and shaded modes, dynamic CAD lighting, and XYZ axis gizmo.
-   - Interactive geometry creation: Cuboid, Cylinder, Sphere, Extruded Polygon, Torus, and custom parametric curves.
-   - Transform controls: Translate, Rotate, Scale with numeric HUD and millimeter/inch precision.
-2. **Precision Vector & Coordinate Tools:**
-   - Dynamic snap grid with adaptive subdivision based on zoom level.
-   - Real-time coordinate HUD (X, Y, Z, delta, angles).
-   - Dimension / measurement calipers.
-3. **Client-Side Parsing & Export Utilities:**
-   - DXF ASCII vector parser & exporter.
-   - SVG vector paths to 3D extrusion geometry.
-   - STL binary/ASCII 3D mesh exporter for 3D printing.
-   - Amonite Native JSON schema for lossless project file import/export.
-4. **Local Workspace Session Memory:**
-   - Automatic background autosave to browser `localStorage` and `IndexedDB`.
-   - Project history (Undo / Redo stack) with keyboard shortcuts (Ctrl+Z / Ctrl+Y).
-5. **Technical Documentation Workspace (`/docs`):**
-   - Architectural specifications, keyboard shortcut reference, math and coordinate systems, parser specs, and contribution guidelines.
-6. **Waitlist & Early Access Conversion:**
-   - Frictionless waitlist submission capturing intent and routing to `amoniteadmin@gmail.com`.
-7. **CI/CD & Open Source Tooling:**
-   - GitHub Actions workflow (`.github/workflows/ci.yml`) for TypeScript verification, ESLint, and build tests.
-   - Comprehensive `README.md` and `CONTRIBUTING.md`.
+## Milestone v2.0 Key Deliverables & Modules
+
+1. **Website Copy & Positioning Overhaul:**
+   - Eliminate engineering jargon ("Brep", "50B records", "CAD/CAM Micro-SaaS").
+   - Replace with creator-first messaging: "Guaranteed Print-Ready", "Flawless toolpaths for clay, resin, and FDM", "Vase Mode (Spiralize) Compatible".
+   - Feature spotlight for the **Clay Shrinkage Tool** (automatic dimensional compensation for ceramic kiln firing).
+
+2. **Illustrating Work Showcase Gallery:**
+   - Dedicated visual section showcasing high-end designer works crafted in Amonite (e.g., Fluted Ikebana Vase, Ribbed Nordic Planter, Pleated Ceramic Bowl, Twisted Biophilic Lamp Shell).
+   - Real-world fabrication specifications (print time, material weight, clay shrinkage factor, slicer settings).
+
+3. **Sculptor UI Paradigm & Base Archetypes:**
+   - Remove mechanical CAD primitives (Cuboid, Sphere, Cylinder, Torus, 2D Extrude).
+   - Introduce 4 Base Decor Archetypes: **Fluted Vase**, **Ribbed Planter**, **Organic Bowl**, **Twisted Lamp Shell**.
+   - Replace XYZ coordinate axes with clean, tactile parametric sliders:
+     - Base Diameter
+     - Wall Thickness
+     - Rib Count
+     - Wave Frequency
+     - Rotational Twist
+   - Simplified Viewport: Remove engineering views (ISO, TOP, FRONT, SHADED); adopt fluid, auto-rotating 3D display with gallery lighting.
+
+4. **Multi-Threaded Web Worker Mesh Engine:**
+   - Dedicated Web Worker offloading parametric vertex/face generation loops, keeping UI at 60fps.
+   - Manifold topology guarantee (zero non-manifold edges, continuous outward normals).
+   - Instant watertight STL export directly optimized for Bambu Studio, PrusaSlicer, and Cura vase mode.
+
+5. **Open-Source Core vs. Premium Boundary:**
+   - **Amonite Core (Open Source):** Local procedural generation, base ribbed archetypes, standard STL export, ceramic/PLA shaders, local storage.
+   - **Amonite Premium:** Commercial starter templates (Japandi, Brutalism, Organic Modern), batch generation for Etsy shop variations, advanced slip-cast mold split lines.

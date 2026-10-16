@@ -1,54 +1,55 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: milestone_complete
-last_updated: "2026-10-16T18:01:30.000Z"
+milestone: v2.0
+milestone_name: "Parametric Decor Studio Pivot"
+status: in_progress
+last_updated: "2026-10-16T19:15:00.000Z"
 progress:
-  total_phases: 5
+  total_phases: 9
   completed_phases: 5
-  total_plans: 9
+  total_plans: 17
   completed_plans: 9
-  percent: 100
+  percent: 53
 ---
 
-# Amonite CAD Project State
+# Amonite Project State
 
 ## Current Position
 
-- **Active Milestone:** Milestone v1.0 (Public Foundational Ecosystem) — COMPLETE
-- **Status:** All 5 Phases Verified & Complete (100%)
+- **Active Milestone:** Milestone v2.0 (Parametric Decor Studio Pivot) — ACTIVE
+- **Status:** Phase 6 (Website Copy, Positioning & Designer Work Showcase Gallery) ready for execution
 - **Repository Branch:** `master`
 - **Primary Support:** `amoniteadmin@gmail.com`
 
-## Completed Phases
+## Milestone History
+
+### Milestone v1.0: Public Foundational Ecosystem (Complete)
 - **Phase 1: Project Setup & Core Viewport Foundation** (Completed: 2026-10-16)
-  - Plan 01-01: Core WebGL Viewport, Camera Duality & Zustand Store
-  - Plan 01-02: Viewport HUD, Snapping Engine, History Stack & Zero-Auth Shell
 - **Phase 2: Parametric Geometry & Transform Engine** (Completed: 2026-10-16)
-  - Plan 02-01: Parametric Solid Primitives Generation & Memory Lifecycle
-  - Plan 02-02: Transform Gizmos, Numeric Inspector HUD & Scene Tree
 - **Phase 3: Client-Side Parsers, Exporters & Session Memory** (Completed: 2026-10-16)
-  - Plan 03-01: Client-Side Mesh Exporters & 2D Vector Parsers (STL, DXF, SVG)
-  - Plan 03-02: Native Lossless Project I/O, Session Storage & File Dialog UI
 - **Phase 4: Landing Page, Documentation & Early Access Funnel** (Completed: 2026-10-16)
-  - Plan 04-01: Anti-Slop Industrial Hero, Asymmetric Architecture & Studio Showcase
-  - Plan 04-02: Editorial Technical Documentation Workspace & Minimalist Early Access Funnel
 - **Phase 5: CI/CD Workflows & Public Repository Governance** (Completed: 2026-10-16)
-  - Plan 05-01: CI/CD Workflows, Repository Governance & Segregation Security Audits
 
-## Architectural Decisions Log
+---
 
-- **Decision 01 (Framework):** Selected Next.js 16 (App Router) + TypeScript + Tailwind CSS over Vite to ensure native metadata, SEO for public landing paths, modular routing, and server-side static generation.
-- **Decision 02 (Rendering Engine):** Selected Three.js WebGL hardware-accelerated viewport with a dedicated React canvas manager. Direct Three.js WebGL loop provides 120fps fluid performance without React 19 peer-dependency conflicts or reconciler bottlenecks during continuous CAD transform interactions.
-- **Decision 03 (State Management):** Zustand state store (`src/store/cad-store.ts`) adopted to decouple high-frequency mouse coordinate streams, grid snap calculations, camera modes, and mesh transforms from React component re-renders.
-- **Decision 04 (Security & Public Scope):** Strictly segregated all authentication, user databases, and paywalls from this repository. Zero-auth sandbox runs 100% client-side with local file session persistence.
-- **Decision 05 (Branding):** Embedded the Ammonite spiral geometry from `Logo/IMAGE.svg` as `public/logo-mark.svg` across splash headers, viewport watermarks, and icons.
-- **Decision 06 (CI & Workflow Enforcement):** GitHub Actions CI workflow established at `.github/workflows/ci.yml` tracking `main` and `master`, verifying TypeScript compilation (`tsc --noEmit`), ESLint, and Turbopack production builds.
-- **Decision 07 (Parametric Lifecycle & Geometry Disposal):** Implemented explicit `mesh.geometry.dispose()` and `edges.geometry.dispose()` whenever node dimensions are mutated, avoiding WebGL buffer memory leaks.
-- **Decision 08 (Zero-Dependency CAD I/O):** Built pure-JavaScript parsers and exporters for binary/ASCII STL, AutoCAD DXF, SVG, and native JSON without heavy native dependencies, enabling 100% client-side execution in all browsers.
-- **Decision 09 (Anti-Slop Industrial Design System):** Enforced a strict ban on generic AI startup tropes (no multi-color gradients, no radial card glows, no 3-column identical rows, no centered symmetry). Adopted a calibrated graphite and cold zinc aesthetic with asymmetric bento layouts, whitespace-driven hierarchy, and authentic CAD/CAM engineering documentation.
-- **Decision 10 (Automated Segregation Guard):** Integrated regex-based automated CI audit (`grep -rniE "stripe|supabase|clerk|next-auth|prisma|drizzle|DATABASE_URL|billing|paywall|subscription" src/`) guaranteeing the public repository stays zero-auth and zero-leak.
+### Milestone v2.0: Parametric Decor Studio Pivot (In Progress)
+- **Phase 6: Website Copy, Positioning & Designer Work Showcase Gallery** (Pending)
+  - Plan 06-01: Website Copy, Typography & Creator Positioning Overhaul
+  - Plan 06-02: Illustrating Designer Work Showcase Section
+- **Phase 7: Parametric Math Engine & Multi-Threaded Web Worker** (Pending)
+  - Plan 07-01: Procedural Waveform & Manifold Geometry Math Kernel
+  - Plan 07-02: Multi-Threaded Web Worker Pipeline
+- **Phase 8: Sculptor Studio UI & Base Archetypes** (Pending)
+  - Plan 08-01: Base Archetype Catalog & Tactile Parametric Controls
+  - Plan 08-02: Fluid Studio Viewport & Ceramic Material Presets
+- **Phase 9: Print Export, Commercial Tiers & Verification** (Pending)
+  - Plan 09-01: Direct-to-Print Watertight STL & Slicer Profiles
+  - Plan 09-02: Documentation, E2E Verification & Milestone Audit
 
-## Milestone v1.0 Summary
-The public foundational ecosystem for Amonite CAD is fully delivered, tested, documented, and protected with automated CI/CD quality gates. All 104 unit and app tests are passing. Production bundle builds cleanly in <2.5s. Ready for public open-source release.
+## Architectural Decisions Log (Milestone v2.0 Additions)
+
+- **Decision 11 (Target Audience Pivot):** Pivoted from generic mechanical CAD (Fusion 360 competitor) to specialized design studio for interior decorators, ceramicists, and Etsy boutique makers (`docs/PRD-v1.0.0-amonite.md`).
+- **Decision 12 (Elimination of Mechanical CAD Mechanics):** Banished traditional 3D primitives (Box, Cylinder, Sphere, Torus, 2D Extrude) and XYZ coordinate axes from the primary interface; replaced with 4 Base Decor Archetypes (Fluted Vase, Ribbed Planter, Organic Bowl, Twisted Lamp Shell) and intuitive parametric sliders.
+- **Decision 13 (Multi-Threaded Web Worker Engine):** Offload all procedural vertex loops, wave transformations, and normal calculations to `src/workers/mesh-worker.ts` with transferable array buffers to prevent UI frame drops when scrubbing sliders at 60fps.
+- **Decision 14 (Vase-Mode & Clay Shrinkage First):** Prioritized continuous spiralize outer contour export and automatic ceramic clay shrinkage compensation (8%–15%) over legacy DXF/SVG formats.
+- **Decision 15 (Studio Visual Showcase):** Added dedicated illustrating gallery on the landing page presenting real-world decor designs with physical fabrication specifications (print time, weight, shrinkage factor, slicer settings).
