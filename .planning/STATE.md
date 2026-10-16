@@ -2,22 +2,22 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: ready_to_plan
-last_updated: "2026-10-16T17:53:00.000Z"
+status: milestone_complete
+last_updated: "2026-10-16T18:01:30.000Z"
 progress:
   total_phases: 5
-  completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
-  percent: 80
+  completed_phases: 5
+  total_plans: 9
+  completed_plans: 9
+  percent: 100
 ---
 
 # Amonite CAD Project State
 
 ## Current Position
 
-- **Active Phase:** Phase 5 (CI/CD Workflows & Public Repository Governance)
-- **Status:** Phase 4 Verified & Complete; Ready for Phase 5
+- **Active Milestone:** Milestone v1.0 (Public Foundational Ecosystem) — COMPLETE
+- **Status:** All 5 Phases Verified & Complete (100%)
 - **Repository Branch:** `master`
 - **Primary Support:** `amoniteadmin@gmail.com`
 
@@ -34,6 +34,8 @@ progress:
 - **Phase 4: Landing Page, Documentation & Early Access Funnel** (Completed: 2026-10-16)
   - Plan 04-01: Anti-Slop Industrial Hero, Asymmetric Architecture & Studio Showcase
   - Plan 04-02: Editorial Technical Documentation Workspace & Minimalist Early Access Funnel
+- **Phase 5: CI/CD Workflows & Public Repository Governance** (Completed: 2026-10-16)
+  - Plan 05-01: CI/CD Workflows, Repository Governance & Segregation Security Audits
 
 ## Architectural Decisions Log
 
@@ -46,8 +48,7 @@ progress:
 - **Decision 07 (Parametric Lifecycle & Geometry Disposal):** Implemented explicit `mesh.geometry.dispose()` and `edges.geometry.dispose()` whenever node dimensions are mutated, avoiding WebGL buffer memory leaks.
 - **Decision 08 (Zero-Dependency CAD I/O):** Built pure-JavaScript parsers and exporters for binary/ASCII STL, AutoCAD DXF, SVG, and native JSON without heavy native dependencies, enabling 100% client-side execution in all browsers.
 - **Decision 09 (Anti-Slop Industrial Design System):** Enforced a strict ban on generic AI startup tropes (no multi-color gradients, no radial card glows, no 3-column identical rows, no centered symmetry). Adopted a calibrated graphite and cold zinc aesthetic with asymmetric bento layouts, whitespace-driven hierarchy, and authentic CAD/CAM engineering documentation.
+- **Decision 10 (Automated Segregation Guard):** Integrated regex-based automated CI audit (`grep -rniE "stripe|supabase|clerk|next-auth|prisma|drizzle|DATABASE_URL|billing|paywall|subscription" src/`) guaranteeing the public repository stays zero-auth and zero-leak.
 
-## Next Steps
-
-1. Run `/gsd-plan-phase 5` to create execution plans for Phase 5: CI/CD Workflows & Public Repository Governance.
-2. Finalize repository governance, CONTRIBUTING.md, and public security audits.
+## Milestone v1.0 Summary
+The public foundational ecosystem for Amonite CAD is fully delivered, tested, documented, and protected with automated CI/CD quality gates. All 104 unit and app tests are passing. Production bundle builds cleanly in <2.5s. Ready for public open-source release.

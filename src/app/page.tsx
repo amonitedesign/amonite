@@ -6,7 +6,6 @@ import Image from 'next/image';
 import {
   ArrowRight,
   Maximize2,
-  Terminal,
   Cpu,
   Shield,
   Box,
@@ -180,9 +179,9 @@ export default function LandingPage() {
 
             {/* Monospace Code / Spec Callout */}
             <div className="mt-6 p-4 rounded-lg bg-[#161a22] border border-white/[0.04] text-[11px] font-mono text-slate-400 space-y-1 overflow-x-auto">
-              <div className="text-slate-500">// Direct WebGL geometry disposal lifecycle</div>
+              <div className="text-slate-500">{'// Direct WebGL geometry disposal lifecycle'}</div>
               <div className="text-slate-300">mesh.geometry.dispose(); edges.geometry.dispose();</div>
-              <div className="text-slate-500">// Precision Raycasting & Transform gizmos</div>
+              <div className="text-slate-500">{'// Precision Raycasting & Transform gizmos'}</div>
               <div className="text-slate-300">gizmo.setMode(&apos;translate&apos; | &apos;rotate&apos; | &apos;scale&apos;); gizmo.setTranslationSnap(1.0);</div>
             </div>
           </div>
@@ -287,7 +286,7 @@ export default function LandingPage() {
               />
             </div>
             <span className="text-slate-300 font-bold">AMONITE CAD</span>
-            <span className="text-slate-600">//</span>
+            <span className="text-slate-600">{'//'}</span>
             <span className="text-slate-400">Public Foundational Micro-SaaS</span>
           </div>
 

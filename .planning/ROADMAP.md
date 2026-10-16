@@ -28,7 +28,7 @@
 - [x] Early access & waitlist submission modal with validation and routing to `amoniteadmin@gmail.com`
 - [x] Responsive UI for mobile/tablet inspection and full desktop modeling studio
 
-## Phase 5: CI/CD Workflows & Public Repository Governance (Current)
-- [ ] GitHub Actions workflow (`.github/workflows/ci.yml`) with automated type-checking and linting
-- [ ] Open-source contribution guidelines (`CONTRIBUTING.md`) and comprehensive `README.md`
-- [ ] Public repository safety verification ensuring zero authentication or payment leaks
+## Phase 5: CI/CD Workflows & Public Repository Governance (Complete)
+- [x] GitHub Actions workflow (`.github/workflows/ci.yml`) with automated type-checking and linting
+- [x] Open-source contribution guidelines (`CONTRIBUTING.md`) and comprehensive `README.md`
+- [x] Public repository safety verification ensuring zero authentication or payment leaks
