@@ -3,21 +3,21 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: ready_to_plan
-last_updated: "2026-10-16T17:14:25.000Z"
+last_updated: "2026-10-16T17:20:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
-  percent: 40
+  completed_phases: 3
+  total_plans: 6
+  completed_plans: 6
+  percent: 60
 ---
 
 # Amonite CAD Project State
 
 ## Current Position
 
-- **Active Phase:** Phase 3 (Client-Side Parsers, Exporters & Session Memory)
-- **Status:** Phase 2 Verified & Complete; Ready for Phase 3
+- **Active Phase:** Phase 4 (Landing Page, Documentation & Early Access Funnel)
+- **Status:** Phase 3 Verified & Complete; Ready for Phase 4
 - **Repository Branch:** `master`
 - **Primary Support:** `amoniteadmin@gmail.com`
 
@@ -28,6 +28,9 @@ progress:
 - **Phase 2: Parametric Geometry & Transform Engine** (Completed: 2026-10-16)
   - Plan 02-01: Parametric Solid Primitives Generation & Memory Lifecycle
   - Plan 02-02: Transform Gizmos, Numeric Inspector HUD & Scene Tree
+- **Phase 3: Client-Side Parsers, Exporters & Session Memory** (Completed: 2026-10-16)
+  - Plan 03-01: Client-Side Mesh Exporters & 2D Vector Parsers (STL, DXF, SVG)
+  - Plan 03-02: Native Lossless Project I/O, Session Storage & File Dialog UI
 
 ## Architectural Decisions Log
 
@@ -38,9 +41,10 @@ progress:
 - **Decision 05 (Branding):** Embedded the Ammonite spiral geometry from `Logo/IMAGE.svg` as `public/logo-mark.svg` across splash headers, viewport watermarks, and icons.
 - **Decision 06 (CI & Workflow Enforcement):** GitHub Actions CI workflow established at `.github/workflows/ci.yml` tracking `main` and `master`, verifying TypeScript compilation (`tsc --noEmit`), ESLint, and Turbopack production builds.
 - **Decision 07 (Parametric Lifecycle & Geometry Disposal):** Implemented explicit `mesh.geometry.dispose()` and `edges.geometry.dispose()` whenever node dimensions are mutated, avoiding WebGL buffer memory leaks.
+- **Decision 08 (Zero-Dependency CAD I/O):** Built pure-JavaScript parsers and exporters for binary/ASCII STL, AutoCAD DXF, SVG, and native JSON without heavy native dependencies, enabling 100% client-side execution in all browsers.
 
 ## Next Steps
 
-1. Run `/gsd-plan-phase 3` to create execution plans for Phase 3: Client-Side Parsers, Exporters & Session Memory.
-2. Advance Binary/ASCII STL generators, AutoCAD DXF entity parsers, and lossless `.amonite.json` project format.
-3. Validate client-side memory safety during large file exports.
+1. Run `/gsd-plan-phase 4` to create execution plans for Phase 4: Landing Page, Documentation & Early Access Funnel.
+2. Polish live interactive ammonite hero visualization, documentation workspace (`/docs`), and early-access waitlist modal.
+3. Validate responsive behavior on desktop and mobile.

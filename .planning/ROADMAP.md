@@ -15,14 +15,14 @@
 - [x] Real-time wireframe, shaded, and technical hidden-line rendering styles
 - [x] Undo / Redo history engine with shortcut bindings (`Ctrl+Z`, `Ctrl+Y`)
 
-## Phase 3: Client-Side Parsers, Exporters & Session Memory (Current)
-- [ ] Binary and ASCII `.stl` exporter for 3D printing
-- [ ] DXF 2D/3D parser and vector path exporter
-- [ ] SVG path parser and 3D extrusion generator
-- [ ] Lossless `.amonite.json` project file import/export
-- [ ] Persistent client-side session store using browser `localStorage` and `IndexedDB`
+## Phase 3: Client-Side Parsers, Exporters & Session Memory (Complete)
+- [x] Binary and ASCII `.stl` exporter for 3D printing
+- [x] DXF 2D/3D parser and vector path exporter
+- [x] SVG path parser and 3D extrusion generator
+- [x] Lossless `.amonite.json` project file import/export
+- [x] Persistent client-side session store using browser `localStorage` and `IndexedDB`
 
-## Phase 4: Landing Page, Documentation & Early Access Funnel
+## Phase 4: Landing Page, Documentation & Early Access Funnel (Current)
 - [ ] High-impact industrial hero section with live 3D ammonite model & interactive CAD sandbox
 - [ ] Technical documentation workspace (`/docs`) with coordinate definitions, shortcuts, and format specs
 - [ ] Early access & waitlist submission modal with validation and routing to `amoniteadmin@gmail.com`

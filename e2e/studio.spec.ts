@@ -6,7 +6,8 @@ import path from 'node:path';
 test('toolbar adds a cuboid and selects it in the tree', async ({ page }) => {
   await page.goto('/sandbox');
   await page.getByTitle('Add Cuboid').click();
-  await expect(page.getByText('Cuboid 3')).toBeVisible();
+  // addNode names it "<Type> <count+1>" — with 2 seeded nodes the box becomes "Box 3"
+  await expect(page.getByText('Box 3')).toBeVisible();
 });
 
 test('inspector edits survive undo/redo via keyboard', async ({ page }) => {
