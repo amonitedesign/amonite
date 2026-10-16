@@ -10,163 +10,244 @@ import {
   Shield,
   ArrowRight,
   Terminal,
+  Box,
 } from 'lucide-react';
 
 export default function DocsPage() {
   const shortcuts = [
-    { key: 'V', desc: 'Select Tool (Click geometry to focus)' },
-    { key: 'G', desc: 'Grab / Translate Gizmo (Move along axes)' },
-    { key: 'R', desc: 'Rotate Gizmo (15° increment snap)' },
-    { key: 'S', desc: 'Scale Gizmo (Uniform or dimensional scaling)' },
+    { key: 'V', desc: 'Select Tool (Click geometry to focus in inspector)' },
+    { key: 'G', desc: 'Grab / Translate Gizmo (Move along X/Y/Z axes)' },
+    { key: 'R', desc: 'Rotate Gizmo (15° incremental angle snap)' },
+    { key: 'S', desc: 'Scale Gizmo (Uniform or dimension vector scaling)' },
     { key: 'Ctrl + Z', desc: 'Undo previous geometric modification' },
-    { key: 'Ctrl + Y', desc: 'Redo undone action' },
-    { key: 'Ctrl + D', desc: 'Duplicate selected entity with offset' },
-    { key: 'Delete', desc: 'Delete active selected object' },
-    { key: 'P', desc: 'Toggle 2D drafting overlay (XZ polygon)' },
-    { key: 'Enter', desc: 'Commit draft polygon as extruded solid' },
-    { key: 'Esc', desc: 'Clear measurement / close drafting' },
+    { key: 'Ctrl + Y', desc: 'Redo undone geometric modification' },
+    { key: 'Ctrl + D', desc: 'Duplicate selected entity with 20mm spatial offset' },
+    { key: 'Delete', desc: 'Delete active selected node from scene tree' },
+    { key: 'P', desc: 'Toggle 2D technical drafting overlay (XZ planar polygon)' },
+    { key: 'Enter', desc: 'Commit drafting contour as 3D extruded solid' },
+    { key: 'Esc', desc: 'Clear point-to-point measurement / close drafting' },
   ];
 
   return (
-    <div className="min-h-screen bg-[#08090c] text-slate-200 font-mono flex flex-col">
+    <div className="min-h-screen bg-[#08090c] text-zinc-300 font-mono flex flex-col selection:bg-zinc-700 selection:text-white">
       <Navbar />
 
-      <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 py-12 w-full">
-        {/* Docs Header */}
-        <div className="border-b border-[#1c222e] pb-8 mb-10">
-          <div className="flex items-center gap-2 text-xs text-cyan-400 uppercase font-bold mb-2">
-            <Terminal className="w-4 h-4" />
-            <span>Technical Documentation // v0.1 Core</span>
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 py-12 w-full">
+        
+        {/* Editorial Docs Header */}
+        <div className="border-b border-white/[0.06] pb-10 mb-12">
+          <div className="flex items-center gap-2 text-[11px] text-zinc-400 uppercase font-semibold tracking-wider mb-3">
+            <Terminal className="w-3.5 h-3.5 text-zinc-400" />
+            <span>TECHNICAL SPECIFICATION // V0.1 CORE</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
             Amonite CAD Architecture & Reference
           </h1>
-          <p className="text-slate-400 text-sm mt-3 max-w-2xl leading-relaxed">
-            Complete technical specification for the Amonite browser CAD/CAM micro-SaaS workspace.
-            Client-side WebGL calculations, coordinate systems, hotkeys, and vector interchange formats.
+          <p className="text-zinc-400 text-xs sm:text-sm mt-3 max-w-3xl leading-relaxed">
+            Engineering documentation and formal specification for the Amonite browser CAD/CAM micro-SaaS workspace. Covers client-side WebGL calculations, coordinate frames, hotkey registries, Brep solid generation, and vector interchange formats.
           </p>
-          <div className="mt-6 flex items-center gap-3">
+          <div className="mt-6 flex items-center gap-4">
             <Link
               href="/sandbox"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-xs transition-colors"
             >
               <span>Launch Studio Sandbox</span>
-              <ArrowRight className="w-4 h-4" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </div>
 
-        {/* Section 1: Keyboard Shortcuts */}
-        <section className="mb-12">
-          <div className="flex items-center gap-2 text-base font-bold text-white mb-4">
-            <Keyboard className="w-5 h-5 text-cyan-400" />
-            <h2>Interactive Viewport Hotkeys</h2>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {shortcuts.map((s) => (
-              <div
-                key={s.key}
-                className="flex items-center justify-between p-3 rounded-xl border border-[#1f2635] bg-[#0e1118]"
-              >
-                <span className="text-xs text-slate-400">{s.desc}</span>
-                <kbd className="px-2 py-1 rounded bg-[#161c28] border border-[#2d374d] text-cyan-300 text-xs font-bold shadow-sm">
-                  {s.key}
-                </kbd>
+        {/* Two-Column Editorial Manual Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          
+          {/* Left Column: Sticky Index Menu */}
+          <aside className="lg:col-span-3 sticky top-24 hidden lg:block space-y-2 text-xs border-r border-white/[0.06] pr-6">
+            <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold mb-3">
+              TABLE OF CONTENTS
+            </div>
+            <nav className="flex flex-col space-y-1.5 text-zinc-400">
+              <a href="#shortcuts" className="hover:text-white transition-colors">
+                1. Viewport Hotkey Registry
+              </a>
+              <a href="#coordinates" className="hover:text-white transition-colors">
+                2. Coordinate Frame & Units
+              </a>
+              <a href="#geometry" className="hover:text-white transition-colors">
+                3. Parametric Solid Lifecycle
+              </a>
+              <a href="#formats" className="hover:text-white transition-colors">
+                4. File Format Specifications
+              </a>
+              <a href="#security" className="hover:text-white transition-colors">
+                5. Privacy Invariant
+              </a>
+            </nav>
+          </aside>
+
+          {/* Right Column: Deep Technical Content */}
+          <div className="lg:col-span-9 space-y-16">
+            
+            {/* Section 1: Keyboard Shortcuts */}
+            <section id="shortcuts" className="scroll-mt-24">
+              <div className="flex items-center gap-2 text-sm font-bold text-white mb-4">
+                <Keyboard className="w-4 h-4 text-zinc-300" />
+                <h2>Interactive Viewport Hotkeys</h2>
               </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Section 2: Mathematical Coordinates & Units */}
-        <section className="mb-12">
-          <div className="flex items-center gap-2 text-base font-bold text-white mb-4">
-            <Compass className="w-5 h-5 text-blue-400" />
-            <h2>Coordinate Frame & Units</h2>
-          </div>
-          <div className="p-5 rounded-xl border border-[#1f2635] bg-[#0e1118] text-xs leading-relaxed space-y-3 text-slate-300">
-            <p>
-              Amonite operates on a standard <strong>Right-Handed Cartesian 3D Coordinate System</strong>:
-            </p>
-            <ul className="list-disc pl-5 space-y-1 text-slate-400">
-              <li>
-                <strong className="text-red-400">X-Axis (Red):</strong> Lateral width vector (East / West).
-              </li>
-              <li>
-                <strong className="text-green-400">Y-Axis (Green):</strong> Elevation height vector (Up / Down).
-              </li>
-              <li>
-                <strong className="text-blue-400">Z-Axis (Blue):</strong> Longitudinal depth vector (North / South).
-              </li>
-            </ul>
-            <p className="pt-2 text-slate-400">
-              Default system linear units are <strong>Millimeters (mm)</strong> with adaptive fractional grid snapping (1mm, 5mm, 10mm, 25mm steps). All vector transformations and matrix multiplications execute client-side utilizing native hardware GPU acceleration.
-            </p>
-          </div>
-        </section>
-
-        {/* Section 3: File Format Specifications */}
-        <section className="mb-12">
-          <div className="flex items-center gap-2 text-base font-bold text-white mb-4">
-            <FileCode className="w-5 h-5 text-indigo-400" />
-            <h2>Supported File Formats</h2>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-            <div className="p-4 rounded-xl border border-[#1f2635] bg-[#0e1118] space-y-2">
-              <h3 className="font-bold text-cyan-300 flex items-center gap-1.5">
-                <span>.STL (Stereolithography)</span>
-              </h3>
-              <p className="text-slate-400">
-                Exports industry-standard binary and ASCII triangle meshes directly for 3D slicers (Bambu Studio, Cura, PrusaSlicer, OrcaSlicer) and CNC toolpath generators.
+              <p className="text-xs text-zinc-400 mb-4 leading-relaxed">
+                Standard single-key and modifier-bound bindings for rapid modeling, camera orbit, and gizmo state transformations.
               </p>
-            </div>
 
-            <div className="p-4 rounded-xl border border-[#1f2635] bg-[#0e1118] space-y-2">
-              <h3 className="font-bold text-blue-300 flex items-center gap-1.5">
-                <span>.DXF (Drawing Exchange Format)</span>
-              </h3>
-              <p className="text-slate-400">
-                AutoCAD R12 ASCII DXF standard for 2D drafting, laser cutters, waterjets, and wire-EDM machines. Supports import into 3D polygon extrusions.
-              </p>
-            </div>
+              <div className="rounded-xl border border-white/[0.06] bg-[#0c0d12] overflow-hidden">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-white/[0.06] text-[10px] text-zinc-500 uppercase tracking-wider bg-white/[0.02]">
+                      <th className="py-2.5 px-4 font-semibold">Key Binding</th>
+                      <th className="py-2.5 px-4 font-semibold">Command Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/[0.04]">
+                    {shortcuts.map((s) => (
+                      <tr key={s.key} className="hover:bg-white/[0.02] transition-colors">
+                        <td className="py-2.5 px-4 whitespace-nowrap">
+                          <kbd className="px-2 py-1 rounded bg-[#151720] border border-white/10 text-zinc-200 text-xs font-semibold">
+                            {s.key}
+                          </kbd>
+                        </td>
+                        <td className="py-2.5 px-4 text-zinc-300 text-xs">
+                          {s.desc}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
 
-            <div className="p-4 rounded-xl border border-[#1f2635] bg-[#0e1118] space-y-2">
-              <h3 className="font-bold text-sky-300 flex items-center gap-1.5">
-                <span>.SVG (Scalable Vector Graphics)</span>
-              </h3>
-              <p className="text-slate-400">
-                High-contrast 2D orthographic vector diagrams with dimension grids. Imports 2D SVG paths and converts them into parametric extruded solids.
-              </p>
-            </div>
+            {/* Section 2: Mathematical Coordinates & Units */}
+            <section id="coordinates" className="scroll-mt-24">
+              <div className="flex items-center gap-2 text-sm font-bold text-white mb-4">
+                <Compass className="w-4 h-4 text-zinc-300" />
+                <h2>Coordinate Frame & Units</h2>
+              </div>
+              <div className="p-6 rounded-xl border border-white/[0.06] bg-[#0c0d12] text-xs leading-relaxed space-y-4 text-zinc-300">
+                <p>
+                  Amonite operates strictly on a normalized <strong>Right-Handed Cartesian 3D Coordinate System</strong> conforming to ISO 841 machine coordinate standards:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+                  <div className="p-3.5 rounded-lg bg-[#07080b] border border-white/[0.04]">
+                    <div className="text-[10px] text-red-400 font-semibold uppercase tracking-wider">X-AXIS (RED)</div>
+                    <div className="text-xs text-zinc-300 font-medium mt-1">Lateral Width</div>
+                    <div className="text-[10px] text-zinc-500 mt-0.5">Horizontal lateral translation vector</div>
+                  </div>
+                  <div className="p-3.5 rounded-lg bg-[#07080b] border border-white/[0.04]">
+                    <div className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wider">Y-AXIS (GREEN)</div>
+                    <div className="text-xs text-zinc-300 font-medium mt-1">Elevation Height</div>
+                    <div className="text-[10px] text-zinc-500 mt-0.5">Vertical normal translation vector</div>
+                  </div>
+                  <div className="p-3.5 rounded-lg bg-[#07080b] border border-white/[0.04]">
+                    <div className="text-[10px] text-sky-400 font-semibold uppercase tracking-wider">Z-AXIS (BLUE)</div>
+                    <div className="text-xs text-zinc-300 font-medium mt-1">Longitudinal Depth</div>
+                    <div className="text-[10px] text-zinc-500 mt-0.5">Depth normal translation vector</div>
+                  </div>
+                </div>
+                <p className="text-zinc-400 text-xs pt-2">
+                  Linear units default to <strong>Millimeters (mm)</strong> with discrete grid snapping options (1mm, 5mm, 10mm, 25mm). Rotations snap to 15° increments when holding Shift or during active transform lock.
+                </p>
+              </div>
+            </section>
 
-            <div className="p-4 rounded-xl border border-[#1f2635] bg-[#0e1118] space-y-2">
-              <h3 className="font-bold text-emerald-300 flex items-center gap-1.5">
-                <span>.AMONITE.JSON (Project State)</span>
-              </h3>
-              <p className="text-slate-400">
-                Lossless native JSON format capturing the scene tree, dimensions, material colors, camera matrices, and viewport configuration.
+            {/* Section 3: Parametric Solid Lifecycle */}
+            <section id="geometry" className="scroll-mt-24">
+              <div className="flex items-center gap-2 text-sm font-bold text-white mb-4">
+                <Box className="w-4 h-4 text-zinc-300" />
+                <h2>Parametric Solid Lifecycle</h2>
+              </div>
+              <div className="p-6 rounded-xl border border-white/[0.06] bg-[#0c0d12] text-xs leading-relaxed space-y-4 text-zinc-300">
+                <p>
+                  Every primitive in Amonite is represented as a pure parametric definition in the decoupled Zustand store, evaluated on-the-fly into indexed triangle geometry:
+                </p>
+                <div className="p-4 rounded-lg bg-[#07080b] border border-white/[0.04] text-[11px] font-mono text-zinc-400 space-y-1">
+                  <div>interface CADNode &#123;</div>
+                  <div className="pl-4">id: string;</div>
+                  <div className="pl-4">type: &apos;box&apos; | &apos;cylinder&apos; | &apos;sphere&apos; | &apos;torus&apos; | &apos;cone&apos; | &apos;extrusion&apos;;</div>
+                  <div className="pl-4">dimensions: Record&lt;string, number&gt;;</div>
+                  <div className="pl-4">transform: &#123; position: [x,y,z]; rotation: [rx,ry,rz]; scale: [sx,sy,sz] &#125;;</div>
+                  <div>&#125;</div>
+                </div>
+                <p className="text-zinc-400 text-xs">
+                  Whenever dimensional parameters are modified in the inspector, previous GPU vertex attributes and edge buffers are explicitly disposed via <code className="text-zinc-200">geometry.dispose()</code> to prevent browser memory leaks.
+                </p>
+              </div>
+            </section>
+
+            {/* Section 4: File Format Specifications */}
+            <section id="formats" className="scroll-mt-24">
+              <div className="flex items-center gap-2 text-sm font-bold text-white mb-2">
+                <FileCode className="w-4 h-4 text-zinc-300" />
+                <h2>Supported File Formats</h2>
+              </div>
+              <div>
+                {[
+                  {
+                    index: 'F.01',
+                    title: '.STL — Stereolithography',
+                    body: 'Exports industry-standard packed binary (50-byte IEEE 754 facet records) and ASCII triangle meshes directly compatible with Bambu Studio, Cura, PrusaSlicer, and OrcaSlicer.',
+                  },
+                  {
+                    index: 'F.02',
+                    title: '.DXF — Drawing Exchange Format',
+                    body: 'AutoCAD R12 ASCII DXF standard for 2D drafting, laser cutters, waterjets, and wire-EDM machines. Also supports importing DXF lines and polyline entities into 3D extrusions.',
+                  },
+                  {
+                    index: 'F.03',
+                    title: '.SVG — Scalable Vector Graphics',
+                    body: '2D orthographic vector projections. Also parses planar SVG path contours (M, L, H, V, C, Z) into parametric extruded 3D solids.',
+                  },
+                  {
+                    index: 'F.04',
+                    title: '.AMONITE.JSON — Project State',
+                    body: 'Lossless native project schema version 1.0.0 capturing the full node hierarchy, dimensional parameters, transform vectors, camera projection matrices, and timestamps.',
+                  },
+                ].map((f) => (
+                  <article
+                    key={f.index}
+                    className="grid grid-cols-12 gap-3 py-5 border-t border-white/[0.06] last:border-b"
+                  >
+                    <span className="col-span-3 sm:col-span-2 font-mono text-[11px] font-bold text-zinc-500">
+                      {f.index}
+                    </span>
+                    <h3 className="col-span-9 sm:col-span-4 text-xs font-bold text-zinc-100">
+                      {f.title}
+                    </h3>
+                    <p className="col-span-9 col-start-4 sm:col-span-6 sm:col-start-auto text-zinc-400 leading-relaxed text-[11px]">
+                      {f.body}
+                    </p>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            {/* Section 5: Architecture & Privacy Segregation */}
+            <section id="security" className="scroll-mt-24 pt-2 text-xs">
+              <div className="flex items-center gap-2 text-zinc-200 font-bold mb-2">
+                <Shield className="w-4 h-4 text-zinc-400" />
+                <span>Architecture & Privacy Segregation</span>
+              </div>
+              <p className="text-zinc-400 leading-relaxed max-w-2xl">
+                This repository contains the lightweight client-side CAD engine and zero-auth playground. No telemetry tracking, analytics cookies, or cloud databases are attached. For inquiries regarding enterprise team vaults, custom CAM post-processors, or direct support, contact{' '}
+                <a
+                  href="mailto:amoniteadmin@gmail.com"
+                  className="text-zinc-200 font-semibold underline hover:text-white"
+                >
+                  amoniteadmin@gmail.com
+                </a>
+                .
               </p>
-            </div>
+            </section>
+
           </div>
-        </section>
+        </div>
 
-        {/* Section 4: Public Repo Segregation Notice */}
-        <section className="p-5 rounded-2xl border border-cyan-500/20 bg-gradient-to-br from-cyan-950/20 to-blue-950/20 text-xs">
-          <div className="flex items-center gap-2 text-cyan-400 font-bold mb-2">
-            <Shield className="w-4 h-4" />
-            <span>Architecture & Privacy Segregation</span>
-          </div>
-          <p className="text-slate-300 leading-relaxed">
-            This public repository contains the lightweight client-side engine and zero-auth sandbox.
-            No personal telemetry or telemetry cookies are stored. For technical support, custom CAM integration inquiries, or enterprise waitlist requests, reach out directly to{' '}
-            <a
-              href="mailto:amoniteadmin@gmail.com"
-              className="text-cyan-400 underline hover:text-cyan-300"
-            >
-              amoniteadmin@gmail.com
-            </a>
-            .
-          </p>
-        </section>
       </main>
     </div>
   );

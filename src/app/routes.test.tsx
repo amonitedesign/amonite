@@ -49,7 +49,7 @@ describe('routes / primary smoke across the app', () => {
     expect(screen.getByText('Amonite CAD Architecture & Reference')).toBeInTheDocument();
     expect(screen.getByText('Ctrl + Z')).toBeInTheDocument();
     expect(screen.getByText('Coordinate Frame & Units')).toBeInTheDocument();
-    expect(screen.getByText(/\.STL \(Stereolithography\)/)).toBeInTheDocument();
+    expect(screen.getByText(/\.STL — Stereolithography/)).toBeInTheDocument();
   });
 
   it('sandbox renders studio shell with toolbar + tree + inspector', () => {

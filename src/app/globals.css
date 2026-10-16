@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+@utility font-display {
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
 @layer base {
   :root {
     --background: #08090b;

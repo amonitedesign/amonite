@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, X, Mail, CheckCircle, ArrowRight, ShieldCheck } from 'lucide-react';
+import { X, Mail, CheckCircle2, ArrowRight, Shield } from 'lucide-react';
 
 interface WaitlistModalProps {
   isOpen: boolean;
@@ -24,55 +24,57 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-      <div className="relative w-full max-w-md bg-[#0d0f13] border border-[#232733] rounded-2xl shadow-2xl p-6 font-mono text-slate-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+      <div className="relative w-full max-w-md bg-[#0c0d12] border border-white/[0.08] rounded-xl shadow-2xl p-6 sm:p-7 font-mono text-zinc-300">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-500 hover:text-white hover:bg-slate-800 transition-colors"
+          aria-label=""
+          className="absolute top-4 right-4 p-1.5 rounded-md text-zinc-500 hover:text-white hover:bg-white/[0.06] transition-colors"
         >
-          <X className="w-5 h-5" />
+          <X className="w-4 h-4" />
         </button>
 
         {!submitted ? (
           <div>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-4 shadow-[0_0_15px_rgba(6,182,212,0.2)]">
-              <Sparkles className="w-5 h-5" />
+            <div className="flex items-center gap-2 text-[10px] text-zinc-400 uppercase tracking-wider font-semibold mb-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
+              <span>EARLY ACCESS INTAKE</span>
             </div>
 
             <h3 className="text-lg font-bold text-white tracking-tight">
               Amonite Pro Early Access
             </h3>
-            <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-              Reserve your spot for cloud workspace sync, parametric CAM toolpaths, and generative CAD pipelines. Queue directed to{' '}
-              <span className="text-cyan-400 font-semibold">amoniteadmin@gmail.com</span>.
+            <p className="text-xs text-zinc-400 mt-2 leading-relaxed">
+              Queue for multi-axis CAM toolpaths, cloud revision vaulting, and native STEP/IGES parsing. Direct engineering intake routed to{' '}
+              <span className="text-zinc-200 font-semibold">amoniteadmin@gmail.com</span>.
             </p>
 
-            <form onSubmit={handleSubmit} className="mt-5 space-y-3.5">
+            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div>
-                <label className="block text-[11px] text-slate-400 uppercase font-bold mb-1.5">
+                <label className="block text-[10px] text-zinc-400 uppercase font-semibold mb-1.5">
                   Work Email
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
+                  <Mail className="absolute left-3 top-2.5 w-4 h-4 text-zinc-500" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="engineer@aerospace.io"
-                    className="w-full pl-9 pr-3 py-2 bg-[#14171f] border border-[#272d3b] rounded-lg text-xs text-white placeholder-slate-600 focus:outline-none focus:border-cyan-400"
+                    className="w-full pl-9 pr-3 py-2 bg-[#12141c] border border-white/10 rounded-lg text-xs text-white placeholder-zinc-600 focus:outline-none focus:border-white/30"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[11px] text-slate-400 uppercase font-bold mb-1.5">
+                <label className="block text-[10px] text-zinc-400 uppercase font-semibold mb-1.5">
                   Engineering Domain
                 </label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
-                  className="w-full px-3 py-2 bg-[#14171f] border border-[#272d3b] rounded-lg text-xs text-white focus:outline-none focus:border-cyan-400"
+                  className="w-full px-3 py-2 bg-[#12141c] border border-white/10 rounded-lg text-xs text-white focus:outline-none focus:border-white/30"
                 >
                   <option value="Mechanical Engineer">Mechanical / Industrial Engineer</option>
                   <option value="3D Printing & CAM">Additive Manufacturing & CAM Specialist</option>
@@ -81,14 +83,14 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
                 </select>
               </div>
 
-              <div className="flex items-center gap-2 text-[10px] text-slate-400 pt-1">
-                <ShieldCheck className="w-3.5 h-3.5 text-cyan-400" />
-                <span>Zero spam guarantee. 100% private developer preview.</span>
+              <div className="flex items-center gap-2 text-[10px] text-zinc-500 pt-1">
+                <Shield className="w-3.5 h-3.5 text-zinc-400" />
+                <span>Zero spam. Direct review by Amonite engineering team.</span>
               </div>
 
               <button
                 type="submit"
-                className="w-full py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold text-xs transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] flex items-center justify-center gap-2 mt-4"
+                className="w-full py-2.5 rounded-lg bg-zinc-100 hover:bg-white text-zinc-950 font-bold text-xs transition-colors flex items-center justify-center gap-2 mt-4"
               >
                 <span>Request Early Access</span>
                 <ArrowRight className="w-4 h-4" />
@@ -96,17 +98,21 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
             </form>
           </div>
         ) : (
-          <div className="py-6 text-center">
-            <div className="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto mb-3">
-              <CheckCircle className="w-6 h-6" />
+          <div className="py-6 text-center space-y-3">
+            <div className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-zinc-200 mx-auto">
+              <CheckCircle2 className="w-5 h-5 text-emerald-400" />
             </div>
-            <h4 className="text-base font-bold text-white">You&apos;re on the list!</h4>
-            <p className="text-xs text-slate-400 mt-2 max-w-xs mx-auto leading-relaxed">
-              We have recorded your email <span className="text-cyan-400">{email}</span>. The Amonite core engineering team will contact you once developer slots open.
+
+            <h3 className="text-base font-bold text-white tracking-tight">
+              You&apos;re on the list!
+            </h3>
+            <p className="text-xs text-zinc-400 max-w-xs mx-auto leading-relaxed">
+              We have queued <span className="text-zinc-200 font-semibold">{email}</span> for priority access. Invitations are dispatched on a rolling weekly basis.
             </p>
+
             <button
               onClick={onClose}
-              className="mt-6 px-5 py-2 rounded-lg bg-[#161a22] hover:bg-[#202531] border border-[#272d3b] text-xs font-semibold text-white transition-colors"
+              className="mt-4 px-5 py-2 rounded-lg border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] text-zinc-200 font-medium text-xs transition-colors"
             >
               Back to Studio
             </button>

@@ -3,21 +3,21 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: ready_to_plan
-last_updated: "2026-10-16T17:20:00.000Z"
+last_updated: "2026-10-16T17:53:00.000Z"
 progress:
   total_phases: 5
-  completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
-  percent: 60
+  completed_phases: 4
+  total_plans: 8
+  completed_plans: 8
+  percent: 80
 ---
 
 # Amonite CAD Project State
 
 ## Current Position
 
-- **Active Phase:** Phase 4 (Landing Page, Documentation & Early Access Funnel)
-- **Status:** Phase 3 Verified & Complete; Ready for Phase 4
+- **Active Phase:** Phase 5 (CI/CD Workflows & Public Repository Governance)
+- **Status:** Phase 4 Verified & Complete; Ready for Phase 5
 - **Repository Branch:** `master`
 - **Primary Support:** `amoniteadmin@gmail.com`
 
@@ -31,6 +31,9 @@ progress:
 - **Phase 3: Client-Side Parsers, Exporters & Session Memory** (Completed: 2026-10-16)
   - Plan 03-01: Client-Side Mesh Exporters & 2D Vector Parsers (STL, DXF, SVG)
   - Plan 03-02: Native Lossless Project I/O, Session Storage & File Dialog UI
+- **Phase 4: Landing Page, Documentation & Early Access Funnel** (Completed: 2026-10-16)
+  - Plan 04-01: Anti-Slop Industrial Hero, Asymmetric Architecture & Studio Showcase
+  - Plan 04-02: Editorial Technical Documentation Workspace & Minimalist Early Access Funnel
 
 ## Architectural Decisions Log
 
@@ -42,9 +45,9 @@ progress:
 - **Decision 06 (CI & Workflow Enforcement):** GitHub Actions CI workflow established at `.github/workflows/ci.yml` tracking `main` and `master`, verifying TypeScript compilation (`tsc --noEmit`), ESLint, and Turbopack production builds.
 - **Decision 07 (Parametric Lifecycle & Geometry Disposal):** Implemented explicit `mesh.geometry.dispose()` and `edges.geometry.dispose()` whenever node dimensions are mutated, avoiding WebGL buffer memory leaks.
 - **Decision 08 (Zero-Dependency CAD I/O):** Built pure-JavaScript parsers and exporters for binary/ASCII STL, AutoCAD DXF, SVG, and native JSON without heavy native dependencies, enabling 100% client-side execution in all browsers.
+- **Decision 09 (Anti-Slop Industrial Design System):** Enforced a strict ban on generic AI startup tropes (no multi-color gradients, no radial card glows, no 3-column identical rows, no centered symmetry). Adopted a calibrated graphite and cold zinc aesthetic with asymmetric bento layouts, whitespace-driven hierarchy, and authentic CAD/CAM engineering documentation.
 
 ## Next Steps
 
-1. Run `/gsd-plan-phase 4` to create execution plans for Phase 4: Landing Page, Documentation & Early Access Funnel.
-2. Polish live interactive ammonite hero visualization, documentation workspace (`/docs`), and early-access waitlist modal.
-3. Validate responsive behavior on desktop and mobile.
+1. Run `/gsd-plan-phase 5` to create execution plans for Phase 5: CI/CD Workflows & Public Repository Governance.
+2. Finalize repository governance, CONTRIBUTING.md, and public security audits.

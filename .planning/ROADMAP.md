@@ -22,13 +22,13 @@
 - [x] Lossless `.amonite.json` project file import/export
 - [x] Persistent client-side session store using browser `localStorage` and `IndexedDB`
 
-## Phase 4: Landing Page, Documentation & Early Access Funnel (Current)
-- [ ] High-impact industrial hero section with live 3D ammonite model & interactive CAD sandbox
-- [ ] Technical documentation workspace (`/docs`) with coordinate definitions, shortcuts, and format specs
-- [ ] Early access & waitlist submission modal with validation and routing to `amoniteadmin@gmail.com`
-- [ ] Responsive UI for mobile/tablet inspection and full desktop modeling studio
+## Phase 4: Landing Page, Documentation & Early Access Funnel (Complete)
+- [x] High-impact industrial hero section with live 3D ammonite model & interactive CAD sandbox
+- [x] Technical documentation workspace (`/docs`) with coordinate definitions, shortcuts, and format specs
+- [x] Early access & waitlist submission modal with validation and routing to `amoniteadmin@gmail.com`
+- [x] Responsive UI for mobile/tablet inspection and full desktop modeling studio
 
-## Phase 5: CI/CD Workflows & Public Repository Governance
+## Phase 5: CI/CD Workflows & Public Repository Governance (Current)
 - [ ] GitHub Actions workflow (`.github/workflows/ci.yml`) with automated type-checking and linting
 - [ ] Open-source contribution guidelines (`CONTRIBUTING.md`) and comprehensive `README.md`
 - [ ] Public repository safety verification ensuring zero authentication or payment leaks
