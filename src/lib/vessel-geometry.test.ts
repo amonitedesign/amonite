@@ -68,6 +68,32 @@ describe('vessel-geometry / parametric kernel', () => {
 
   it('finishes carry distinct clay colors', () => {
     const colors = new Set(Object.values(VESSEL_FINISHES).map((f) => f.color));
-    expect(colors.size).toBe(3);
+    expect(colors.size).toBe(4);
+    expect(VESSEL_FINISHES.obsidian).toBeDefined();
+  });
+
+  it('brutalist-planter archetype produces valid stepped geometry', () => {
+    const p = VESSEL_ARCHETYPES['brutalist-planter'].defaults;
+    const geom = createVesselGeometry(p);
+    geom.computeBoundingBox();
+    expect(geom.boundingBox!.max.y - geom.boundingBox!.min.y).toBeCloseTo(130, 0);
+    geom.dispose();
+  });
+
+  it('shrinkage compensation scales geometry dimensions proportionally', () => {
+    const base = VESSEL_ARCHETYPES['fluted-vase'].defaults;
+    const geomStandard = createVesselGeometry({ ...base, shrinkagePercent: 0 });
+    const geomCompensated = createVesselGeometry({ ...base, shrinkagePercent: 10 });
+
+    geomStandard.computeBoundingBox();
+    geomCompensated.computeBoundingBox();
+
+    const hStandard = geomStandard.boundingBox!.max.y - geomStandard.boundingBox!.min.y;
+    const hCompensated = geomCompensated.boundingBox!.max.y - geomCompensated.boundingBox!.min.y;
+
+    expect(hCompensated).toBeCloseTo(hStandard * 1.1, 1);
+
+    geomStandard.dispose();
+    geomCompensated.dispose();
   });
 });

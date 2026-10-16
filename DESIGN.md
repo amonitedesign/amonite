@@ -48,17 +48,16 @@ Do not attempt to "invent" arbitrary custom styling or inject rogue inline utili
 
 ## ANNEX: AMONITE CONCRETE TOKENS (HARD RULES FOR THIS REPO)
 
-Ground the mandates above in these exact values taken from `src/app/globals.css`. Do not approximate.
+Ground the mandates above in these exact values. Do not approximate.
 
-- **Canvas:** `#08090b` page, `#0a0b0e` viewport, `#0d0f13` / `#101216` panels, `#161a22` wells.
-- **Single accent:** cyan `#22d3ee` — solid fills and text only. Never as gradient stop, never with glow shadows.
-- **Text:** white display, `slate-300` primary, `slate-400/500` secondary. No purple/indigo/blue accent text.
-- **Typography:** Outfit for display headlines (`font-display` variable), JetBrains Mono for UI labels, HUD, and buttons (`font-mono` used app-wide). Left-anchored headlines; eyebrow tags are mono uppercase tracking-widest, no pill glow.
-- **Buttons:** primary = solid `bg-cyan-300 text-black`; secondary = ghost/bordered `border-white/10`; danger = `red-500/10` wash. Uniform `rounded-lg`, no `rounded-full` pills on CTAs, no gradient classes, no colored drop shadows.
-- **Structure:** hairline dividers (`border-white/8` or section spacing `py-16/24`) instead of boxed cards; numbered typographic rows (`01 / 02 / 03`) instead of equal-width feature grids.
-- **Micro-copy:** real CAD terms only — primitives (Cuboid, Mounting Boss), units (mm/in), snap steps (1/5/10/25 mm), formats (STL, DXF R12, SVG, `.amonite.json`).
-- **Scope guard:** `/sandbox` is a dense IDE — its panel hairlines and floating toolbars are functional chrome, not decorative slop. Leave it alone unless asked.
-- **Copy freeze:** CTA labels "Open Studio Sandbox" / "Join Pro Waitlist", and docs headings are asserted by tests. Keep the strings clean when restyling.
+- **Landing:** paper `#fbfaf7` / dark `#121110`; hairlines `#e6e2da` / `white/[0.06]`; terracotta accent `#c28456` / `#d4a373` — solid only, never gradients or glows.
+- **Sandbox atelier:** warm charcoal stage `#161310`, panels `#1e1a15` / `#1c1712`, hairlines `white/[0.07]`; terracotta accent `#c96f4b` (active archetype, slider fill `accent-[#c96f4b]`, badge tint); clay finishes Sandstone `#d9c7a8`, Terracotta `#b96a4b`, Porcelain `#efe9dd`, Obsidian `#222226`; warm off-white text `#ece5d8` / `#d8cfbd`, muted `#a89e8d`.
+- **Text:** display headlines in Outfit (`font-display`), UI labels/HUD in JetBrains Mono (`font-mono` app-wide). Left-anchored headlines; eyebrows are mono uppercase tracking-widest, no pill glow.
+- **Buttons:** primary = solid (landing: ink/zinc-100; sandbox: `#ede4d3` clay / `#c96f4b` terracotta); secondary = ghost/bordered hairline. Uniform `rounded-lg` (sandbox reset and turntable pills are `rounded-full` exceptions), no gradient classes, no colored drop shadows.
+- **Structure:** hairline dividers and spacing instead of boxed cards; numbered typographic rows (`01 / 02 / 03`, `F.01…`) instead of equal-width feature grids. Sandbox bottom bar holds Reset view, Turntable toggle, plus a hint line.
+- **Micro-copy:** vessel terms only — Fluted Vase, Brutalist Planter, Organic Bowl, Twisted Cylinder; Base radius, Wall thickness, Rib count, Wave, Twist; finishes Sandstone/Terracotta/Porcelain/Obsidian; Kiln Shrinkage Tool (+9.5% Terracotta, +11.8% Stoneware, +14.2% Porcelain); 1-Click Etsy Collection Batch Drop (.zip with 6 watertight STLs, mockups, and Etsy SEO guide); formats STL, DXF footprints, SVG, `.amonite.json`. Never: Brep, gizmo, snap step, telemetry, Cuboid, Mounting Boss.
+- **Scope guard:** `/sandbox` is a single-vessel atelier — no scene tree, no primitive toolbar, no XYZ inspector, no camera-preset bar, no grid, no measure/calipers. Orbit/pan/zoom + Reset view is the entire viewport contract.
+- **Copy freeze:** landing H1 "Sculpt bespoke minimal vases & interior decor, right in your browser.", CTA "Open Studio Sandbox", sandbox strings ("AMONITE ATELIER", "Base forms", "Shape the clay", "Reset view") are asserted by `src/app/routes.test.tsx` and `e2e/*.spec.ts`. Keep byte-identical when restyling.
 
 ---
 

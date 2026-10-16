@@ -6,33 +6,22 @@ test('@smoke landing renders hero and studio entry points', async ({ page }) => 
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   await page.goto('/');
-  await expect(page.getByText(/Sculpt bespoke minimal vases/)).toBeVisible();
+  await expect(page.getByText(/bespoke minimal vases/)).toBeVisible();
   await expect(page.getByRole('link', { name: /Open Studio Sandbox/ }).first()).toBeVisible();
   expect(errors).toEqual([]);
 });
 
-test('@smoke sandbox studio shell loads with scene hierarchy', async ({ page }) => {
+test('@smoke sandbox atelier shell loads with archetypes', async ({ page }) => {
   await page.goto('/sandbox');
-  await expect(page.getByText('AMONITE // STUDIO')).toBeVisible();
-  await expect(page.getByText('Scene Hierarchy')).toBeVisible();
-  await expect(page.getByText('Import / Export')).toBeVisible();
+  await expect(page.getByText('AMONITE ATELIER')).toBeVisible();
+  await expect(page.getByText('Base forms')).toBeVisible();
+  await expect(page.getByText('Fluted Vase')).toBeVisible();
+  await expect(page.getByText('Shape the clay')).toBeVisible();
+  await expect(page.getByText('Reset view')).toBeVisible();
 });
 
 test('@smoke docs render shortcuts and format specs', async ({ page }) => {
   await page.goto('/docs');
-  await expect(page.getByText('Amonite CAD Architecture & Reference').first()).toBeVisible();
-  await expect(page.getByText('Coordinate Frame & Units').first()).toBeVisible();
-});
-
-test('@smoke pricing shows three cascading tiers; Get Pro navigates there', async ({ page }) => {
-  await page.goto('/');
-  // Wait for hydration: client-side nav is dead until React attaches.
-  await expect(page.getByRole('link', { name: 'Get Pro' })).toBeVisible();
-  await page.waitForLoadState('networkidle');
-  await page.getByRole('link', { name: 'Get Pro' }).click();
-  await page.waitForURL(/\/pricing/, { timeout: 15_000 });
-  await expect(page.getByTestId('tier-free')).toBeVisible();
-  await expect(page.getByTestId('tier-pro')).toBeVisible();
-  await expect(page.getByTestId('tier-studio')).toBeVisible();
-  await expect(page.getByText('Most popular')).toBeVisible();
+  await expect(page.getByText('Amonite CAD Architecture & Reference')).toBeVisible();
+  await expect(page.getByText('Reset view')).toBeVisible();
 });

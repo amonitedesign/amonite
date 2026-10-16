@@ -10,6 +10,8 @@ import {
   HelpCircle,
   Sparkles,
   RotateCcw,
+  Play,
+  Pause,
 } from 'lucide-react';
 import CADCanvas from '@/components/cad/cad-canvas';
 import VesselArchetypes from '@/components/cad/vessel-archetypes';
@@ -21,6 +23,7 @@ import { saveWorkspaceLocally, loadWorkspaceLocally } from '@/lib/storage';
 export default function SandboxPage() {
   const [isFileOpen, setIsFileOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [autoRotate, setAutoRotate] = useState(true);
 
   const nodes = useCADStore((s) => s.nodes);
   const viewport = useCADStore((s) => s.viewport);
@@ -142,7 +145,7 @@ export default function SandboxPage() {
       {/* Main Studio Viewport Area */}
       <div className="relative flex-1 w-full h-[calc(100vh-48px)] overflow-hidden">
         {/* Fullscreen 3D Atelier Canvas */}
-        <CADCanvas className="absolute inset-0 z-0" />
+        <CADCanvas className="absolute inset-0 z-0" autoRotate={autoRotate} />
 
         {/* Left Side Base Form Menu */}
         <div className="absolute top-20 left-4 z-20 hidden md:block">
@@ -155,17 +158,32 @@ export default function SandboxPage() {
         </div>
 
         {/* Bottom Center Minimal View Bar */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
           <button
             type="button"
             onClick={() => setCameraPreset('iso')}
-            className="flex items-center gap-2 rounded-full border border-white/10 bg-[#1e1a15]/95 px-4 py-2 font-mono text-[11px] text-[#d8cfbd] shadow-2xl backdrop-blur-md transition-colors hover:border-white/25 hover:text-white"
+            className="flex items-center gap-2 rounded-full border border-white/10 bg-[#1e1a15]/95 px-3.5 py-1.5 font-mono text-[11px] text-[#d8cfbd] shadow-2xl backdrop-blur-md transition-colors hover:border-white/25 hover:text-white"
           >
-            <RotateCcw className="h-3.5 w-3.5" />
+            <RotateCcw className="h-3 w-3" />
             <span>Reset view</span>
           </button>
-          <span className="hidden font-mono text-[10px] text-[#6b6257] sm:inline">
-            Drag to orbit · Scroll to zoom · Right-drag to pan
+
+          <button
+            type="button"
+            onClick={() => setAutoRotate(!autoRotate)}
+            className={`flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-mono text-[11px] shadow-2xl backdrop-blur-md transition-colors ${
+              autoRotate
+                ? 'border-[#c96f4b]/30 bg-[#c96f4b]/15 text-[#f0caa3]'
+                : 'border-white/10 bg-[#1e1a15]/95 text-[#a89e8d] hover:text-white'
+            }`}
+            title="Toggle turntable auto-rotation"
+          >
+            {autoRotate ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+            <span>Turntable</span>
+          </button>
+
+          <span className="hidden font-mono text-[10px] text-[#6b6257] sm:inline pl-2">
+            Drag to orbit · Scroll to zoom
           </span>
         </div>
       </div>

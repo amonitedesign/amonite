@@ -11,16 +11,22 @@ type CADTaggedObject = THREE.Object3D & { cadNodeId?: string; lastDimKey?: strin
 
 // Warm atelier stage constants.
 const STAGE_BG = 0x161310;
-const PEDESTAL_COLOR = 0x2a231b;
+const PEDESTAL_COLOR = 0x1f1b17;
 const EDGE_COLOR = 0x8a7f6a;
 
 function vesselFrame(nodes: { type: string; vessel?: { height: number } }[]): { targetY: number; dist: number } {
   const vessel = nodes.find((n) => n.type === 'vessel' && n.vessel);
   const h = vessel?.vessel?.height ?? 170;
-  return { targetY: h * 0.45, dist: Math.max(230, h * 1.6) };
+  return { targetY: h * 0.48, dist: Math.max(220, h * 1.75) };
 }
 
-export default function CADCanvas({ className = '' }: { className?: string }) {
+export default function CADCanvas({
+  className = '',
+  autoRotate = true,
+}: {
+  className?: string;
+  autoRotate?: boolean;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -65,12 +71,12 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMappingExposure = 1.15;
     rendererRef.current = renderer;
 
-    // Cameras
-    const perspCamera = new THREE.PerspectiveCamera(40, aspect, 0.1, 3000);
-    perspCamera.position.set(170, 150, 210);
+    // Cameras — 34° portrait focal length for luxury architectural presentation
+    const perspCamera = new THREE.PerspectiveCamera(34, aspect, 0.1, 3000);
+    perspCamera.position.set(160, 140, 200);
     perspCameraRef.current = perspCamera;
 
     const frustumSize = 320;
@@ -82,58 +88,64 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
       0.1,
       3000
     );
-    orthoCamera.position.set(170, 150, 210);
+    orthoCamera.position.set(160, 140, 200);
     orthoCameraRef.current = orthoCamera;
 
     activeCameraRef.current = perspCamera;
 
-    // OrbitControls — the only interaction: orbit, pan, zoom.
+    // OrbitControls — smooth turntable damping and rotation
     const orbit = new OrbitControls(perspCamera, renderer.domElement);
     orbit.enableDamping = true;
     orbit.dampingFactor = 0.06;
-    orbit.target.set(0, 75, 0);
+    orbit.target.set(0, 80, 0);
     orbit.minDistance = 80;
     orbit.maxDistance = 900;
-    orbit.maxPolarAngle = Math.PI * 0.55;
+    orbit.maxPolarAngle = Math.PI * 0.52;
+    orbit.autoRotate = autoRotate;
+    orbit.autoRotateSpeed = 0.75;
     orbit.update();
     orbitControlsRef.current = orbit;
 
-    // Lighting — soft gallery warmth.
-    const hemi = new THREE.HemisphereLight(0xfff4e6, 0x2a2118, 0.55);
+    // Lighting — soft architectural gallery warmth (Key + Fill + Rim + Hemisphere)
+    const hemi = new THREE.HemisphereLight(0xfffaf0, 0x221a14, 0.95);
     scene.add(hemi);
 
-    const key = new THREE.DirectionalLight(0xffe9d2, 1.6);
-    key.position.set(120, 220, 140);
+    const key = new THREE.DirectionalLight(0xfff6eb, 1.9);
+    key.position.set(130, 240, 160);
     key.castShadow = true;
     key.shadow.mapSize.width = 2048;
     key.shadow.mapSize.height = 2048;
-    key.shadow.camera.left = -200;
-    key.shadow.camera.right = 200;
+    key.shadow.camera.left = -160;
+    key.shadow.camera.right = 160;
     key.shadow.camera.top = 260;
-    key.shadow.camera.bottom = -60;
-    key.shadow.bias = -0.0004;
+    key.shadow.camera.bottom = -40;
+    key.shadow.bias = -0.0001;
     scene.add(key);
 
-    const fill = new THREE.DirectionalLight(0xd8dee9, 0.3);
-    fill.position.set(-140, 80, -120);
+    const fill = new THREE.DirectionalLight(0xb0cce6, 0.65);
+    fill.position.set(-150, 100, 110);
     scene.add(fill);
 
-    // Pedestal — a quiet plinth the vessel rests on.
+    const rim = new THREE.DirectionalLight(0xffdfb4, 1.6);
+    rim.position.set(20, 180, -180);
+    scene.add(rim);
+
+    // Pedestal — refined studio plinth
     const pedestal = new THREE.Mesh(
-      new THREE.CylinderGeometry(110, 116, 10, 72),
-      new THREE.MeshStandardMaterial({ color: PEDESTAL_COLOR, roughness: 0.9, metalness: 0 })
+      new THREE.CylinderGeometry(80, 84, 8, 64),
+      new THREE.MeshStandardMaterial({ color: PEDESTAL_COLOR, roughness: 0.88, metalness: 0.05 })
     );
-    pedestal.position.y = -5;
+    pedestal.position.y = -4;
     pedestal.receiveShadow = true;
     scene.add(pedestal);
 
     // Ground shadow catcher.
     const ground = new THREE.Mesh(
       new THREE.PlaneGeometry(1600, 1600),
-      new THREE.ShadowMaterial({ opacity: 0.3 })
+      new THREE.ShadowMaterial({ opacity: 0.35 })
     );
     ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -10;
+    ground.position.y = -8;
     ground.receiveShadow = true;
     scene.add(ground);
 
@@ -182,6 +194,7 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
       cancelAnimationFrame(animationFrameId);
       renderer.dispose();
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 2. Handle Camera Mode Switches (Perspective vs Orthographic)
@@ -205,6 +218,13 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
     orbitControlsRef.current.target.copy(target);
     orbitControlsRef.current.update();
   }, [viewport.cameraMode]);
+
+  // Sync autoRotate prop changes
+  useEffect(() => {
+    if (orbitControlsRef.current) {
+      orbitControlsRef.current.autoRotate = autoRotate;
+    }
+  }, [autoRotate]);
 
   // 3. Handle Camera Orientation Presets — framed on the vessel.
   useEffect(() => {
@@ -277,7 +297,8 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
 
         const mesh = new THREE.Mesh(geom, mat);
         mesh.castShadow = true;
-        mesh.receiveShadow = true;
+        // Crucial fix: Vessel lathe meshes must NOT receiveShadow to prevent self-shadowing extinction on double-sided geometry.
+        mesh.receiveShadow = !isVessel;
         (mesh as CADTaggedObject).cadNodeId = node.id;
         (mesh as CADTaggedObject).lastDimKey =
           JSON.stringify(node.vessel ?? node.dimensions) + '-' + node.type;
@@ -324,6 +345,8 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
           const mat = mesh.material as THREE.MeshStandardMaterial;
           const isVessel = node.type === 'vessel' && node.vessel;
           const finish = isVessel && node.vessel ? VESSEL_FINISHES[node.vessel.finish] : null;
+          mesh.castShadow = true;
+          mesh.receiveShadow = !isVessel;
           if (finish) {
             mat.color.set(finish.color);
             mat.roughness = finish.roughness;

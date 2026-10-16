@@ -2,9 +2,13 @@ export type PrimitiveType = 'box' | 'cylinder' | 'sphere' | 'torus' | 'cone' | '
 
 export type TransformMode = 'select' | 'translate' | 'rotate' | 'scale';
 
-export type VesselArchetype = 'fluted-vase' | 'organic-bowl' | 'twisted-cylinder';
+export type VesselArchetype =
+  | 'fluted-vase'
+  | 'organic-bowl'
+  | 'twisted-cylinder'
+  | 'brutalist-planter';
 
-export type VesselFinish = 'sandstone' | 'terracotta' | 'porcelain';
+export type VesselFinish = 'sandstone' | 'terracotta' | 'porcelain' | 'obsidian';
 
 export interface VesselParams {
   archetype: VesselArchetype;
@@ -21,6 +25,8 @@ export interface VesselParams {
   /** Flute twist from base to rim, degrees. */
   twistAngle: number;
   finish: VesselFinish;
+  /** Optional clay kiln shrinkage compensation percentage (e.g. 11.8 for +11.8%). */
+  shrinkagePercent?: number;
 }
 
 export type CameraPreset = 'iso' | 'top' | 'front' | 'right' | 'bottom' | 'back' | 'left';

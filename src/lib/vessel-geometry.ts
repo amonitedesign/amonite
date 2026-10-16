@@ -24,6 +24,12 @@ export const VESSEL_FINISHES: Record<
     roughness: 0.35,
     blurb: 'Smooth glaze-like sheen',
   },
+  obsidian: {
+    label: 'Obsidian',
+    color: '#222226',
+    roughness: 0.28,
+    blurb: 'Sleek smoked ceramic with subtle specular sheen',
+  },
 };
 
 export interface VesselArchetypeSpec {
@@ -45,6 +51,22 @@ export const VESSEL_ARCHETYPES: Record<VesselArchetype, VesselArchetypeSpec> = {
       waveAmplitude: 2,
       twistAngle: 0,
       finish: 'sandstone',
+      shrinkagePercent: 0,
+    },
+  },
+  'brutalist-planter': {
+    label: 'Brutalist Planter',
+    blurb: 'Architectural stepped silhouette with raw presence',
+    defaults: {
+      archetype: 'brutalist-planter',
+      baseRadius: 55,
+      height: 130,
+      wallThickness: 4.5,
+      ribCount: 16,
+      waveAmplitude: 0,
+      twistAngle: 0,
+      finish: 'terracotta',
+      shrinkagePercent: 0,
     },
   },
   'organic-bowl': {
@@ -59,6 +81,7 @@ export const VESSEL_ARCHETYPES: Record<VesselArchetype, VesselArchetypeSpec> = {
       waveAmplitude: 5,
       twistAngle: 0,
       finish: 'porcelain',
+      shrinkagePercent: 0,
     },
   },
   'twisted-cylinder': {
@@ -72,7 +95,8 @@ export const VESSEL_ARCHETYPES: Record<VesselArchetype, VesselArchetypeSpec> = {
       ribCount: 12,
       waveAmplitude: 1.5,
       twistAngle: 120,
-      finish: 'terracotta',
+      finish: 'obsidian',
+      shrinkagePercent: 0,
     },
   },
 };
@@ -87,6 +111,15 @@ const PROFILES: Record<VesselArchetype, Array<[number, number]>> = {
     [0.72, 0.78],
     [0.88, 0.58],
     [1, 0.7],
+  ],
+  'brutalist-planter': [
+    [0, 0.75],
+    [0.18, 0.75],
+    [0.2, 0.95],
+    [0.55, 0.95],
+    [0.58, 1.1],
+    [0.92, 1.1],
+    [1, 1.05],
   ],
   'organic-bowl': [
     [0, 0.4],
@@ -196,5 +229,14 @@ export function createVesselGeometry(p: VesselParams): THREE.BufferGeometry {
 
   const merged = mergeGeometries([outer, inner, rim, floorOuter, floorInner]);
   merged.computeVertexNormals();
+
+  // Kiln shrinkage compensation: scales geometry pre-fire so post-fire dimensions match target.
+  const shrinkage = p.shrinkagePercent ?? 0;
+  if (shrinkage > 0) {
+    const scaleFactor = 1 + shrinkage / 100;
+    merged.scale(scaleFactor, scaleFactor, scaleFactor);
+  }
+
+  merged.computeBoundingBox();
   return merged;
 }

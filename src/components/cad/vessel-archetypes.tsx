@@ -5,35 +5,46 @@ import { useCADStore } from '@/store/cad-store';
 import { VESSEL_ARCHETYPES, vesselProfileRadius } from '@/lib/vessel-geometry';
 import type { VesselArchetype } from '@/lib/cad-types';
 
-const ORDER: VesselArchetype[] = ['fluted-vase', 'organic-bowl', 'twisted-cylinder'];
+const ORDER: VesselArchetype[] = [
+  'fluted-vase',
+  'brutalist-planter',
+  'organic-bowl',
+  'twisted-cylinder',
+];
 
 function Silhouette({ archetype, active }: { archetype: VesselArchetype; active: boolean }) {
   const W = 64;
   const H = 76;
   const pts: string[] = [];
-  const N = 24;
+  const N = 28;
   for (let i = 0; i <= N; i++) {
     const v = i / N;
     const r = vesselProfileRadius(archetype, v);
-    pts.push(`${W / 2 + r * 26},${H - 6 - v * (H - 12)}`);
+    pts.push(`${W / 2 + r * 25},${H - 6 - v * (H - 12)}`);
   }
   // Mirror down the other side to close the silhouette.
   const mirrored = [...pts].reverse().map((p) => {
     const [x, y] = p.split(',').map(Number);
     return `${W - x},${y}`;
   });
+
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
-      className="h-16 w-14 shrink-0"
+      className="h-14 w-12 shrink-0 drop-shadow-sm transition-transform duration-200 group-hover:scale-105"
       aria-hidden="true"
     >
+      <defs>
+        <linearGradient id={`grad-${archetype}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#c96f4b" stopOpacity={active ? '0.35' : '0.1'} />
+          <stop offset="100%" stopColor="#c96f4b" stopOpacity={active ? '0.05' : '0'} />
+        </linearGradient>
+      </defs>
       <polygon
         points={[...pts, ...mirrored].join(' ')}
-        fill={active ? '#c96f4b' : 'none'}
-        fillOpacity={active ? 0.18 : 0}
-        stroke={active ? '#c96f4b' : '#8a8071'}
-        strokeWidth={1.5}
+        fill={`url(#grad-${archetype})`}
+        stroke={active ? '#d98560' : '#8a8071'}
+        strokeWidth={active ? 1.75 : 1.25}
         strokeLinejoin="round"
       />
     </svg>
