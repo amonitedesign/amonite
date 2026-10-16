@@ -38,10 +38,9 @@ describe('routes / primary smoke across the app', () => {
   it('landing renders hero + studio links without crashing', () => {
     resetStore();
     render(<LandingPage />);
-    expect(screen.getByText(/Plan rooms to the millimetre/)).toBeInTheDocument();
+    expect(screen.getByText(/Sculpt minimal 3D objects/)).toBeInTheDocument();
     expect(screen.getAllByText('Open Studio Sandbox').length).toBeGreaterThan(0);
-    // Landing carries no 3D stage — the canvas mock must stay unmounted.
-    expect(screen.queryByTestId('mock-canvas')).not.toBeInTheDocument();
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument();
   });
 
   it('docs renders shortcuts, units, and format specs', () => {

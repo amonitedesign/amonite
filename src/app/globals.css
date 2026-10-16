@@ -8,13 +8,13 @@
 
 @layer base {
   :root {
-    --background: #ffffff;
-    --foreground: #090a0f;
+    --background: #fbfaf7;
+    --foreground: #1c1a17;
   }
 
   .dark {
-    --background: #08090b;
-    --foreground: #e2e8f0;
+    --background: #121110;
+    --foreground: #dcd8d0;
   }
 
   body {
@@ -23,22 +23,30 @@
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
   }
 
-  /* Sleek Technical Industrial Scrollbars */
+  /* Quiet Studio Technical Scrollbars */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #0d0f14;
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #232836;
-    border-radius: 3px;
+    background: #d5d0c7;
+    border-radius: 2px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: #2a2724;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #00e5ff88;
+    background: #a8a297;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: #423e39;
   }
 }

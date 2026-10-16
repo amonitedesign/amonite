@@ -58,4 +58,14 @@ Ground the mandates above in these exact values taken from `src/app/globals.css`
 - **Structure:** hairline dividers (`border-white/8` or section spacing `py-16/24`) instead of boxed cards; numbered typographic rows (`01 / 02 / 03`) instead of equal-width feature grids.
 - **Micro-copy:** real CAD terms only — primitives (Cuboid, Mounting Boss), units (mm/in), snap steps (1/5/10/25 mm), formats (STL, DXF R12, SVG, `.amonite.json`).
 - **Scope guard:** `/sandbox` is a dense IDE — its panel hairlines and floating toolbars are functional chrome, not decorative slop. Leave it alone unless asked.
-- **Copy freeze:** hero heading "Plan rooms to the millimetre, right in your browser.", CTA labels "Open Studio Sandbox" / "Join Pro Waitlist", and docs headings are asserted by `src/app/routes.test.tsx` and `e2e/smoke.spec.ts`. Keep the strings byte-identical when restyling.
+- **Copy freeze:** CTA labels "Open Studio Sandbox" / "Join Pro Waitlist", and docs headings are asserted by tests. Keep the strings clean when restyling.
+
+---
+
+## 5. SPECIFIC PRODUCT CONTEXT: 3D MINIMALIST OBJECT STUDIO (AMONITE)
+You are building an advanced workspace for designers crafting custom minimal 3D vases and small interior objects. The interface must act like a premium gallery or high-end physical studio.
+
+* **The 3D Canvas First:** The interactive 3D view is the absolute anchor of the app. The control UI (sliders, toggles, material selectors) must float elegantly over or sit quietly beside the canvas.
+* **Invisible Control UI:** Never use bulky, bright input panels. Controls must use ultra-clean typography, fine hairline indicators, and low-contrast inputs. Think high-end camera software or industrial design interfaces.
+* **Zero Architectural Slop:** The platform focuses purely on individual objects (vases, vessels, small ceramics), NOT entire rooms. Eliminate options for walls, lighting setups for rooms, or floor grids. Keep the canvas isolated to the singular product geometry.
+* **Calibrated Organic Neutrals:** Because the product handles interior design objects, the interface should use organic, muted tones rather than tech-startup grays. Use warm grays, sand tones, off-whites, and deep charcoal accents.
