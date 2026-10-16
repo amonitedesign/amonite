@@ -6,7 +6,7 @@ test('@smoke landing renders hero and studio entry points', async ({ page }) => 
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(String(e)));
   await page.goto('/');
-  await expect(page.getByText(/Precision Engineering in Your Browser/)).toBeVisible();
+  await expect(page.getByText(/Plan rooms to the millimetre/)).toBeVisible();
   await expect(page.getByRole('link', { name: /Open Studio Sandbox/ }).first()).toBeVisible();
   expect(errors).toEqual([]);
 });

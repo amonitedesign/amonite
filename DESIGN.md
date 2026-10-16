@@ -58,4 +58,4 @@ Ground the mandates above in these exact values taken from `src/app/globals.css`
 - **Structure:** hairline dividers (`border-white/8` or section spacing `py-16/24`) instead of boxed cards; numbered typographic rows (`01 / 02 / 03`) instead of equal-width feature grids.
 - **Micro-copy:** real CAD terms only — primitives (Cuboid, Mounting Boss), units (mm/in), snap steps (1/5/10/25 mm), formats (STL, DXF R12, SVG, `.amonite.json`).
 - **Scope guard:** `/sandbox` is a dense IDE — its panel hairlines and floating toolbars are functional chrome, not decorative slop. Leave it alone unless asked.
-- **Copy freeze:** hero heading "Precision Engineering in Your Browser.", CTA labels "Open Studio Sandbox" / "Join Pro Waitlist", and docs headings are asserted by `src/app/routes.test.tsx`. Keep the strings byte-identical when restyling.
+- **Copy freeze:** hero heading "Plan rooms to the millimetre, right in your browser.", CTA labels "Open Studio Sandbox" / "Join Pro Waitlist", and docs headings are asserted by `src/app/routes.test.tsx` and `e2e/smoke.spec.ts`. Keep the strings byte-identical when restyling.

@@ -1,11 +1,18 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @utility font-display {
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 @layer base {
   :root {
+    --background: #ffffff;
+    --foreground: #090a0f;
+  }
+
+  .dark {
     --background: #08090b;
     --foreground: #e2e8f0;
   }

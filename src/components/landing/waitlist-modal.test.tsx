@@ -11,19 +11,19 @@ describe('waitlist-modal', () => {
 
   it('requires an email to submit', () => {
     render(<WaitlistModal isOpen onClose={() => {}} />);
-    const input = screen.getByPlaceholderText('engineer@aerospace.io');
+    const input = screen.getByPlaceholderText('you@studio.co');
     expect(input).toHaveAttribute('required');
     expect(input).toHaveAttribute('type', 'email');
   });
 
   it('submits and shows confirmation with the email echoed', () => {
     render(<WaitlistModal isOpen onClose={() => {}} />);
-    fireEvent.change(screen.getByPlaceholderText('engineer@aerospace.io'), {
-      target: { value: 'mech@aero.io' },
+    fireEvent.change(screen.getByPlaceholderText('you@studio.co'), {
+      target: { value: 'designer@studio.co' },
     });
     fireEvent.click(screen.getByText('Request Early Access'));
     expect(screen.getByText("You're on the list!")).toBeInTheDocument();
-    expect(screen.getByText('mech@aero.io')).toBeInTheDocument();
+    expect(screen.getByText('designer@studio.co')).toBeInTheDocument();
   });
 
   it('closes via X and Back buttons', () => {
@@ -32,7 +32,7 @@ describe('waitlist-modal', () => {
     fireEvent.click(screen.getByRole('button', { name: '' })); // X icon button
     expect(onClose).toHaveBeenCalled();
     rerender(<WaitlistModal isOpen onClose={onClose} />);
-    fireEvent.change(screen.getByPlaceholderText('engineer@aerospace.io'), {
+    fireEvent.change(screen.getByPlaceholderText('you@studio.co'), {
       target: { value: 'a@b.io' },
     });
     fireEvent.click(screen.getByText('Request Early Access'));
