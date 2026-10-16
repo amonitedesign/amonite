@@ -8,11 +8,7 @@ import {
   ArrowRight,
   Maximize2,
   Cpu,
-  Layers,
   FileCode,
-  ShieldCheck,
-  Compass,
-  Boxes,
   Lock,
   Zap,
 } from 'lucide-react';
@@ -151,7 +147,7 @@ export default function LandingPage() {
             </div>
             <h3 className="text-sm font-bold text-white">Zero-Auth & Local Session Persistence</h3>
             <p className="text-xs text-slate-400 leading-relaxed">
-              No account creation, cookies, or tracking. Your CAD geometries auto-save strictly to your browser's private local storage.
+              No account creation, cookies, or tracking. Your CAD geometries auto-save strictly to your browser&apos;s private local storage.
             </p>
           </div>
         </div>

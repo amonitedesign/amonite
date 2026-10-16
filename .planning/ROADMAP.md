@@ -1,6 +1,6 @@
 # Amonite CAD Development Roadmap
 
-## Phase 1: Project Setup & Core Viewport Foundation (Current)
+## Phase 1: Project Setup & Core Viewport Foundation (Complete)
 - [x] Next.js App Router, TypeScript, Tailwind CSS configuration
 - [x] Official `logo-mark.svg` asset integration from `Logo/IMAGE.svg`
 - [x] Core Zustand high-frequency state store for viewport and CAD models
@@ -8,7 +8,7 @@
 - [x] Dual-mode camera projection (Perspective / Orthographic) & view orientation presets (Top, Front, Right, Isometric)
 - [x] Adaptive technical grid system with millimeter snap coordinates
 
-## Phase 2: Parametric Geometry & Transform Engine
+## Phase 2: Parametric Geometry & Transform Engine (Current)
 - [ ] Parametric 3D solid primitives (Cuboid, Cylinder, Sphere, Torus, Extruded Polygon)
 - [ ] Direct manipulation transform gizmos (Translate, Rotate, Scale)
 - [ ] Dynamic technical inspection panel with real-time numeric inputs and dimensions

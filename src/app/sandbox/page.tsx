@@ -15,6 +15,7 @@ import CADToolbar from '@/components/cad/cad-toolbar';
 import CADInspector from '@/components/cad/cad-inspector';
 import CADTree from '@/components/cad/cad-tree';
 import CADViewControls from '@/components/cad/cad-view-controls';
+import CADMeasure from '@/components/cad/cad-measure';
 import FileDialog from '@/components/io/file-dialog';
 import WaitlistModal from '@/components/landing/waitlist-modal';
 import { useCADStore } from '@/store/cad-store';
@@ -34,6 +35,9 @@ export default function SandboxPage() {
   const removeNode = useCADStore((s) => s.removeNode);
   const duplicateNode = useCADStore((s) => s.duplicateNode);
   const setTransformMode = useCADStore((s) => s.setTransformMode);
+  const measureActive = useCADStore((s) => s.measureActive);
+  const setMeasureActive = useCADStore((s) => s.setMeasureActive);
+  const setMeasurePoints = useCADStore((s) => s.setMeasurePoints);
 
   // Load from local storage on initial mount
   useEffect(() => {
@@ -85,12 +89,18 @@ export default function SandboxPage() {
         setTransformMode('rotate');
       } else if (e.key.toLowerCase() === 's') {
         setTransformMode('scale');
+      } else if (e.key.toLowerCase() === 'm') {
+        if (measureActive) setMeasurePoints(null);
+        setMeasureActive(!measureActive);
+      } else if (e.key === 'Escape') {
+        setMeasurePoints(null);
+        setMeasureActive(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedId, undo, redo, duplicateNode, removeNode, setTransformMode]);
+  }, [selectedId, undo, redo, duplicateNode, removeNode, setTransformMode, measureActive, setMeasureActive, setMeasurePoints]);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-[#0a0b0e] flex flex-col font-mono text-slate-200">
@@ -179,6 +189,11 @@ export default function SandboxPage() {
         {/* Right Side Dimension & Transform Inspector */}
         <div className="absolute top-20 right-4 z-20 hidden md:block">
           <CADInspector />
+        </div>
+
+        {/* Measurement calipers overlay */}
+        <div className="absolute bottom-24 right-4 z-20 hidden md:block">
+          <CADMeasure />
         </div>
       </div>
 

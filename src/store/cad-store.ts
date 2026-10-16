@@ -15,6 +15,8 @@ interface CADStoreState {
 
   // Measurement / interaction
   cursorCoords: { x: number; y: number; z: number };
+  measurePoints: { a: { x: number; y: number; z: number }; b: { x: number; y: number; z: number } } | null;
+  measureActive: boolean;
 
   // Undo / Redo history
   undoStack: CADNode[][];
@@ -37,6 +39,8 @@ interface CADStoreState {
   setViewport: (updates: Partial<ViewportState>) => void;
   setCameraPreset: (preset: string) => void;
   setCursorCoords: (coords: { x: number; y: number; z: number }) => void;
+  setMeasurePoints: (pts: { a: { x: number; y: number; z: number }; b: { x: number; y: number; z: number } } | null) => void;
+  setMeasureActive: (active: boolean) => void;
   undo: () => void;
   redo: () => void;
   loadProject: (project: AmoniteProject) => void;
@@ -90,6 +94,8 @@ export const useCADStore = create<CADStoreState>((set, get) => ({
   cameraPresetTrigger: 0,
   activePreset: 'iso',
   cursorCoords: { x: 0, y: 0, z: 0 },
+  measurePoints: null,
+  measureActive: false,
   undoStack: [],
   redoStack: [],
 
@@ -199,6 +205,8 @@ export const useCADStore = create<CADStoreState>((set, get) => ({
     })),
 
   setCursorCoords: (coords) => set({ cursorCoords: coords }),
+  setMeasurePoints: (pts) => set({ measurePoints: pts }),
+  setMeasureActive: (active) => set({ measureActive: active }),
 
   undo: () => {
     const { undoStack, nodes } = get();

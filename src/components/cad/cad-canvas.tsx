@@ -24,6 +24,7 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
   const setSelectedId = useCADStore((s) => s.setSelectedId);
   const updateNodeTransform = useCADStore((s) => s.updateNodeTransform);
   const setCursorCoords = useCADStore((s) => s.setCursorCoords);
+  const measurePoints = useCADStore((s) => s.measurePoints);
 
   // References to keep Three.js instances stable across React renders
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -35,6 +36,7 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
   const transformControlsRef = useRef<TransformControls | null>(null);
   const meshesMapRef = useRef<Map<string, THREE.Group>>(new Map());
   const gridHelperRef = useRef<THREE.GridHelper | null>(null);
+  const measureLineRef = useRef<THREE.Line | null>(null);
 
   // 1. Initialize Scene, Renderer, and Cameras
   useEffect(() => {
@@ -115,7 +117,7 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
     dirLight2.position.set(-80, 40, -100);
     scene.add(dirLight2);
 
-    // CAD Engineering Ground Grid
+    // CAD Engineering Ground Grid (adaptive — rebuilt on snap/size change)
     const gridHelper = new THREE.GridHelper(240, 48, 0x00e5ff, 0x1f2937);
     gridHelper.position.y = 0;
     scene.add(gridHelper);
@@ -274,12 +276,48 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
     orbitControlsRef.current.update();
   }, [cameraPresetTrigger, activePreset]);
 
-  // 4. Handle Grid Visibility and Step
+  // 4. Handle Grid Visibility and adaptive subdivision (gridSize / snapStep)
   useEffect(() => {
-    if (gridHelperRef.current) {
-      gridHelperRef.current.visible = viewport.gridVisible;
+    const scene = sceneRef.current;
+    if (!scene) return;
+    const old = gridHelperRef.current;
+    if (old) {
+      scene.remove(old);
+      old.geometry.dispose();
+      const oldMat = old.material as THREE.Material | THREE.Material[];
+      if (Array.isArray(oldMat)) oldMat.forEach((m) => m.dispose());
+      else oldMat.dispose();
     }
-  }, [viewport.gridVisible]);
+    const size = viewport.gridSize || 200;
+    const step = viewport.snapStep > 0 ? viewport.snapStep : 5;
+    const divisions = Math.min(100, Math.max(10, Math.round(size / step)));
+    const grid = new THREE.GridHelper(size, divisions, 0x00e5ff, 0x1f2937);
+    grid.position.y = 0;
+    grid.visible = viewport.gridVisible;
+    scene.add(grid);
+    gridHelperRef.current = grid;
+  }, [viewport.gridVisible, viewport.gridSize, viewport.snapStep]);
+
+  // 4b. Measurement caliper line (session-only overlay)
+  useEffect(() => {
+    const scene = sceneRef.current;
+    if (!scene) return;
+    if (measureLineRef.current) {
+      scene.remove(measureLineRef.current);
+      measureLineRef.current.geometry.dispose();
+      (measureLineRef.current.material as THREE.Material).dispose();
+      measureLineRef.current = null;
+    }
+    if (!measurePoints) return;
+    const geom = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(measurePoints.a.x, measurePoints.a.y, measurePoints.a.z),
+      new THREE.Vector3(measurePoints.b.x, measurePoints.b.y, measurePoints.b.z),
+    ]);
+    const mat = new THREE.LineBasicMaterial({ color: 0xfacc15 });
+    const line = new THREE.Line(geom, mat);
+    scene.add(line);
+    measureLineRef.current = line;
+  }, [measurePoints]);
 
   // 5. Synchronize 3D Meshes from Zustand nodes
   useEffect(() => {
@@ -307,16 +345,20 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
         (group as CADTaggedObject).cadNodeId = node.id;
 
         const geom = createGeometryForNode(node);
+        const isHiddenLine = viewport.renderStyle === 'hidden-line';
         const mat = new THREE.MeshStandardMaterial({
           color: node.color,
           roughness: 0.35,
           metalness: 0.25,
           wireframe: viewport.renderStyle === 'wireframe' || node.wireframe,
+          transparent: isHiddenLine,
+          opacity: isHiddenLine ? 0 : 1,
         });
 
         const mesh = new THREE.Mesh(geom, mat);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
+        mesh.castShadow = !isHiddenLine;
+        mesh.receiveShadow = !isHiddenLine;
+        mesh.visible = !isHiddenLine;
         (mesh as CADTaggedObject).cadNodeId = node.id;
         group.add(mesh);
 
@@ -339,8 +381,15 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
         const mesh = group.children[0] as THREE.Mesh;
         if (mesh) {
           const mat = mesh.material as THREE.MeshStandardMaterial;
+          const isHiddenLine = viewport.renderStyle === 'hidden-line';
           mat.color.set(node.color);
           mat.wireframe = viewport.renderStyle === 'wireframe' || node.wireframe;
+          mat.transparent = isHiddenLine;
+          mat.opacity = isHiddenLine ? 0 : 1;
+          mat.needsUpdate = true;
+          mesh.castShadow = !isHiddenLine;
+          mesh.receiveShadow = !isHiddenLine;
+          mesh.visible = !isHiddenLine;
         }
       }
 
@@ -462,6 +511,22 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
       <div className="absolute top-4 left-4 pointer-events-none flex items-center gap-2 px-3 py-1.5 rounded-md bg-black/40 backdrop-blur-md border border-cyan-500/20 text-xs font-mono text-cyan-400">
         <span className="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
         AMONITE // WEBGL HARDWARE ACCELERATED
+      </div>
+
+      {/* XYZ axis gizmo (orientation reference, mirrors camera presets) */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute right-4 top-4 flex flex-col gap-1 rounded-md bg-black/40 backdrop-blur-md border border-[#232733] px-2.5 py-2 font-mono text-[10px] font-bold"
+      >
+        <span className="flex items-center gap-1.5 text-red-400">
+          <span className="inline-block h-0.5 w-4 bg-red-400" />X
+        </span>
+        <span className="flex items-center gap-1.5 text-green-400">
+          <span className="inline-block h-0.5 w-4 bg-green-400" />Y
+        </span>
+        <span className="flex items-center gap-1.5 text-blue-400">
+          <span className="inline-block h-0.5 w-4 bg-blue-400" />Z
+        </span>
       </div>
     </div>
   );

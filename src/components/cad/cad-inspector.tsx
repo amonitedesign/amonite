@@ -3,12 +3,14 @@
 import React from 'react';
 import { Sliders, Eye, EyeOff } from 'lucide-react';
 import { useCADStore } from '@/store/cad-store';
+import { fromMM, toMM } from '@/lib/measurement';
 
 export default function CADInspector() {
   const selectedId = useCADStore((s) => s.selectedId);
   const nodes = useCADStore((s) => s.nodes);
   const updateNode = useCADStore((s) => s.updateNode);
   const updateNodeTransform = useCADStore((s) => s.updateNodeTransform);
+  const unit = useCADStore((s) => s.viewport.unit);
 
   const selectedNode = nodes.find((n) => n.id === selectedId);
 
@@ -50,7 +52,7 @@ export default function CADInspector() {
 
       {/* Position (X, Y, Z) */}
       <div className="flex flex-col gap-1.5">
-        <span className="text-[10px] text-slate-500 uppercase font-semibold">Position (mm)</span>
+        <span className="text-[10px] text-slate-500 uppercase font-semibold">Position ({unit})</span>
         <div className="grid grid-cols-3 gap-1.5">
           {(['x', 'y', 'z'] as const).map((axis) => (
             <div key={axis} className="flex items-center bg-[#161a22] border border-[#272d3b] rounded px-1.5 py-1">
@@ -59,10 +61,10 @@ export default function CADInspector() {
               </span>
               <input
                 type="number"
-                step="5"
-                value={position[axis]}
+                step={unit === 'mm' ? 5 : 0.25}
+                value={Number(fromMM(position[axis], unit).toFixed(3))}
                 onChange={(e) =>
-                  updateNodeTransform(selectedNode.id, { [axis]: parseFloat(e.target.value) || 0 })
+                  updateNodeTransform(selectedNode.id, { [axis]: toMM(parseFloat(e.target.value) || 0, unit) })
                 }
                 className="w-full bg-transparent text-right text-xs text-white focus:outline-none"
               />

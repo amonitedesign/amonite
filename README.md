@@ -5,15 +5,17 @@
 </p>
 
 <p align="center">
-  <strong>Zero-Auth, Hardware-Accelerated 3D WebGL Solids Modeling, 2D Vector Drafting, and Manufacturing Interchange</strong>
+  <strong>Zero-auth, hardware-accelerated 3D viewport, precision measurement calipers, and client-side manufacturing interchange.</strong>
 </p>
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
+  <a href="#precision--measurement">Precision</a> •
   <a href="#tech-stack">Tech Stack</a> •
   <a href="#architecture-segregation">Architecture</a> •
   <a href="#quickstart">Quickstart</a> •
   <a href="#shortcuts">Shortcuts</a> •
+  <a href="#community">Community</a> •
   <a href="#license">License</a>
 </p>
 
@@ -21,87 +23,97 @@
 
 ## Overview
 
-**Amonite** is an industrial-grade, client-side CAD/CAM Micro-SaaS public application built for mechanical engineers, industrial designers, additive manufacturing technicians, and digital fabricators.
-
-Amonite bypasses all registration barriers, running an instant 3D WebGL solids modeling sandbox right on your browser canvas with client-side mathematical matrix operations, millimeter grid snapping, dynamic parametric inspector, and fast local STL/DXF parsing.
+**Amonite** is an industrial-grade, client-side CAD workspace for mechanical
+engineers, industrial designers, additive-manufacturing technicians, and digital
+fabricators. No registration, no telemetry — geometry, transforms, and file
+parsing all run locally in the browser.
 
 ## Key Features
 
-- **Hardware-Accelerated 3D WebGL Viewport:** Powered by Three.js with OrbitControls, TransformControls, and multi-source studio lighting.
-- **Dual-Mode Projection:** Seamlessly switch between Perspective 3D rendering and true Orthographic 2D/3D engineering views.
-- **Parametric Solid Primitives:** Generate Cuboids, Cylinders, Spheres, Tori, Cones, and extruded 2D Polygons with dynamic dimension inspection.
-- **Manufacturing File Interchange:**
-  - **STL (Binary & ASCII):** Export direct triangle meshes for 3D printing slicers (Bambu Studio, Cura, PrusaSlicer).
-  - **DXF (AutoCAD R12 ASCII):** Read and write vector CAD lines for CNC routing and laser cutting.
-  - **SVG:** Export 2D orthographic projection diagrams or import 2D vector paths into 3D extrusions.
-  - **Amonite Native JSON:** Lossless full project backup and restoration.
-- **High-Frequency Zustand Store:** Coordinates, camera matrices, and transform states isolated from React tree re-renders for 120fps fluid interaction.
-- **Local Workspace Persistence:** Automatic background autosave to browser `localStorage` and `IndexedDB` with zero external telemetry.
-- **Zero-Auth Playground:** Immediate CAD utility without logins, cookies, or paywalls.
+- **Hardware-accelerated 3D viewport:** Three.js WebGL with orbit + transform
+  gizmos, studio lighting, and XYZ axis reference.
+- **Projection + render modes:** Perspective / orthographic cameras; shaded /
+  wireframe / hidden-line styles; ISO, top, front, right, bottom, back, left presets.
+- **Parametric primitives:** Cuboid, cylinder, sphere, torus, cone, and 2D-polygon
+  extrusions with a numeric inspector.
+- **Manufacturing interchange (client-side):** STL binary/ASCII export, DXF R12
+  ASCII import/export, SVG import/export, lossless Amonite native JSON.
+- **Zustand high-frequency store:** Viewport, gizmo, and coordinate state isolated
+  from React re-renders for fluid interaction.
+- **Local persistence:** Debounced `localStorage` autosave with undo/redo history
+  (`Ctrl+Z` / `Ctrl+Y`).
+
+## Precision & Measurement
+
+- **Adaptive snap grid:** Divisions derive from `gridSize / snapStep`
+  (`src/lib/grid-utils.ts`), clamped to 10–100 cells; steps selectable at
+  1 / 5 / 10 / 25 mm.
+- **Canonical-mm units:** Storage stays in millimeters; the HUD, inspector, and
+  snap labels convert via `src/lib/measurement.ts` (`mm`, `cm`, `m`, `in`).
+  Toggle `MM ⇄ IN` in the viewport bar.
+- **Calipers (`M` / `Esc`):** Capture points A/B from the live cursor raycast,
+  render a session-only 3D line, and report distance, ΔX/ΔY/ΔZ, and XY-plane angle.
+- **HUD telemetry:** Live X/Y/Z cursor readout in the active unit plus snap status.
 
 ## Tech Stack
 
 - **Framework:** Next.js 16 (App Router)
-- **Language:** TypeScript 5 (Strict Mode)
-- **Styling:** Tailwind CSS 4 + Industrial Dark Theme
-- **3D Graphics:** Three.js (WebGL Hardware Acceleration)
-- **State Store:** Zustand
+- **Language:** TypeScript 5 (strict)
+- **Styling:** Tailwind CSS 4, industrial dark theme
+- **3D:** Three.js (`three`, `@react-three/fiber`, `@react-three/drei`)
+- **State:** Zustand
 - **Icons:** Lucide React
-- **Typography:** Outfit & JetBrains Mono
+- **Fonts:** Outfit + JetBrains Mono
 
 ## Architecture Segregation
 
-This repository represents the **Public Core Ecosystem**:
-- **Included:** Core WebGL canvas, geometric primitives, transform gizmos, local file parsers, documentation workspace (`/docs`), and waitlist conversion funnel.
-- **Excluded (Reserved for Private Enterprise Vault):** Authentication gates, subscription billing, server-side database schemas, multi-tenant cloud sync, and enterprise CAM post-processors.
+Public core (`amonite`):
+
+- Included: WebGL canvas, primitives, gizmos, calipers, parsers, `/docs`,
+  waitlist funnel, local persistence.
+- Excluded (private vault): auth, billing, server DB schemas, multi-tenant cloud
+  sync, enterprise CAM post-processors.
 
 ## Quickstart
 
 ### Prerequisites
-- Node.js 18+ (tested on Node v20/v24)
+
+- Node.js 18+ (tested on Node 20/24)
 - npm 9+
 
-### Setup & Run
-```bash
-# 1. Install dependencies
-npm install
+### Setup & Run (PowerShell)
 
-# 2. Start development server
+```powershell
+npm install
 npm run dev
 ```
 
-Navigate to [http://localhost:3000](http://localhost:3000) for the landing page with live CAD hero, or [http://localhost:3000/sandbox](http://localhost:3000/sandbox) for the fullscreen studio.
+Open [http://localhost:3000](http://localhost:3000) (landing + live hero) or
+[http://localhost:3000/sandbox](http://localhost:3000/sandbox) (fullscreen studio).
 
 ### Validation
-```bash
-# Typecheck
-npx tsc --noEmit
 
-# Lint
-npm run lint
-
-# Production Build
-npm run build
+```powershell
+npx tsc --noEmit; if ($?) { npm run lint }; if ($?) { npm run build }
 ```
 
 ## Interactive Hotkeys
 
 | Shortcut | Description |
 | :--- | :--- |
-| **`V`** | Select Tool (Focus entity) |
-| **`G`** | Translate / Move Gizmo |
-| **`R`** | Rotate Gizmo (15° snap) |
-| **`S`** | Scale Gizmo |
-| **`Ctrl + Z`** | Undo geometric modification |
-| **`Ctrl + Y`** | Redo geometric modification |
-| **`Ctrl + D`** | Duplicate selected entity |
-| **`Delete`** | Delete selected entity |
+| `V` | Select tool |
+| `G` / `R` / `S` | Translate / rotate / scale gizmo |
+| `M` | Toggle measurement calipers |
+| `Esc` | Clear measurement / close calipers |
+| `Ctrl+Z` / `Ctrl+Y` | Undo / redo |
+| `Ctrl+D` | Duplicate selected entity |
+| `Delete` | Delete selected entity |
 
-## Contact & Early Access
+## Community
 
-For feedback, custom CAM integration inquiries, or early access to cloud vaults:
-- **Email:** `amoniteadmin@gmail.com`
-- **Waitlist:** Available directly within the application shell.
+- Code of conduct: [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md)
+- Support / early access: `amoniteadmin@gmail.com` (also via in-app waitlist)
 
 ---
+
 © Amonite CAD. Distributed under the MIT Open Source License.

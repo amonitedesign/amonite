@@ -2,24 +2,29 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-status: executing
-last_updated: "2026-10-16T11:19:36.493Z"
+status: ready_to_plan
+last_updated: "2026-10-16T16:54:15.000Z"
 progress:
   total_phases: 5
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 2
-  completed_plans: 0
-  percent: 0
+  completed_plans: 2
+  percent: 20
 ---
 
 # Amonite CAD Project State
 
 ## Current Position
 
-- **Active Phase:** Phase 1 (Project Setup & Core Viewport Foundation)
-- **Status:** Ready to execute
+- **Active Phase:** Phase 2 (Parametric Geometry & Transform Engine)
+- **Status:** Phase 1 Verified & Complete; Ready for Phase 2
 - **Repository Branch:** `master`
 - **Primary Support:** `amoniteadmin@gmail.com`
+
+## Completed Phases
+- **Phase 1: Project Setup & Core Viewport Foundation** (Completed: 2026-10-16)
+  - Plan 01-01: Core WebGL Viewport, Camera Duality & Zustand Store
+  - Plan 01-02: Viewport HUD, Snapping Engine, History Stack & Zero-Auth Shell
 
 ## Architectural Decisions Log
 
@@ -28,13 +33,10 @@ progress:
 - **Decision 03 (State Management):** Zustand state store (`src/store/cad-store.ts`) adopted to decouple high-frequency mouse coordinate streams, grid snap calculations, camera modes, and mesh transforms from React component re-renders.
 - **Decision 04 (Security & Public Scope):** Strictly segregated all authentication, user databases, and paywalls from this repository. Zero-auth sandbox runs 100% client-side with local file session persistence.
 - **Decision 05 (Branding):** Embedded the Ammonite spiral geometry from `Logo/IMAGE.svg` as `public/logo-mark.svg` across splash headers, viewport watermarks, and icons.
+- **Decision 06 (CI & Workflow Enforcement):** GitHub Actions CI workflow established at `.github/workflows/ci.yml` tracking `main` and `master`, verifying TypeScript compilation (`tsc --noEmit`), ESLint, and Turbopack production builds.
 
 ## Next Steps
 
-1. Implement the complete Zustand store (`src/store/cad-store.ts`).
-2. Build the hardware-accelerated WebGL Viewport (`src/components/cad/viewport.tsx`) with OrbitControls, TransformControls, CAD grid, camera presets, and lighting.
-3. Build the CAD Toolbar, Properties Inspector, and Layer Tree components.
-4. Implement client-side geometry generators and STL/DXF/SVG/JSON parsers.
-5. Create the technical documentation page (`src/app/docs/page.tsx`).
-6. Build the hero landing page with live interactive CAD playground and waitlist form.
-7. Setup GitHub Actions (`.github/workflows/ci.yml`), `README.md`, and `CONTRIBUTING.md`.
+1. Run `/gsd-plan-phase 2` to create execution plans for Phase 2: Parametric Geometry & Transform Engine.
+2. Advance geometric primitives (Sphere, Torus, Cylinder, Extrusion) and numeric properties inspectors.
+3. Wire transform gizmo precision inputs and keyboard modifiers.
