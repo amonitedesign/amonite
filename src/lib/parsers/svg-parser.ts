@@ -49,6 +49,10 @@ export function exportToSVG(nodes: CADNode[], width = 800, height = 600): Blob {
       const r = (node.dimensions.radius || 20) * scale;
       svg += `  <circle cx="${nx}" cy="${nz}" r="${r}" class="cad-geom" />\n`;
       svg += `  <text x="${nx - r + 5}" y="${nz}" class="text">${node.name}</text>\n`;
+    } else if (node.type === 'vessel' && node.vessel) {
+      const r = node.vessel.baseRadius * scale;
+      svg += `  <circle cx="${nx}" cy="${nz}" r="${r}" class="cad-geom" />\n`;
+      svg += `  <text x="${nx - r + 5}" y="${nz}" class="text">${node.name}</text>\n`;
     } else {
       svg += `  <circle cx="${nx}" cy="${nz}" r="12" class="cad-geom" />\n`;
       svg += `  <text x="${nx + 15}" y="${nz + 4}" class="text">${node.name}</text>\n`;

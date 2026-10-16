@@ -1,6 +1,27 @@
-export type PrimitiveType = 'box' | 'cylinder' | 'sphere' | 'torus' | 'cone' | 'extrusion';
+export type PrimitiveType = 'box' | 'cylinder' | 'sphere' | 'torus' | 'cone' | 'extrusion' | 'vessel';
 
 export type TransformMode = 'select' | 'translate' | 'rotate' | 'scale';
+
+export type VesselArchetype = 'fluted-vase' | 'organic-bowl' | 'twisted-cylinder';
+
+export type VesselFinish = 'sandstone' | 'terracotta' | 'porcelain';
+
+export interface VesselParams {
+  archetype: VesselArchetype;
+  /** Outer radius at the belly/rim reference ring, mm. */
+  baseRadius: number;
+  /** Total height, mm. */
+  height: number;
+  /** Shell thickness for 3D printing, mm. */
+  wallThickness: number;
+  /** Flute/rib count around the body (0 = smooth). */
+  ribCount: number;
+  /** Vertical ripple amplitude, mm. */
+  waveAmplitude: number;
+  /** Flute twist from base to rim, degrees. */
+  twistAngle: number;
+  finish: VesselFinish;
+}
 
 export type CameraPreset = 'iso' | 'top' | 'front' | 'right' | 'bottom' | 'back' | 'left';
 
@@ -36,6 +57,8 @@ export interface CADNode {
   visible: boolean;
   wireframe: boolean;
   extrusionPoints?: { x: number; y: number }[];
+  /** Present when type === 'vessel'. The singular atelier piece. */
+  vessel?: VesselParams;
 }
 
 export interface ViewportState {

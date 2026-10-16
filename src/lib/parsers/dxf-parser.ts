@@ -81,6 +81,21 @@ export function exportToDXF(nodes: CADNode[]): Blob {
           dxf += `0\nLINE\n8\nAMONITE_GEOMETRY\n10\n${x1.toFixed(4)}\n20\n${(py - h).toFixed(4)}\n30\n${z1.toFixed(4)}\n11\n${x1.toFixed(4)}\n21\n${(py + h).toFixed(4)}\n31\n${z1.toFixed(4)}\n`;
         }
       }
+    } else if (node.type === 'vessel' && node.vessel) {
+      // Vessel footprint: base ring + rim ring for contractor layouts.
+      const r = node.vessel.baseRadius;
+      const h = node.vessel.height;
+      const segs = 24;
+      for (let i = 0; i < segs; i++) {
+        const theta1 = (i / segs) * Math.PI * 2;
+        const theta2 = ((i + 1) / segs) * Math.PI * 2;
+        const x1 = px + r * Math.cos(theta1);
+        const z1 = pz + r * Math.sin(theta1);
+        const x2 = px + r * Math.cos(theta2);
+        const z2 = pz + r * Math.sin(theta2);
+        dxf += `0\nLINE\n8\nAMONITE_GEOMETRY\n10\n${x1.toFixed(4)}\n20\n${py.toFixed(4)}\n30\n${z1.toFixed(4)}\n11\n${x2.toFixed(4)}\n21\n${py.toFixed(4)}\n31\n${z2.toFixed(4)}\n`;
+        dxf += `0\nLINE\n8\nAMONITE_GEOMETRY\n10\n${x1.toFixed(4)}\n20\n${(py + h).toFixed(4)}\n30\n${z1.toFixed(4)}\n11\n${x2.toFixed(4)}\n21\n${(py + h).toFixed(4)}\n31\n${z2.toFixed(4)}\n`;
+      }
     } else {
       // Generic coordinate cross / marker
       dxf += `0\nPOINT\n8\nAMONITE_GEOMETRY\n10\n${px.toFixed(4)}\n20\n${py.toFixed(4)}\n30\n${pz.toFixed(4)}\n`;

@@ -39,7 +39,7 @@ describe('routes / primary smoke across the app', () => {
   it('landing renders hero + studio links without crashing', () => {
     resetStore();
     render(<LandingPage />);
-    expect(screen.getByText(/Sculpt minimal 3D objects/)).toBeInTheDocument();
+    expect(screen.getByText(/Sculpt bespoke minimal vases/)).toBeInTheDocument();
     expect(screen.getAllByText('Open Studio Sandbox').length).toBeGreaterThan(0);
     expect(screen.queryByTestId('mock-canvas')).not.toBeInTheDocument();
   });
@@ -53,68 +53,41 @@ describe('routes / primary smoke across the app', () => {
     expect(screen.getByText(/\.STL — Stereolithography/)).toBeInTheDocument();
   });
 
-  it('sandbox renders studio shell with toolbar + tree + inspector', () => {
+  it('sandbox renders the atelier shell with archetypes + studio panel', () => {
     resetStore();
     render(<SandboxPage />);
-    expect(screen.getByText('AMONITE // STUDIO')).toBeInTheDocument();
-    expect(screen.getByText('Import / Export')).toBeInTheDocument();
-    expect(screen.getByText('Scene Hierarchy')).toBeInTheDocument();
+    expect(screen.getByText('AMONITE ATELIER')).toBeInTheDocument();
+    expect(screen.getByText('Files')).toBeInTheDocument();
+    expect(screen.getByText('Base forms')).toBeInTheDocument();
+    expect(screen.getByText('Fluted Vase')).toBeInTheDocument();
+    expect(screen.getByText('Shape the clay')).toBeInTheDocument();
+    expect(screen.getByText('Reset view')).toBeInTheDocument();
     expect(screen.getByTestId('mock-canvas')).toBeInTheDocument();
   });
 
-  it('sandbox hotkeys drive transform modes (G/R/S/V)', () => {
+  it('sandbox archetype switch reconfigures the vessel', () => {
     resetStore();
     render(<SandboxPage />);
-    act(() => {
-      fireEvent.keyDown(window, { key: 'g' });
-    });
-    expect(useCADStore.getState().transformMode).toBe('translate');
-    act(() => {
-      fireEvent.keyDown(window, { key: 'r' });
-    });
-    expect(useCADStore.getState().transformMode).toBe('rotate');
-    act(() => {
-      fireEvent.keyDown(window, { key: 's' });
-    });
-    expect(useCADStore.getState().transformMode).toBe('scale');
-    act(() => {
-      fireEvent.keyDown(window, { key: 'v' });
-    });
-    expect(useCADStore.getState().transformMode).toBe('select');
+    fireEvent.click(screen.getByText('Organic Bowl'));
+    const vessel = useCADStore.getState().nodes.find((n) => n.id === 'vessel-1')!;
+    expect(vessel.vessel?.archetype).toBe('organic-bowl');
   });
 
-  it('sandbox hotkeys toggle calipers (M) and clear on Escape', () => {
+  it('sandbox sliders reshape the vessel and undo restores it', () => {
     resetStore();
     render(<SandboxPage />);
+    const slider = screen.getByLabelText('Base radius') as HTMLInputElement;
+    fireEvent.pointerDown(slider);
+    fireEvent.change(slider, { target: { value: '70' } });
+    expect(
+      useCADStore.getState().nodes.find((n) => n.id === 'vessel-1')!.vessel?.baseRadius
+    ).toBe(70);
     act(() => {
-      fireEvent.keyDown(window, { key: 'm' });
+      fireEvent.keyDown(window, { key: 'z', ctrlKey: true });
     });
-    expect(useCADStore.getState().measureActive).toBe(true);
-    act(() => {
-      fireEvent.keyDown(window, { key: 'Escape' });
-    });
-    expect(useCADStore.getState().measureActive).toBe(false);
-  });
-
-  it('sandbox Ctrl+D duplicates and Delete removes the selection', () => {
-    resetStore();
-    render(<SandboxPage />);
-    let added!: { id: string };
-    act(() => {
-      added = useCADStore.getState().addNode('box');
-    });
-    expect(useCADStore.getState().nodes).toHaveLength(1);
-    act(() => {
-      fireEvent.keyDown(window, { key: 'd', ctrlKey: true });
-    });
-    expect(useCADStore.getState().nodes).toHaveLength(2);
-    act(() => {
-      useCADStore.setState({ selectedId: added.id });
-    });
-    act(() => {
-      fireEvent.keyDown(window, { key: 'Delete' });
-    });
-    expect(useCADStore.getState().nodes.find((n) => n.id === added.id)).toBeUndefined();
+    expect(
+      useCADStore.getState().nodes.find((n) => n.id === 'vessel-1')!.vessel?.baseRadius
+    ).toBe(45);
   });
 
   it('navbar splits Pro from Early Access: Get Pro + Pricing, no Join Waitlist', () => {

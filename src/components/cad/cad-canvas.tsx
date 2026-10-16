@@ -3,11 +3,22 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { TransformControls } from 'three/examples/jsm/controls/TransformControls.js';
 import { useCADStore } from '@/store/cad-store';
-import { createGeometryForNode, createAmmoniteSpiralGeometry } from '@/lib/geometry-engine';
+import { createGeometryForNode } from '@/lib/geometry-engine';
+import { VESSEL_FINISHES } from '@/lib/vessel-geometry';
 
 type CADTaggedObject = THREE.Object3D & { cadNodeId?: string; lastDimKey?: string };
+
+// Warm atelier stage constants.
+const STAGE_BG = 0x161310;
+const PEDESTAL_COLOR = 0x2a231b;
+const EDGE_COLOR = 0x8a7f6a;
+
+function vesselFrame(nodes: { type: string; vessel?: { height: number } }[]): { targetY: number; dist: number } {
+  const vessel = nodes.find((n) => n.type === 'vessel' && n.vessel);
+  const h = vessel?.vessel?.height ?? 170;
+  return { targetY: h * 0.45, dist: Math.max(230, h * 1.6) };
+}
 
 export default function CADCanvas({ className = '' }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -15,16 +26,9 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
 
   // Zustand Store selectors
   const nodes = useCADStore((s) => s.nodes);
-  const selectedId = useCADStore((s) => s.selectedId);
-  const transformMode = useCADStore((s) => s.transformMode);
   const viewport = useCADStore((s) => s.viewport);
   const cameraPresetTrigger = useCADStore((s) => s.cameraPresetTrigger);
   const activePreset = useCADStore((s) => s.activePreset);
-
-  const setSelectedId = useCADStore((s) => s.setSelectedId);
-  const updateNodeTransform = useCADStore((s) => s.updateNodeTransform);
-  const setCursorCoords = useCADStore((s) => s.setCursorCoords);
-  const measurePoints = useCADStore((s) => s.measurePoints);
 
   // References to keep Three.js instances stable across React renders
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -33,12 +37,9 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
   const orthoCameraRef = useRef<THREE.OrthographicCamera | null>(null);
   const activeCameraRef = useRef<THREE.Camera | null>(null);
   const orbitControlsRef = useRef<OrbitControls | null>(null);
-  const transformControlsRef = useRef<TransformControls | null>(null);
   const meshesMapRef = useRef<Map<string, THREE.Group>>(new Map());
-  const gridHelperRef = useRef<THREE.GridHelper | null>(null);
-  const measureLineRef = useRef<THREE.Line | null>(null);
 
-  // 1. Initialize Scene, Renderer, and Cameras
+  // 1. Initialize Scene, Renderer, Cameras, and the atelier stage
   useEffect(() => {
     if (!containerRef.current || !canvasRef.current) return;
 
@@ -46,9 +47,10 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
     const height = containerRef.current.clientHeight || 600;
     const aspect = width / height;
 
-    // Scene
+    // Scene — warm charcoal with a breath of depth fog.
     const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x0c0e12); // Sleek deep technical dark tone
+    scene.background = new THREE.Color(STAGE_BG);
+    scene.fog = new THREE.Fog(STAGE_BG, 500, 1100);
     sceneRef.current = scene;
 
     // Renderer
@@ -61,85 +63,79 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFShadowMap;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
     rendererRef.current = renderer;
 
     // Cameras
-    const perspCamera = new THREE.PerspectiveCamera(45, aspect, 0.1, 2000);
-    perspCamera.position.set(120, 100, 140);
+    const perspCamera = new THREE.PerspectiveCamera(40, aspect, 0.1, 3000);
+    perspCamera.position.set(170, 150, 210);
     perspCameraRef.current = perspCamera;
 
-    const frustumSize = 250;
+    const frustumSize = 320;
     const orthoCamera = new THREE.OrthographicCamera(
       (frustumSize * aspect) / -2,
       (frustumSize * aspect) / 2,
       frustumSize / 2,
       frustumSize / -2,
       0.1,
-      2000
+      3000
     );
-    orthoCamera.position.set(120, 100, 140);
+    orthoCamera.position.set(170, 150, 210);
     orthoCameraRef.current = orthoCamera;
 
     activeCameraRef.current = perspCamera;
 
-    // OrbitControls
+    // OrbitControls — the only interaction: orbit, pan, zoom.
     const orbit = new OrbitControls(perspCamera, renderer.domElement);
     orbit.enableDamping = true;
-    orbit.dampingFactor = 0.05;
-    orbit.target.set(0, 15, 0);
+    orbit.dampingFactor = 0.06;
+    orbit.target.set(0, 75, 0);
+    orbit.minDistance = 80;
+    orbit.maxDistance = 900;
+    orbit.maxPolarAngle = Math.PI * 0.55;
     orbit.update();
     orbitControlsRef.current = orbit;
 
-    // TransformControls
-    const transform = new TransformControls(perspCamera, renderer.domElement);
-    transform.size = 0.75;
-    scene.add(transform.getHelper());
-    transformControlsRef.current = transform;
+    // Lighting — soft gallery warmth.
+    const hemi = new THREE.HemisphereLight(0xfff4e6, 0x2a2118, 0.55);
+    scene.add(hemi);
 
-    // Disable OrbitControls while dragging transform gizmo
-    transform.addEventListener('dragging-changed', (event) => {
-      orbit.enabled = !event.value;
-    });
+    const key = new THREE.DirectionalLight(0xffe9d2, 1.6);
+    key.position.set(120, 220, 140);
+    key.castShadow = true;
+    key.shadow.mapSize.width = 2048;
+    key.shadow.mapSize.height = 2048;
+    key.shadow.camera.left = -200;
+    key.shadow.camera.right = 200;
+    key.shadow.camera.top = 260;
+    key.shadow.camera.bottom = -60;
+    key.shadow.bias = -0.0004;
+    scene.add(key);
 
-    // Lighting (Studio CAD Lighting)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-    scene.add(ambientLight);
+    const fill = new THREE.DirectionalLight(0xd8dee9, 0.3);
+    fill.position.set(-140, 80, -120);
+    scene.add(fill);
 
-    const dirLight1 = new THREE.DirectionalLight(0xffffff, 1.2);
-    dirLight1.position.set(80, 120, 100);
-    dirLight1.castShadow = true;
-    dirLight1.shadow.mapSize.width = 1024;
-    dirLight1.shadow.mapSize.height = 1024;
-    scene.add(dirLight1);
+    // Pedestal — a quiet plinth the vessel rests on.
+    const pedestal = new THREE.Mesh(
+      new THREE.CylinderGeometry(110, 116, 10, 72),
+      new THREE.MeshStandardMaterial({ color: PEDESTAL_COLOR, roughness: 0.9, metalness: 0 })
+    );
+    pedestal.position.y = -5;
+    pedestal.receiveShadow = true;
+    scene.add(pedestal);
 
-    const dirLight2 = new THREE.DirectionalLight(0x38bdf8, 0.4);
-    dirLight2.position.set(-80, 40, -100);
-    scene.add(dirLight2);
-
-    // CAD Engineering Ground Grid (adaptive — rebuilt on snap/size change)
-    const gridHelper = new THREE.GridHelper(240, 48, 0x00e5ff, 0x1f2937);
-    gridHelper.position.y = 0;
-    scene.add(gridHelper);
-    gridHelperRef.current = gridHelper;
-
-    // Coordinates Axes Helper
-    const axesHelper = new THREE.AxesHelper(30);
-    axesHelper.position.set(0, 0.1, 0);
-    scene.add(axesHelper);
-
-    // Background Decorative Ammonite Spiral Spline
-    const spiralGeom = createAmmoniteSpiralGeometry();
-    const spiralMat = new THREE.LineBasicMaterial({
-      color: 0x22d3ee,
-      transparent: true,
-      opacity: 0.15,
-      linewidth: 1,
-    });
-    const spiralLine = new THREE.Line(spiralGeom, spiralMat);
-    spiralLine.rotation.x = Math.PI / 2;
-    spiralLine.position.set(0, 0.05, 0);
-    scene.add(spiralLine);
+    // Ground shadow catcher.
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(1600, 1600),
+      new THREE.ShadowMaterial({ opacity: 0.3 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -10;
+    ground.receiveShadow = true;
+    scene.add(ground);
 
     // Resize Handler
     const handleResize = () => {
@@ -166,32 +162,6 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
 
     window.addEventListener('resize', handleResize);
 
-    // Mouse Move Raycasting for Coordinate HUD
-    const raycaster = new THREE.Raycaster();
-    const plane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
-    const planeIntersect = new THREE.Vector3();
-
-    const handleMouseMove = (e: MouseEvent) => {
-      if (!containerRef.current || !activeCameraRef.current) return;
-      const rect = containerRef.current.getBoundingClientRect();
-      const mouse = new THREE.Vector2(
-        ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        -((e.clientY - rect.top) / rect.height) * 2 + 1
-      );
-
-      raycaster.setFromCamera(mouse, activeCameraRef.current);
-      if (raycaster.ray.intersectPlane(plane, planeIntersect)) {
-        setCursorCoords({
-          x: Math.round(planeIntersect.x * 10) / 10,
-          y: Math.round(planeIntersect.y * 10) / 10,
-          z: Math.round(planeIntersect.z * 10) / 10,
-        });
-      }
-    };
-
-    const container = containerRef.current;
-    container.addEventListener('mousemove', handleMouseMove);
-
     // Animation Render Loop
     let animationFrameId: number;
     const animate = () => {
@@ -209,11 +179,10 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      container.removeEventListener('mousemove', handleMouseMove);
       cancelAnimationFrame(animationFrameId);
       renderer.dispose();
     };
-  }, [setCursorCoords]);
+  }, []);
 
   // 2. Handle Camera Mode Switches (Perspective vs Orthographic)
   useEffect(() => {
@@ -226,100 +195,51 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
       orthoCameraRef.current.quaternion.copy(perspCameraRef.current.quaternion);
       activeCameraRef.current = orthoCameraRef.current;
       orbitControlsRef.current.object = orthoCameraRef.current;
-      if (transformControlsRef.current) {
-        transformControlsRef.current.camera = orthoCameraRef.current;
-      }
     } else {
       perspCameraRef.current.position.copy(orthoCameraRef.current.position);
       perspCameraRef.current.quaternion.copy(orthoCameraRef.current.quaternion);
       activeCameraRef.current = perspCameraRef.current;
       orbitControlsRef.current.object = perspCameraRef.current;
-      if (transformControlsRef.current) {
-        transformControlsRef.current.camera = perspCameraRef.current;
-      }
     }
 
     orbitControlsRef.current.target.copy(target);
     orbitControlsRef.current.update();
   }, [viewport.cameraMode]);
 
-  // 3. Handle Camera Orientation Presets (Iso, Top, Front, Right)
+  // 3. Handle Camera Orientation Presets — framed on the vessel.
   useEffect(() => {
     if (!orbitControlsRef.current || !activeCameraRef.current) return;
-    const dist = 180;
-    const target = new THREE.Vector3(0, 15, 0);
+    const { targetY, dist } = vesselFrame(nodes);
+    const target = new THREE.Vector3(0, targetY, 0);
     orbitControlsRef.current.target.copy(target);
 
     switch (activePreset) {
       case 'iso':
-        activeCameraRef.current.position.set(dist * 0.7, dist * 0.6, dist * 0.7);
+        activeCameraRef.current.position.set(dist * 0.62, targetY + dist * 0.45, dist * 0.72);
         break;
       case 'top':
-        activeCameraRef.current.position.set(0, dist, 0.001);
+        activeCameraRef.current.position.set(0, targetY + dist, 0.001);
         break;
       case 'front':
-        activeCameraRef.current.position.set(0, 15, dist);
+        activeCameraRef.current.position.set(0, targetY, dist);
         break;
       case 'right':
-        activeCameraRef.current.position.set(dist, 15, 0);
+        activeCameraRef.current.position.set(dist, targetY, 0);
         break;
       case 'bottom':
-        activeCameraRef.current.position.set(0, -dist, 0.001);
+        activeCameraRef.current.position.set(0, targetY - dist, 0.001);
         break;
       case 'back':
-        activeCameraRef.current.position.set(0, 15, -dist);
+        activeCameraRef.current.position.set(0, targetY, -dist);
         break;
       case 'left':
-        activeCameraRef.current.position.set(-dist, 15, 0);
+        activeCameraRef.current.position.set(-dist, targetY, 0);
         break;
     }
     orbitControlsRef.current.update();
-  }, [cameraPresetTrigger, activePreset]);
+  }, [cameraPresetTrigger, activePreset, nodes]);
 
-  // 4. Handle Grid Visibility and adaptive subdivision (gridSize / snapStep)
-  useEffect(() => {
-    const scene = sceneRef.current;
-    if (!scene) return;
-    const old = gridHelperRef.current;
-    if (old) {
-      scene.remove(old);
-      old.geometry.dispose();
-      const oldMat = old.material as THREE.Material | THREE.Material[];
-      if (Array.isArray(oldMat)) oldMat.forEach((m) => m.dispose());
-      else oldMat.dispose();
-    }
-    const size = viewport.gridSize || 200;
-    const step = viewport.snapStep > 0 ? viewport.snapStep : 5;
-    const divisions = Math.min(100, Math.max(10, Math.round(size / step)));
-    const grid = new THREE.GridHelper(size, divisions, 0x00e5ff, 0x1f2937);
-    grid.position.y = 0;
-    grid.visible = viewport.gridVisible;
-    scene.add(grid);
-    gridHelperRef.current = grid;
-  }, [viewport.gridVisible, viewport.gridSize, viewport.snapStep]);
-
-  // 4b. Measurement caliper line (session-only overlay)
-  useEffect(() => {
-    const scene = sceneRef.current;
-    if (!scene) return;
-    if (measureLineRef.current) {
-      scene.remove(measureLineRef.current);
-      measureLineRef.current.geometry.dispose();
-      (measureLineRef.current.material as THREE.Material).dispose();
-      measureLineRef.current = null;
-    }
-    if (!measurePoints) return;
-    const geom = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(measurePoints.a.x, measurePoints.a.y, measurePoints.a.z),
-      new THREE.Vector3(measurePoints.b.x, measurePoints.b.y, measurePoints.b.z),
-    ]);
-    const mat = new THREE.LineBasicMaterial({ color: 0xfacc15 });
-    const line = new THREE.Line(geom, mat);
-    scene.add(line);
-    measureLineRef.current = line;
-  }, [measurePoints]);
-
-  // 5. Synchronize 3D Meshes from Zustand nodes
+  // 4. Synchronize 3D Meshes from Zustand nodes
   useEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
@@ -345,35 +265,36 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
         (group as CADTaggedObject).cadNodeId = node.id;
 
         const geom = createGeometryForNode(node);
-        const isHiddenLine = viewport.renderStyle === 'hidden-line';
+        const isVessel = node.type === 'vessel' && node.vessel;
+        const finish = isVessel && node.vessel ? VESSEL_FINISHES[node.vessel.finish] : null;
         const mat = new THREE.MeshStandardMaterial({
-          color: node.color,
-          roughness: 0.35,
-          metalness: 0.25,
-          wireframe: viewport.renderStyle === 'wireframe' || node.wireframe,
-          transparent: isHiddenLine,
-          opacity: isHiddenLine ? 0 : 1,
+          color: finish ? finish.color : node.color,
+          roughness: finish ? finish.roughness : 0.6,
+          metalness: 0,
+          wireframe: !isVessel && (viewport.renderStyle === 'wireframe' || node.wireframe),
+          side: isVessel ? THREE.DoubleSide : THREE.FrontSide,
         });
 
         const mesh = new THREE.Mesh(geom, mat);
-        mesh.castShadow = !isHiddenLine;
-        mesh.receiveShadow = !isHiddenLine;
-        mesh.visible = !isHiddenLine;
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
         (mesh as CADTaggedObject).cadNodeId = node.id;
-        (mesh as CADTaggedObject).lastDimKey = JSON.stringify(node.dimensions) + '-' + node.type;
+        (mesh as CADTaggedObject).lastDimKey =
+          JSON.stringify(node.vessel ?? node.dimensions) + '-' + node.type;
         group.add(mesh);
 
-        // Technical sharp edge lines for industrial look
-        const edgesGeom = new THREE.EdgesGeometry(geom, 25);
-        const edgesMat = new THREE.LineBasicMaterial({
-          color: 0x00e5ff,
-          linewidth: 1.5,
-          transparent: true,
-          opacity: 0.8,
-        });
-        const edgesLine = new THREE.LineSegments(edgesGeom, edgesMat);
-        edgesLine.name = 'edges';
-        group.add(edgesLine);
+        if (!isVessel) {
+          // Soft edge lines for imported vector geometry.
+          const edgesGeom = new THREE.EdgesGeometry(geom, 25);
+          const edgesMat = new THREE.LineBasicMaterial({
+            color: EDGE_COLOR,
+            transparent: true,
+            opacity: 0.5,
+          });
+          const edgesLine = new THREE.LineSegments(edgesGeom, edgesMat);
+          edgesLine.name = 'edges';
+          group.add(edgesLine);
+        }
 
         scene.add(group);
         currentMeshes.set(node.id, group);
@@ -381,7 +302,7 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
         // Update existing mesh
         const mesh = group.children[0] as THREE.Mesh;
         if (mesh) {
-          const dimKey = JSON.stringify(node.dimensions) + '-' + node.type;
+          const dimKey = JSON.stringify(node.vessel ?? node.dimensions) + '-' + node.type;
           if ((mesh as CADTaggedObject).lastDimKey !== dimKey) {
             // Dispose old geometry and regenerate
             mesh.geometry.dispose();
@@ -390,9 +311,9 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
             mesh.geometry.computeBoundingBox();
             mesh.geometry.computeBoundingSphere();
 
-            // Rebuild edges
+            // Rebuild edges for non-vessel nodes
             const edgesLine = group.getObjectByName('edges') as THREE.LineSegments | null;
-            if (edgesLine) {
+            if (edgesLine && node.type !== 'vessel') {
               edgesLine.geometry.dispose();
               edgesLine.geometry = new THREE.EdgesGeometry(newGeom, 25);
             }
@@ -401,15 +322,18 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
           }
 
           const mat = mesh.material as THREE.MeshStandardMaterial;
-          const isHiddenLine = viewport.renderStyle === 'hidden-line';
-          mat.color.set(node.color);
-          mat.wireframe = viewport.renderStyle === 'wireframe' || node.wireframe;
-          mat.transparent = isHiddenLine;
-          mat.opacity = isHiddenLine ? 0 : 1;
+          const isVessel = node.type === 'vessel' && node.vessel;
+          const finish = isVessel && node.vessel ? VESSEL_FINISHES[node.vessel.finish] : null;
+          if (finish) {
+            mat.color.set(finish.color);
+            mat.roughness = finish.roughness;
+            mat.side = THREE.DoubleSide;
+          } else {
+            mat.color.set(node.color);
+            mat.wireframe = viewport.renderStyle === 'wireframe' || node.wireframe;
+            mat.side = THREE.FrontSide;
+          }
           mat.needsUpdate = true;
-          mesh.castShadow = !isHiddenLine;
-          mesh.receiveShadow = !isHiddenLine;
-          mesh.visible = !isHiddenLine;
         }
       }
 
@@ -425,129 +349,17 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
     });
   }, [nodes, viewport.renderStyle]);
 
-  // 6. Handle Selection and Transform Gizmo attachment
-  useEffect(() => {
-    const transform = transformControlsRef.current;
-    if (!transform) return;
-
-    if (!selectedId || transformMode === 'select') {
-      transform.detach();
-      return;
-    }
-
-    const group = meshesMapRef.current.get(selectedId);
-    if (group) {
-      transform.attach(group);
-      transform.setMode(transformMode);
-
-      if (viewport.snapToGrid) {
-        transform.setTranslationSnap(viewport.snapStep);
-        transform.setRotationSnap(THREE.MathUtils.degToRad(15));
-        transform.setScaleSnap(0.1);
-      } else {
-        transform.setTranslationSnap(null);
-        transform.setRotationSnap(null);
-        transform.setScaleSnap(null);
-      }
-    } else {
-      transform.detach();
-    }
-  }, [selectedId, transformMode, viewport.snapToGrid, viewport.snapStep]);
-
-  // 7. Bind transform gizmo drag changes back to Zustand
-  useEffect(() => {
-    const transform = transformControlsRef.current;
-    if (!transform) return;
-
-    const handleObjectChange = () => {
-      const obj = transform.object;
-      if (!obj || !(obj as CADTaggedObject).cadNodeId) return;
-      const id = (obj as CADTaggedObject).cadNodeId as string;
-
-      updateNodeTransform(
-        id,
-        { x: obj.position.x, y: obj.position.y, z: obj.position.z },
-        {
-          x: Math.round((obj.rotation.x * 180) / Math.PI),
-          y: Math.round((obj.rotation.y * 180) / Math.PI),
-          z: Math.round((obj.rotation.z * 180) / Math.PI),
-        },
-        { x: obj.scale.x, y: obj.scale.y, z: obj.scale.z }
-      );
-    };
-
-    transform.addEventListener('objectChange', handleObjectChange);
-    return () => {
-      transform.removeEventListener('objectChange', handleObjectChange);
-    };
-  }, [updateNodeTransform]);
-
-  // 8. Direct Click Selection via Raycasting
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
-    if (!containerRef.current || !activeCameraRef.current || !sceneRef.current) return;
-    if (transformMode !== 'select') return;
-
-    const rect = containerRef.current.getBoundingClientRect();
-    const mouse = new THREE.Vector2(
-      ((e.clientX - rect.left) / rect.width) * 2 - 1,
-      -((e.clientY - rect.top) / rect.height) * 2 + 1
-    );
-
-    const raycaster = new THREE.Raycaster();
-    raycaster.setFromCamera(mouse, activeCameraRef.current);
-
-    const meshList: THREE.Object3D[] = [];
-    meshesMapRef.current.forEach((group) => {
-      meshList.push(group.children[0]);
-    });
-
-    const intersects = raycaster.intersectObjects(meshList, false);
-
-    if (intersects.length > 0) {
-      const hit = intersects[0].object;
-      const nodeId = (hit as CADTaggedObject).cadNodeId;
-      if (nodeId) {
-        setSelectedId(nodeId);
-        return;
-      }
-    }
-
-    // Clicked empty space
-    setSelectedId(null);
-  };
-
   return (
     <div
       ref={containerRef}
-      className={`relative w-full h-full overflow-hidden select-none bg-[#0a0b0e] ${className}`}
+      className={`relative w-full h-full overflow-hidden select-none ${className ?? ''}`}
+      style={{ background: '#161310' }}
     >
       <canvas
         ref={canvasRef}
-        onClick={handleCanvasClick}
-        className="w-full h-full block cursor-crosshair outline-none"
+        className="w-full h-full block outline-none"
+        style={{ cursor: 'grab' }}
       />
-
-      {/* Viewport Floating Watermark Badge */}
-      <div className="absolute top-4 left-4 pointer-events-none flex items-center gap-2 px-3 py-1.5 rounded-md bg-black/40 backdrop-blur-md border border-cyan-500/20 text-xs font-mono text-cyan-400">
-        <span className="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-        AMONITE // WEBGL HARDWARE ACCELERATED
-      </div>
-
-      {/* XYZ axis gizmo (orientation reference, mirrors camera presets) */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute right-4 top-4 flex flex-col gap-1 rounded-md bg-black/40 backdrop-blur-md border border-[#232733] px-2.5 py-2 font-mono text-[10px] font-bold"
-      >
-        <span className="flex items-center gap-1.5 text-red-400">
-          <span className="inline-block h-0.5 w-4 bg-red-400" />X
-        </span>
-        <span className="flex items-center gap-1.5 text-green-400">
-          <span className="inline-block h-0.5 w-4 bg-green-400" />Y
-        </span>
-        <span className="flex items-center gap-1.5 text-blue-400">
-          <span className="inline-block h-0.5 w-4 bg-blue-400" />Z
-        </span>
-      </div>
     </div>
   );
 }

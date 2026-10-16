@@ -20,7 +20,7 @@ export default function Navbar({ onOpenFileExchange }: NavbarProps) {
             <div className="relative w-8 h-8 rounded-lg bg-zinc-100 dark:bg-white/[0.04] border border-zinc-200 dark:border-white/10 flex items-center justify-center p-1.5 transition-colors group-hover:border-zinc-400 dark:group-hover:border-white/20">
               <Image
                 src="/logo-mark.svg"
-                alt="Amonite CAD"
+                alt="Amonite Studio"
                 width={22}
                 height={22}
                 className="object-contain"
@@ -64,7 +64,7 @@ export default function Navbar({ onOpenFileExchange }: NavbarProps) {
             className="flex items-center gap-2 hover:text-zinc-950 dark:hover:text-white transition-colors"
           >
             <BookOpen className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
-            <span>Architecture & Specs</span>
+            <span>Docs &amp; Specs</span>
           </Link>
           <Link
             href="/pricing"
@@ -84,7 +84,7 @@ export default function Navbar({ onOpenFileExchange }: NavbarProps) {
             href="/sandbox"
             className="hidden sm:inline-flex px-3.5 py-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 hover:bg-zinc-100 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] text-zinc-800 dark:text-zinc-200 transition-colors font-medium"
           >
-            Launch CAD
+            Open Studio
           </Link>
 
           {onOpenFileExchange && (
@@ -92,7 +92,7 @@ export default function Navbar({ onOpenFileExchange }: NavbarProps) {
               onClick={onOpenFileExchange}
               className="hidden sm:inline-flex px-3.5 py-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 hover:bg-zinc-100 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] text-zinc-800 dark:text-zinc-200 transition-colors font-medium"
             >
-              File I/O
+              Files
             </button>
           )}
 

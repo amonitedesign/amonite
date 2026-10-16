@@ -153,3 +153,44 @@ describe('cad-store / CRUD + history', () => {
     expect(useCADStore.getState().selectedId).toBeNull();
   });
 });
+
+describe('cad-store / atelier vessel', () => {
+  beforeEach(resetStore);
+
+  it('ensures a singular vessel piece', () => {
+    const id = useCADStore.getState().ensureVessel();
+    expect(id).toBe('vessel-1');
+    expect(useCADStore.getState().vesselId).toBe('vessel-1');
+    // Second call reuses the same piece, no duplicates.
+    expect(useCADStore.getState().ensureVessel()).toBe('vessel-1');
+    expect(useCADStore.getState().nodes.filter((n) => n.type === 'vessel')).toHaveLength(1);
+  });
+
+  it('switches archetypes with preset params and history', () => {
+    const st = () => useCADStore.getState();
+    st().ensureVessel();
+    const depth = st().undoStack.length;
+    st().setVesselArchetype('organic-bowl');
+    const vessel = st().nodes.find((n) => n.id === 'vessel-1')!;
+    expect(vessel.name).toBe('Organic Bowl');
+    expect(vessel.vessel?.archetype).toBe('organic-bowl');
+    expect(vessel.vessel?.ribCount).toBe(0);
+    expect(st().undoStack.length).toBeGreaterThan(depth);
+  });
+
+  it('drags params with a single history entry, undoes cleanly', () => {
+    const st = () => useCADStore.getState();
+    st().ensureVessel();
+    const before = st().nodes.find((n) => n.id === 'vessel-1')!.vessel?.baseRadius;
+    const depth = st().undoStack.length;
+    st().beginVesselDrag();
+    st().setVesselParams({ baseRadius: 60 });
+    st().setVesselParams({ baseRadius: 70 });
+    expect(st().nodes.find((n) => n.id === 'vessel-1')!.vessel?.baseRadius).toBe(70);
+    expect(st().undoStack.length).toBe(depth + 1); // one entry for the whole drag
+    st().commitVesselHistory(); // release without extra pushes
+    expect(st().undoStack.length).toBe(depth + 1);
+    st().undo();
+    expect(st().nodes.find((n) => n.id === 'vessel-1')!.vessel?.baseRadius).toBe(before);
+  });
+});

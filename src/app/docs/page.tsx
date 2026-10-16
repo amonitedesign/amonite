@@ -15,17 +15,13 @@ import {
 
 export default function DocsPage() {
   const shortcuts = [
-    { key: 'V', desc: 'Select Tool (Click geometry to focus in inspector)' },
-    { key: 'G', desc: 'Grab / Translate Gizmo (Move along X/Y/Z axes)' },
-    { key: 'R', desc: 'Rotate Gizmo (15° incremental angle snap)' },
-    { key: 'S', desc: 'Scale Gizmo (Uniform or dimension vector scaling)' },
-    { key: 'Ctrl + Z', desc: 'Undo previous geometric modification' },
-    { key: 'Ctrl + Y', desc: 'Redo undone geometric modification' },
-    { key: 'Ctrl + D', desc: 'Duplicate selected entity with 20mm spatial offset' },
-    { key: 'Delete', desc: 'Delete active selected node from scene tree' },
-    { key: 'P', desc: 'Toggle 2D technical drafting overlay (XZ planar polygon)' },
-    { key: 'Enter', desc: 'Commit drafting contour as 3D extruded solid' },
-    { key: 'Esc', desc: 'Clear point-to-point measurement / close drafting' },
+    { key: 'Drag', desc: 'Orbit around the vessel on its pedestal' },
+    { key: 'Scroll', desc: 'Zoom toward / away from the piece' },
+    { key: 'Right-drag', desc: 'Pan across the studio stage' },
+    { key: 'Reset view', desc: 'Re-center the vessel (bottom bar button)' },
+    { key: 'Sliders', desc: 'Shape radius, height, walls, ribs, wave, twist live' },
+    { key: 'Ctrl + Z', desc: 'Undo the last shape change' },
+    { key: 'Ctrl + Y', desc: 'Redo the undone shape change' },
   ];
 
   return (

@@ -1,11 +1,18 @@
 import * as THREE from 'three';
 import { CADNode } from './cad-types';
+import { VESSEL_ARCHETYPES, createVesselGeometry } from './vessel-geometry';
 
 /**
  * Creates a Three.js BufferGeometry based on the CADNode parametric properties.
  */
 export function createGeometryForNode(node: CADNode): THREE.BufferGeometry {
   const d = node.dimensions;
+
+  if (node.type === 'vessel') {
+    return createVesselGeometry(
+      node.vessel ?? VESSEL_ARCHETYPES['fluted-vase'].defaults
+    );
+  }
 
   switch (node.type) {
     case 'box':

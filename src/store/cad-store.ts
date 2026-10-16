@@ -1,5 +1,25 @@
 import { create } from 'zustand';
-import { CADNode, TransformMode, ViewportState, AmoniteProject, PrimitiveType } from '@/lib/cad-types';
+import { CADNode, TransformMode, ViewportState, AmoniteProject, PrimitiveType, VesselArchetype, VesselParams } from '@/lib/cad-types';
+import { VESSEL_ARCHETYPES } from '@/lib/vessel-geometry';
+
+export const VESSEL_NODE_ID = 'vessel-1';
+
+export function defaultVesselNode(): CADNode {
+  const preset = VESSEL_ARCHETYPES['fluted-vase'].defaults;
+  return {
+    id: VESSEL_NODE_ID,
+    name: 'Fluted Vase',
+    type: 'vessel',
+    position: { x: 0, y: 0, z: 0 },
+    rotation: { x: 0, y: 0, z: 0 },
+    scale: { x: 1, y: 1, z: 1 },
+    dimensions: {},
+    color: '#d9c7a8',
+    visible: true,
+    wireframe: false,
+    vessel: { ...preset },
+  };
+}
 
 interface CADStoreState {
   // Scene objects
@@ -48,6 +68,15 @@ interface CADStoreState {
   setDraftingActive: (active: boolean) => void;
   setDraftPoints: (pts: Array<{ x: number; y: number }>) => void;
   commitDraftAsExtrusion: () => CADNode | null;
+
+  // Atelier vessel (singular parametric piece)
+  vesselId: string | null;
+  vesselDragOpen: boolean;
+  ensureVessel: () => string;
+  setVesselArchetype: (archetype: VesselArchetype) => void;
+  beginVesselDrag: () => void;
+  setVesselParams: (patch: Partial<VesselParams>) => void;
+  commitVesselHistory: () => void;
   undo: () => void;
   redo: () => void;
   loadProject: (project: AmoniteProject) => void;
@@ -65,36 +94,11 @@ const DEFAULT_VIEWPORT: ViewportState = {
   unit: 'mm',
 };
 
-const INITIAL_NODES: CADNode[] = [
-  {
-    id: 'node-box-1',
-    name: 'Base Plate',
-    type: 'box',
-    position: { x: 0, y: 5, z: 0 },
-    rotation: { x: 0, y: 0, z: 0 },
-    scale: { x: 1, y: 1, z: 1 },
-    dimensions: { width: 60, height: 10, depth: 60 },
-    color: '#38bdf8',
-    visible: true,
-    wireframe: false,
-  },
-  {
-    id: 'node-cyl-2',
-    name: 'Mounting Boss',
-    type: 'cylinder',
-    position: { x: 0, y: 25, z: 0 },
-    rotation: { x: 0, y: 0, z: 0 },
-    scale: { x: 1, y: 1, z: 1 },
-    dimensions: { radius: 15, height: 30, radialSegments: 32 },
-    color: '#06b6d4',
-    visible: true,
-    wireframe: false,
-  },
-];
+const INITIAL_NODES: CADNode[] = [defaultVesselNode()];
 
 export const useCADStore = create<CADStoreState>((set, get) => ({
   nodes: INITIAL_NODES,
-  selectedId: 'node-box-1',
+  selectedId: VESSEL_NODE_ID,
   transformMode: 'select',
   hoveredId: null,
   viewport: DEFAULT_VIEWPORT,
@@ -107,6 +111,8 @@ export const useCADStore = create<CADStoreState>((set, get) => ({
   draftPoints: [],
   undoStack: [],
   redoStack: [],
+  vesselId: VESSEL_NODE_ID,
+  vesselDragOpen: false,
 
   addNode: (type: PrimitiveType) => {
     const id = `node-${type}-${Date.now()}`;
@@ -121,6 +127,7 @@ export const useCADStore = create<CADStoreState>((set, get) => ({
       torus: { radius: 25, tube: 8, radialSegments: 24, tubularSegments: 48 },
       cone: { radius: 20, height: 40, radialSegments: 32 },
       extrusion: { height: 20 },
+      vessel: {},
     }[type];
 
     const newNode: CADNode = {
@@ -219,6 +226,57 @@ export const useCADStore = create<CADStoreState>((set, get) => ({
   setDraftingActive: (active) => set({ draftingActive: active }),
   setDraftPoints: (pts) => set({ draftPoints: pts }),
 
+  ensureVessel: () => {
+    const existing = get().nodes.find((n) => n.type === 'vessel');
+    if (existing) {
+      if (get().vesselId !== existing.id) set({ vesselId: existing.id });
+      return existing.id;
+    }
+    const node = defaultVesselNode();
+    set((state) => ({
+      undoStack: [...state.undoStack.slice(-30), state.nodes],
+      redoStack: [],
+      nodes: [...state.nodes, node],
+      selectedId: node.id,
+      vesselId: node.id,
+    }));
+    return node.id;
+  },
+
+  setVesselArchetype: (archetype) => {
+    const id = get().ensureVessel();
+    const preset = VESSEL_ARCHETYPES[archetype].defaults;
+    const label = VESSEL_ARCHETYPES[archetype].label;
+    get().updateNode(id, {
+      name: label,
+      position: { x: 0, y: 0, z: 0 },
+      rotation: { x: 0, y: 0, z: 0 },
+      vessel: { ...preset },
+    });
+  },
+
+  setVesselParams: (patch) => {
+    const id = get().vesselId;
+    if (!id) return;
+    const open = get().vesselDragOpen;
+    set((state) => {
+      const next = state.nodes.map((n) =>
+        n.id === id && n.vessel ? { ...n, vessel: { ...n.vessel, ...patch } } : n
+      );
+      if (!open) return { nodes: next };
+      return {
+        nodes: next,
+        undoStack: [...state.undoStack.slice(-30), state.nodes],
+        redoStack: [],
+        vesselDragOpen: false,
+      };
+    });
+  },
+
+  beginVesselDrag: () => set({ vesselDragOpen: true }),
+
+  commitVesselHistory: () => set({ vesselDragOpen: false }),
+
   commitDraftAsExtrusion: () => {
     const pts = get().draftPoints;
     if (pts.length < 3) return null;
@@ -262,6 +320,7 @@ export const useCADStore = create<CADStoreState>((set, get) => ({
       nodes: project.nodes,
       viewport: project.viewport || state.viewport,
       selectedId: project.nodes[0]?.id || null,
+      vesselId: project.nodes.find((n) => n.type === 'vessel')?.id ?? null,
     }));
   },
 
@@ -271,6 +330,7 @@ export const useCADStore = create<CADStoreState>((set, get) => ({
       redoStack: [],
       nodes: [],
       selectedId: null,
+      vesselId: null,
     }));
   },
 }));

@@ -11,16 +11,9 @@
 
 ## Milestone v2.0: Parametric Decor Studio Pivot (Active)
 
-### Phase 6: Website Copy, Positioning & Designer Work Showcase Gallery
-- [ ] Plan 06-01: Website Copy, Typography & Creator Positioning Overhaul
-  - Update `src/app/layout.tsx` title to "Amonite | The 3D Studio for Minimalist Interior Decor" and rewrite SEO metadata.
-  - Overhaul `src/app/page.tsx` hero headline, subtext, and telemetry metrics (eliminate "Brep", "50B records", "CAD/CAM Micro-SaaS").
-  - Spotlight the Clay Shrinkage Tool and Vase-Mode continuous extrusion features on the landing page.
-  - Remove raw DXF/SVG emphasis from landing in favor of Instant Watertight STL and print reliability.
-- [ ] Plan 06-02: Illustrating Designer Work Showcase Section
-  - Create `src/components/landing/designer-showcase.tsx` featuring 4 high-end designer works (Fluted Ikebana Vase, Ribbed Nordic Planter, Pleated Wave Bowl, Twisted Biophilic Lamp Shell).
-  - Add realistic fabrication specs per item (print duration, clay shrinkage compensation factor, material, nozzle diameter, vase-mode settings).
-  - Add direct "Load Archetype into Studio" actions and visual material indicators.
+### Phase 6: Website Copy, Positioning & Designer Work Showcase Gallery (Complete)
+- [x] Plan 06-01: Website Copy, Typography & Creator Positioning Overhaul
+- [x] Plan 06-02: Illustrating Designer Work Showcase Section
 
 ### Phase 7: Parametric Math Engine & Multi-Threaded Web Worker
 - [ ] Plan 07-01: Procedural Waveform & Manifold Geometry Math Kernel

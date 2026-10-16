@@ -9,14 +9,11 @@ import {
   ArrowLeft,
   HelpCircle,
   Sparkles,
+  RotateCcw,
 } from 'lucide-react';
 import CADCanvas from '@/components/cad/cad-canvas';
-import CADToolbar from '@/components/cad/cad-toolbar';
-import CADInspector from '@/components/cad/cad-inspector';
-import CADTree from '@/components/cad/cad-tree';
-import CADViewControls from '@/components/cad/cad-view-controls';
-import CADMeasure from '@/components/cad/cad-measure';
-import CADDraftingOverlay from '@/components/cad/cad-drafting-overlay';
+import VesselArchetypes from '@/components/cad/vessel-archetypes';
+import VesselStudio from '@/components/cad/vessel-studio';
 import FileDialog from '@/components/io/file-dialog';
 import { useCADStore } from '@/store/cad-store';
 import { saveWorkspaceLocally, loadWorkspaceLocally } from '@/lib/storage';
@@ -27,28 +24,20 @@ export default function SandboxPage() {
 
   const nodes = useCADStore((s) => s.nodes);
   const viewport = useCADStore((s) => s.viewport);
-  const selectedId = useCADStore((s) => s.selectedId);
   const loadProject = useCADStore((s) => s.loadProject);
+  const ensureVessel = useCADStore((s) => s.ensureVessel);
+  const setCameraPreset = useCADStore((s) => s.setCameraPreset);
   const undo = useCADStore((s) => s.undo);
   const redo = useCADStore((s) => s.redo);
-  const removeNode = useCADStore((s) => s.removeNode);
-  const duplicateNode = useCADStore((s) => s.duplicateNode);
-  const setTransformMode = useCADStore((s) => s.setTransformMode);
-  const measureActive = useCADStore((s) => s.measureActive);
-  const setMeasureActive = useCADStore((s) => s.setMeasureActive);
-  const setMeasurePoints = useCADStore((s) => s.setMeasurePoints);
-  const draftingActive = useCADStore((s) => s.draftingActive);
-  const setDraftingActive = useCADStore((s) => s.setDraftingActive);
-  const setDraftPoints = useCADStore((s) => s.setDraftPoints);
-  const commitDraftAsExtrusion = useCADStore((s) => s.commitDraftAsExtrusion);
 
-  // Load from local storage on initial mount
+  // Load from local storage on initial mount, then guarantee the vessel piece.
   useEffect(() => {
     const saved = loadWorkspaceLocally();
     if (saved && saved.nodes && saved.nodes.length > 0) {
       loadProject(saved);
     }
-  }, [loadProject]);
+    ensureVessel();
+  }, [loadProject, ensureVessel]);
 
   // Debounced autosave
   useEffect(() => {
@@ -79,72 +68,46 @@ export default function SandboxPage() {
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
         e.preventDefault();
         redo();
-      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd') {
-        e.preventDefault();
-        if (selectedId) duplicateNode(selectedId);
-      } else if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (selectedId) removeNode(selectedId);
-      } else if (e.key.toLowerCase() === 'v') {
-        setTransformMode('select');
-      } else if (e.key.toLowerCase() === 'g') {
-        setTransformMode('translate');
-      } else if (e.key.toLowerCase() === 'r') {
-        setTransformMode('rotate');
-      } else if (e.key.toLowerCase() === 's') {
-        setTransformMode('scale');
-      } else if (e.key.toLowerCase() === 'm') {
-        if (measureActive) setMeasurePoints(null);
-        setMeasureActive(!measureActive);
-      } else if (e.key.toLowerCase() === 'p') {
-        if (draftingActive) setDraftPoints([]);
-        setDraftingActive(!draftingActive);
-      } else if (e.key === 'Enter') {
-        if (draftingActive) commitDraftAsExtrusion();
-      } else if (e.key === 'Escape') {
-        setMeasurePoints(null);
-        setMeasureActive(false);
-        setDraftPoints([]);
-        setDraftingActive(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedId, undo, redo, duplicateNode, removeNode, setTransformMode, measureActive, setMeasureActive, setMeasurePoints, draftingActive, setDraftingActive, setDraftPoints, commitDraftAsExtrusion]);
+  }, [undo, redo]);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden bg-[#0a0b0e] flex flex-col font-mono text-slate-200">
+    <div className="relative w-screen h-screen overflow-hidden bg-[#161310] flex flex-col font-mono text-[#ece5d8]">
       {/* Top Application Bar */}
-      <header className="h-12 bg-[#0d0f14] border-b border-[#1f2430] px-4 flex items-center justify-between z-30 select-none">
+      <header className="h-12 bg-[#1c1712] border-b border-white/[0.07] px-4 flex items-center justify-between z-30 select-none">
         <div className="flex items-center gap-3">
           <Link
             href="/"
-            className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
+            className="flex items-center gap-2 text-[#a89e8d] hover:text-white transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
 
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center p-0.5">
+            <div className="w-6 h-6 rounded bg-white/[0.05] border border-white/10 flex items-center justify-center p-0.5">
               <Image
                 src="/logo-mark.svg"
-                alt="Amonite CAD"
+                alt="Amonite"
                 width={20}
                 height={20}
                 className="object-contain"
               />
             </div>
             <span className="font-extrabold text-sm tracking-tight text-white">
-              AMONITE // STUDIO
+              AMONITE ATELIER
             </span>
-            <span className="text-[10px] bg-cyan-500/15 text-cyan-400 px-1.5 py-0.5 rounded border border-cyan-500/20">
-              ZERO-AUTH
+            <span className="text-[10px] bg-[#c96f4b]/15 text-[#d98f66] px-1.5 py-0.5 rounded border border-[#c96f4b]/25">
+              3D PRINT READY
             </span>
           </div>
 
-          <div className="hidden sm:flex items-center gap-2 text-[11px] text-slate-400 border-l border-[#232733] pl-3 ml-2">
-            <Save className={`w-3.5 h-3.5 ${isSaved ? 'text-emerald-400' : 'text-slate-500'}`} />
-            <span>{isSaved ? 'Autosaved Locally' : 'Local Storage Active'}</span>
+          <div className="hidden sm:flex items-center gap-2 text-[11px] text-[#a89e8d] border-l border-white/[0.07] pl-3 ml-2">
+            <Save className={`w-3.5 h-3.5 ${isSaved ? 'text-emerald-400' : 'text-[#6b6257]'}`} />
+            <span>{isSaved ? 'Autosaved' : 'Autosave on'}</span>
           </div>
         </div>
 
@@ -152,23 +115,23 @@ export default function SandboxPage() {
         <div className="flex items-center gap-2 text-xs">
           <button
             onClick={() => setIsFileOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#161a22] hover:bg-slate-800 border border-[#272d3b] text-slate-300 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 text-[#ece5d8] transition-colors"
           >
-            <FileBox className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Import / Export</span>
+            <FileBox className="w-3.5 h-3.5 text-[#d98f66]" />
+            <span>Files</span>
           </button>
 
           <Link
             href="/docs"
-            className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
-            title="Shortcuts and Documentation"
+            className="hidden md:flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[#a89e8d] hover:text-white hover:bg-white/[0.06] transition-colors"
+            title="Help and documentation"
           >
             <HelpCircle className="w-4 h-4" />
           </Link>
 
           <Link
             href="/pricing"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold transition-all shadow-[0_0_12px_rgba(6,182,212,0.25)]"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#ede4d3] hover:bg-white text-[#221c14] font-bold transition-colors"
           >
             <Sparkles className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Get Pro</span>
@@ -178,37 +141,32 @@ export default function SandboxPage() {
 
       {/* Main Studio Viewport Area */}
       <div className="relative flex-1 w-full h-[calc(100vh-48px)] overflow-hidden">
-        {/* Fullscreen 3D WebGL Canvas */}
+        {/* Fullscreen 3D Atelier Canvas */}
         <CADCanvas className="absolute inset-0 z-0" />
 
-        {/* Top Centered Floating CAD Toolbar */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
-          <CADToolbar />
-        </div>
-
-        {/* Bottom Left Viewport HUD & View Controls */}
-        <div className="absolute bottom-4 left-4 z-20">
-          <CADViewControls />
-        </div>
-
-        {/* Left Side Scene Tree */}
+        {/* Left Side Base Form Menu */}
         <div className="absolute top-20 left-4 z-20 hidden md:block">
-          <CADTree />
+          <VesselArchetypes />
         </div>
 
-        {/* Right Side Dimension & Transform Inspector */}
+        {/* Right Side Parametric Studio Panel */}
         <div className="absolute top-20 right-4 z-20 hidden md:block">
-          <CADInspector />
+          <VesselStudio />
         </div>
 
-        {/* Measurement calipers overlay */}
-        <div className="absolute bottom-24 right-4 z-20 hidden md:block">
-          <CADMeasure />
-        </div>
-
-        {/* 2D drafting overlay (XZ plane → extrusion) */}
-        <div className="absolute bottom-4 right-4 z-20 hidden md:block">
-          <CADDraftingOverlay />
+        {/* Bottom Center Minimal View Bar */}
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setCameraPreset('iso')}
+            className="flex items-center gap-2 rounded-full border border-white/10 bg-[#1e1a15]/95 px-4 py-2 font-mono text-[11px] text-[#d8cfbd] shadow-2xl backdrop-blur-md transition-colors hover:border-white/25 hover:text-white"
+          >
+            <RotateCcw className="h-3.5 w-3.5" />
+            <span>Reset view</span>
+          </button>
+          <span className="hidden font-mono text-[10px] text-[#6b6257] sm:inline">
+            Drag to orbit · Scroll to zoom · Right-drag to pan
+          </span>
         </div>
       </div>
 

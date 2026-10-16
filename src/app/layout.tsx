@@ -12,9 +12,18 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Amonite CAD | Browser-Based CAD/CAM Micro-SaaS',
+  title: 'Amonite | The 3D Studio for Minimalist Interior Decor',
   description:
-    'High-performance browser-based CAD/CAM workspace. Hardware-accelerated 3D WebGL viewport, parametric solids, client-side math, and instant STL/DXF parsing.',
+    'Procedural 3D studio for bespoke minimalist vases, ribbed planters, and ceramic decor. Instant watertight STL export for clay 3D printing, resin, and continuous vase mode.',
+  keywords: [
+    '3d vase studio',
+    'ceramic 3d printing',
+    'vase mode cad',
+    'clay shrinkage calculator',
+    'minimalist interior decor',
+    'parametric planter',
+    'watertight stl',
+  ],
   icons: {
     icon: '/logo-mark.svg',
     shortcut: '/logo-mark.svg',
