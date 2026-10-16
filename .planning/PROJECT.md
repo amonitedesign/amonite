@@ -1,5 +1,15 @@
 # Project Amonite: High-Performance Browser-Based CAD/CAM Micro-SaaS
 
+> **PIVOT NOTE (2026-10-16, PRD v1.0.0 AUTHORITATIVE):** Milestone v1.0 delivered a
+> generic CAD foundation (primitives, gizmos, DXF/SVG/STL, local persistence).
+> Direction from v1.1 onward is `docs/PRD-v1.0.0-amonite.md`: a specialized
+> browser-native parametric vase/decor studio for Etsy makers and decor
+> designers (rib/profile morphing, guaranteed-watertight STL, vase-mode).
+> Old REQ-GEOM generic scope is legacy — see `docs/REQUIREMENTS-vase.md`.
+> Open decisions (license AGPL vs MIT, orange snail vs current logo-mark,
+> `Amonite CAD` vs `Amonite — Object Studio`) are flagged in the PRD header
+> and NOT resolved here.
+
 ## Executive Summary
 **Amonite** is a modern, ultra-responsive browser-based CAD/CAM workspace engineered for mechanical designers, industrial engineers, makers, and digital fabricators. Amonite delivers zero-friction CAD utility directly in the browser with no mandatory login barrier, instant hardware-accelerated 3D viewport rendering, interactive 2D drafting overlays, precision grid snapping, client-side vector math, and local persistence.
 

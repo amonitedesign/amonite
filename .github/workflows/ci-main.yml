@@ -111,11 +111,13 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
 
       - name: Public-repo segregation guard
-        # This repo must stay zero-auth: no auth, billing, or server-DB code.
+        # This repo must stay zero-auth with no payment code. Matches
+        # code-level signals only (SDKs, secrets, billing routes) — plain
+        # marketing words like "billing" on /pricing are fine.
         run: |
-          if grep -rniE "stripe|supabase|clerk|next-auth|prisma|drizzle|DATABASE_URL|billing|paywall|subscription" src/ --include="*.ts" --include="*.tsx"; then
-            echo "::error::Segregation guard failed: auth/billing/DB code found in public repo"
+          if grep -rniE "stripe|paddle|lemonsqueezy|dodo.?payments|next-auth|clerk|supabase|prisma|drizzle|DATABASE_URL|STRIPE_.*KEY|api/(billing|checkout|webhooks?)" src/ --include="*.ts" --include="*.tsx"; then
+            echo "::error::Segregation guard failed: payment/auth/DB code found in public repo"
             exit 1
           else
-            echo "Segregation guard passed: no auth/billing/DB code in src/"
+            echo "Segregation guard passed: no payment/auth/DB code in src/"
           fi

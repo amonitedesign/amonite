@@ -18,13 +18,11 @@ import CADViewControls from '@/components/cad/cad-view-controls';
 import CADMeasure from '@/components/cad/cad-measure';
 import CADDraftingOverlay from '@/components/cad/cad-drafting-overlay';
 import FileDialog from '@/components/io/file-dialog';
-import WaitlistModal from '@/components/landing/waitlist-modal';
 import { useCADStore } from '@/store/cad-store';
 import { saveWorkspaceLocally, loadWorkspaceLocally } from '@/lib/storage';
 
 export default function SandboxPage() {
   const [isFileOpen, setIsFileOpen] = useState(false);
-  const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
 
   const nodes = useCADStore((s) => s.nodes);
@@ -168,13 +166,13 @@ export default function SandboxPage() {
             <HelpCircle className="w-4 h-4" />
           </Link>
 
-          <button
-            onClick={() => setIsWaitlistOpen(true)}
+          <Link
+            href="/pricing"
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold transition-all shadow-[0_0_12px_rgba(6,182,212,0.25)]"
           >
             <Sparkles className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Pro Early Access</span>
-          </button>
+            <span className="hidden sm:inline">Get Pro</span>
+          </Link>
         </div>
       </header>
 
@@ -216,7 +214,6 @@ export default function SandboxPage() {
 
       {/* Modals */}
       <FileDialog isOpen={isFileOpen} onClose={() => setIsFileOpen(false)} />
-      <WaitlistModal isOpen={isWaitlistOpen} onClose={() => setIsWaitlistOpen(false)} />
     </div>
   );
 }

@@ -69,3 +69,24 @@ You are building an advanced workspace for designers crafting custom minimal 3D 
 * **Invisible Control UI:** Never use bulky, bright input panels. Controls must use ultra-clean typography, fine hairline indicators, and low-contrast inputs. Think high-end camera software or industrial design interfaces.
 * **Zero Architectural Slop:** The platform focuses purely on individual objects (vases, vessels, small ceramics), NOT entire rooms. Eliminate options for walls, lighting setups for rooms, or floor grids. Keep the canvas isolated to the singular product geometry.
 * **Calibrated Organic Neutrals:** Because the product handles interior design objects, the interface should use organic, muted tones rather than tech-startup grays. Use warm grays, sand tones, off-whites, and deep charcoal accents.
+
+---
+
+## APPENDIX A: PRD v1.0.0 DESIGNER-FIRST RULES (AUTHORITATIVE)
+
+Authority: `docs/PRD-v1.0.0-amonite.md` §2 (Etsy makers, decor designers, vase-mode specialists). This appendix governs all DESIGN and UI work on `/` landing. `/sandbox` IDE chrome stays exempt per Scope guard above.
+
+**A1. Audience voice — designers, not engineers.**
+Speak silhouette, profile, curve, proportion, foot, rim, wall, collection, glaze, stoneware, cast, fire. These map to REQ-VASE params (rib count, wave frequency, twist, base diameter) without exposing math.
+
+**A2. Banned in first two viewports (engineer slop).**
+Brep, manifold, watertight, telemetry, slicer, parametric, 50B records, DXF R12, STL byte copy, `PARAMETRIC PROFILE · WALL OFFSET`, `OBJECT MORPHOLOGY`, `FABRICATION PIPELINE / SLICER READY`, `01 // ATELIER METHODOLOGY`, code-block exports (`vessel radius 65mm … export watertight-vessel.stl`). Technical proof moves to `/docs` and the collapsed Making row only.
+
+**A3. Gallery rules for landing.**
+Display type (Outfit) for headlines, quiet body for subtext, mono ONLY for tiny eyebrows/captions. Left-anchored headlines. Hairlines or spacing — no boxed bento cards, no 3-equal-column rows, no gradients/glows/pills. Full spec: `docs/design/landing-designer-first.md`.
+
+**A4. Hero canvas is a pedestal, not an IDE.**
+No `CADToolbar` / `CADViewControls` overlays, no `Vessel Geometry // 3D Viewport` header bar, no `Drag: Rotate` HUD copy in hero. One object, one caption (`No. 04 — Fluted Vessel, stoneware`), one fading `Rotate to inspect` hint max. Implementation: `src/app/page.tsx`, `src/components/ui/navbar.tsx`.
+
+**A5. Token conflicts (OPEN, do not freelance).**
+OPEN-1 License (MIT vs AGPL), OPEN-2 orange snail `icon.svg` vs current `public/logo-mark.svg` graphite+cyan, OPEN-3 `Amonite CAD` vs `Amonite — Object Studio`. Until ruled: keep current tokens, keep CTA strings (`Open Studio Sandbox` / `Join Pro Waitlist`) stable — they are test-asserted (`e2e/smoke.spec.ts:9-10`, `src/app/routes.test.tsx:42-43`).

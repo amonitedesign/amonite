@@ -22,6 +22,9 @@ test('inspector edits survive undo/redo via keyboard', async ({ page }) => {
 
 test('transform hotkeys switch gizmo modes', async ({ page }) => {
   await page.goto('/sandbox');
+  // Ensure hydration + focus before sending keys (else presses get lost).
+  await expect(page.getByTitle('Move (G)')).toBeVisible();
+  await page.mouse.click(400, 400);
   await page.keyboard.press('g');
   await expect(page.getByTitle('Move (G)')).toHaveClass(/bg-cyan-500\/20/);
   await page.keyboard.press('v');
@@ -49,8 +52,8 @@ test('native JSON import restores the E2E plate', async ({ page }) => {
 test('waitlist modal validates email and confirms', async ({ page }) => {
   await page.goto('/');
   await page.getByRole('button', { name: /Join Pro Waitlist/ }).first().click();
-  await page.getByPlaceholder('engineer@aerospace.io').fill('mech@aero.io');
-  await page.getByText('Request Early Access').click();
+  await page.getByPlaceholder('you@studio.co').fill('mech@aero.io');
+  await page.locator('form').getByRole('button', { name: 'Request Early Access' }).click();
   await expect(page.getByText("You're on the list!")).toBeVisible();
 });
 

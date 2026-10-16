@@ -39,4 +39,19 @@ describe('waitlist-modal', () => {
     fireEvent.click(screen.getByText('Back to Studio'));
     expect(onClose).toHaveBeenCalledTimes(2);
   });
+
+  it('shows a plan chip and echoes the plan on success when tagged', () => {
+    render(<WaitlistModal isOpen onClose={() => {}} plan="studio" />);
+    expect(screen.getByText('Queueing for Studio')).toBeInTheDocument();
+    fireEvent.change(screen.getByPlaceholderText('you@studio.co'), {
+      target: { value: 'lead@studio.co' },
+    });
+    fireEvent.click(screen.getByText('Request Early Access'));
+    expect(screen.getByText('Studio')).toBeInTheDocument();
+  });
+
+  it('shows no plan chip without a plan (legacy early-access flow)', () => {
+    render(<WaitlistModal isOpen onClose={() => {}} />);
+    expect(screen.queryByText(/Queueing for/)).toBeNull();
+  });
 });

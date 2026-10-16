@@ -9,6 +9,7 @@ vi.mock('@/components/cad/cad-canvas', () => ({
 import LandingPage from '@/app/page';
 import DocsPage from '@/app/docs/page';
 import SandboxPage from '@/app/sandbox/page';
+import PricingPage from '@/app/pricing/page';
 import { useCADStore } from '@/store/cad-store';
 
 function resetStore() {
@@ -40,7 +41,7 @@ describe('routes / primary smoke across the app', () => {
     render(<LandingPage />);
     expect(screen.getByText(/Sculpt minimal 3D objects/)).toBeInTheDocument();
     expect(screen.getAllByText('Open Studio Sandbox').length).toBeGreaterThan(0);
-    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument();
+    expect(screen.queryByTestId('mock-canvas')).not.toBeInTheDocument();
   });
 
   it('docs renders shortcuts, units, and format specs', () => {
@@ -58,6 +59,7 @@ describe('routes / primary smoke across the app', () => {
     expect(screen.getByText('AMONITE // STUDIO')).toBeInTheDocument();
     expect(screen.getByText('Import / Export')).toBeInTheDocument();
     expect(screen.getByText('Scene Hierarchy')).toBeInTheDocument();
+    expect(screen.getByTestId('mock-canvas')).toBeInTheDocument();
   });
 
   it('sandbox hotkeys drive transform modes (G/R/S/V)', () => {
@@ -113,5 +115,59 @@ describe('routes / primary smoke across the app', () => {
       fireEvent.keyDown(window, { key: 'Delete' });
     });
     expect(useCADStore.getState().nodes.find((n) => n.id === added.id)).toBeUndefined();
+  });
+
+  it('navbar splits Pro from Early Access: Get Pro + Pricing, no Join Waitlist', () => {
+    resetStore();
+    render(<LandingPage />);
+    const proLink = screen.getByText('Get Pro').closest('a');
+    expect(proLink?.getAttribute('href')).toBe('/pricing');
+    const pricingLinks = screen
+      .getAllByText('Pricing')
+      .map((el) => el.closest('a')?.getAttribute('href'));
+    expect(pricingLinks).toContain('/pricing');
+    expect(screen.queryByText('Join Waitlist')).toBeNull();
+    // Early Access still lives on the landing section
+    expect(screen.getByText('Request Early Access')).toBeInTheDocument();
+  });
+
+  it('sandbox header links to pricing instead of opening waitlist', () => {
+    resetStore();
+    render(<SandboxPage />);
+    const proLink = screen.getByText('Get Pro').closest('a');
+    expect(proLink?.getAttribute('href')).toBe('/pricing');
+    expect(screen.queryByText('Pro Early Access')).toBeNull();
+  });
+
+  it('pricing page renders hero, billing toggle, and three cascading tiles', () => {
+    resetStore();
+    render(<PricingPage />);
+    expect(screen.getByText(/Free to plan\. Paid when you bill\./)).toBeInTheDocument();
+    expect(screen.getByTestId('tier-free')).toBeInTheDocument();
+    expect(screen.getByTestId('tier-pro')).toBeInTheDocument();
+    expect(screen.getByTestId('tier-studio')).toBeInTheDocument();
+    expect(screen.getByText('Most popular')).toBeInTheDocument();
+  });
+
+  it('pricing toggle switches monthly/annual prices', () => {
+    resetStore();
+    render(<PricingPage />);
+    expect(screen.getByText('$16')).toBeInTheDocument(); // annual default
+    fireEvent.click(screen.getByText(/Monthly/));
+    expect(screen.getByText('$20')).toBeInTheDocument();
+  });
+
+  it('pricing Pro tile opens plan-tagged waitlist modal', () => {
+    resetStore();
+    render(<PricingPage />);
+    fireEvent.click(screen.getByText('Notify me'));
+    expect(screen.getByText('Queueing for Pro')).toBeInTheDocument();
+  });
+
+  it('pricing FAQ accordion expands answers', () => {
+    resetStore();
+    render(<PricingPage />);
+    fireEvent.click(screen.getByText('Do my clients need a paid seat to view a room?'));
+    expect(screen.getByText(/Viewers are free on every tier/)).toBeInTheDocument();
   });
 });

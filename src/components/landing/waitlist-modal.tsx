@@ -2,13 +2,22 @@
 
 import React, { useState } from 'react';
 import { X, Mail, CheckCircle2, ArrowRight, Shield } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import type { PlanId } from '@/components/pricing/pricing-tiles';
 
 interface WaitlistModalProps {
   isOpen: boolean;
   onClose: () => void;
+  plan?: PlanId | null;
 }
 
-export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
+const PLAN_LABEL: Record<PlanId, string> = {
+  free: 'Free',
+  pro: 'Pro',
+  studio: 'Studio',
+};
+
+export default function WaitlistModal({ isOpen, onClose, plan }: WaitlistModalProps) {
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('Interior Designer');
   const [submitted, setSubmitted] = useState(false);
@@ -44,6 +53,11 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
             <h3 className="text-lg font-bold text-zinc-950 dark:text-white tracking-tight">
               Amonite Pro Early Access
             </h3>
+            {plan && plan !== 'free' && (
+              <div className="mt-2">
+                <Badge variant="secondary">Queueing for {PLAN_LABEL[plan]}</Badge>
+              </div>
+            )}
             <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
               Queue for material libraries, joinery cut lists, and shareable
               client rooms. Direct interiors intake routed to{' '}
@@ -109,7 +123,11 @@ export default function WaitlistModal({ isOpen, onClose }: WaitlistModalProps) {
               You&apos;re on the list!
             </h3>
             <p className="text-xs text-zinc-600 dark:text-zinc-400 max-w-xs mx-auto leading-relaxed">
-              We have queued <span className="text-zinc-900 dark:text-zinc-200 font-semibold">{email}</span> for priority access. Invitations are dispatched on a rolling weekly basis.
+              We have queued <span className="text-zinc-900 dark:text-zinc-200 font-semibold">{email}</span> for priority access
+              {plan && plan !== 'free' && (
+                <> to <span className="text-zinc-900 dark:text-zinc-200 font-semibold">{PLAN_LABEL[plan]}</span></>
+              )}
+              . Invitations are dispatched on a rolling weekly basis.
             </p>
 
             <button

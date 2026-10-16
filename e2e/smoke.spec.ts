@@ -20,6 +20,19 @@ test('@smoke sandbox studio shell loads with scene hierarchy', async ({ page }) 
 
 test('@smoke docs render shortcuts and format specs', async ({ page }) => {
   await page.goto('/docs');
-  await expect(page.getByText('Amonite CAD Architecture & Reference')).toBeVisible();
-  await expect(page.getByText('Coordinate Frame & Units')).toBeVisible();
+  await expect(page.getByText('Amonite CAD Architecture & Reference').first()).toBeVisible();
+  await expect(page.getByText('Coordinate Frame & Units').first()).toBeVisible();
+});
+
+test('@smoke pricing shows three cascading tiers; Get Pro navigates there', async ({ page }) => {
+  await page.goto('/');
+  // Wait for hydration: client-side nav is dead until React attaches.
+  await expect(page.getByRole('link', { name: 'Get Pro' })).toBeVisible();
+  await page.waitForLoadState('networkidle');
+  await page.getByRole('link', { name: 'Get Pro' }).click();
+  await page.waitForURL(/\/pricing/, { timeout: 15_000 });
+  await expect(page.getByTestId('tier-free')).toBeVisible();
+  await expect(page.getByTestId('tier-pro')).toBeVisible();
+  await expect(page.getByTestId('tier-studio')).toBeVisible();
+  await expect(page.getByText('Most popular')).toBeVisible();
 });

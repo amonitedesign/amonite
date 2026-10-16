@@ -1,12 +1,9 @@
 import type { Metadata } from 'next';
-import { Outfit, JetBrains_Mono } from 'next/font/google';
+import { JetBrains_Mono, Roboto } from 'next/font/google';
 import './globals.css';
+import { cn } from "@/lib/utils";
 
-const outfit = Outfit({
-  subsets: ['latin'],
-  variable: '--font-sans',
-  display: 'swap',
-});
+const roboto = Roboto({subsets:['latin'],variable:'--font-sans'});
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
@@ -33,7 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${outfit.variable} ${jetbrainsMono.variable} dark h-full antialiased`}
+      className={cn("dark", "h-full", "antialiased", jetbrainsMono.variable, "font-sans", roboto.variable)}
     >
       <body className="min-h-full flex flex-col bg-[#08090b] text-slate-200">
         {children}

@@ -3,15 +3,14 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BookOpen, Layers } from 'lucide-react';
+import { BookOpen, Layers, Tag } from 'lucide-react';
 import ThemeToggle from '@/components/ui/theme-toggle';
 
 interface NavbarProps {
-  onOpenWaitlist?: () => void;
   onOpenFileExchange?: () => void;
 }
 
-export default function Navbar({ onOpenWaitlist }: NavbarProps) {
+export default function Navbar({ onOpenFileExchange }: NavbarProps) {
   return (
     <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-[#08090b]/90 backdrop-blur-md border-b border-zinc-200 dark:border-white/[0.06] transition-colors">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
@@ -67,6 +66,13 @@ export default function Navbar({ onOpenWaitlist }: NavbarProps) {
             <BookOpen className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
             <span>Architecture & Specs</span>
           </Link>
+          <Link
+            href="/pricing"
+            className="flex items-center gap-2 hover:text-zinc-950 dark:hover:text-white transition-colors"
+          >
+            <Tag className="w-3.5 h-3.5 text-zinc-500 dark:text-zinc-400" />
+            <span>Pricing</span>
+          </Link>
         </nav>
 
         {/* Right Action Buttons */}
@@ -81,14 +87,21 @@ export default function Navbar({ onOpenWaitlist }: NavbarProps) {
             Launch CAD
           </Link>
 
-          {onOpenWaitlist && (
+          {onOpenFileExchange && (
             <button
-              onClick={onOpenWaitlist}
-              className="px-4 py-1.5 rounded-lg bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 font-semibold transition-colors flex items-center gap-1.5"
+              onClick={onOpenFileExchange}
+              className="hidden sm:inline-flex px-3.5 py-1.5 rounded-lg border border-zinc-200 dark:border-white/10 bg-zinc-50 hover:bg-zinc-100 dark:bg-white/[0.04] dark:hover:bg-white/[0.08] text-zinc-800 dark:text-zinc-200 transition-colors font-medium"
             >
-              <span>Join Waitlist</span>
+              File I/O
             </button>
           )}
+
+          <Link
+            href="/pricing"
+            className="px-4 py-1.5 rounded-lg bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 font-semibold transition-colors flex items-center gap-1.5"
+          >
+            <span>Get Pro</span>
+          </Link>
         </div>
       </div>
     </header>
