@@ -1,0 +1,121 @@
+name: Amonite CAD CI Heavy (main only)
+
+# Biggest / slowest checks — main/master pushes ONLY. Target 15–25 min:
+# coverage gates, production build + bundle report, full Playwright matrix,
+# dependency audit, and public-repo segregation guard.
+
+on:
+  push:
+    branches: [master, main]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Full unit suite with coverage gates
+        run: npm run test:coverage
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-lcov
+          path: coverage/lcov.info
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Run TypeScript Verification
+        run: npm run typecheck
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Build Next.js Production Bundle
+        run: npm run build
+
+      - name: Bundle size report
+        run: |
+          echo "## Bundle report" >> "$GITHUB_STEP_SUMMARY"
+          du -sh .next >> "$GITHUB_STEP_SUMMARY"
+          du -sh .next/static/* | sort -h >> "$GITHUB_STEP_SUMMARY"
+
+  e2e-full:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Full E2E matrix (chromium + firefox + mobile)
+        run: npm run test:e2e:full
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report
+
+  audit-and-segregation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Dependency audit (production)
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Public-repo segregation guard
+        # This repo must stay zero-auth: no auth, billing, or server-DB code.
+        run: |
+          if grep -rniE "stripe|supabase|clerk|next-auth|prisma|drizzle|DATABASE_URL|billing|paywall|subscription" src/ --include="*.ts" --include="*.tsx"; then
+            echo "::error::Segregation guard failed: auth/billing/DB code found in public repo"
+            exit 1
+          else
+            echo "Segregation guard passed: no auth/billing/DB code in src/"
+          fi

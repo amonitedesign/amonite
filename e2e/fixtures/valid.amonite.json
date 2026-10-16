@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "id": "e2e-import",
+  "title": "E2E Import Project",
+  "created": 1700000000000,
+  "updated": 1700000000000,
+  "viewport": {
+    "cameraMode": "perspective",
+    "renderStyle": "shaded",
+    "gridVisible": true,
+    "gridSize": 200,
+    "gridDivisions": 40,
+    "snapToGrid": true,
+    "snapStep": 5,
+    "unit": "mm"
+  },
+  "nodes": [
+    {
+      "id": "e2e-box-1",
+      "name": "E2E Plate",
+      "type": "box",
+      "position": { "x": 0, "y": 5, "z": 0 },
+      "rotation": { "x": 0, "y": 0, "z": 0 },
+      "scale": { "x": 1, "y": 1, "z": 1 },
+      "dimensions": { "width": 60, "height": 10, "depth": 60 },
+      "color": "#38bdf8",
+      "visible": true,
+      "wireframe": false
+    }
+  ]
+}

@@ -1,13 +1,18 @@
-name: Amonite CAD CI
+name: Amonite CAD CI (PR fast)
+
+# Fast gates for pull requests + feature pushes. Target < 5 min:
+# static checks + minute unit suite + primary app suite + E2E smoke (chromium).
+# Heavy checks (coverage gates, prod build, full browser matrix, audits)
+# run on main only via ci-main.yml.
 
 on:
-  push:
-    branches: [ master, main ]
   pull_request:
-    branches: [ master, main ]
+    branches: [master, main]
+  push:
+    branches-ignore: [master, main]
 
 jobs:
-  build-and-test:
+  static:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Codebase
@@ -23,10 +28,64 @@ jobs:
         run: npm ci
 
       - name: Run TypeScript Verification
-        run: npx tsc --noEmit
+        run: npm run typecheck
 
       - name: Run ESLint
         run: npm run lint
 
-      - name: Build Next.js Production Bundle
-        run: npm run build
+  minute:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Minute suite (unit, <60s)
+        run: npm run test:minute
+
+  primary:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Primary suite (components + routes)
+        run: npm run test:primary
+
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Install Playwright chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E smoke (@smoke, chromium only)
+        run: npm run test:e2e:smoke -- --project=chromium

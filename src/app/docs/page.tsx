@@ -22,6 +22,9 @@ export default function DocsPage() {
     { key: 'Ctrl + Y', desc: 'Redo undone action' },
     { key: 'Ctrl + D', desc: 'Duplicate selected entity with offset' },
     { key: 'Delete', desc: 'Delete active selected object' },
+    { key: 'P', desc: 'Toggle 2D drafting overlay (XZ polygon)' },
+    { key: 'Enter', desc: 'Commit draft polygon as extruded solid' },
+    { key: 'Esc', desc: 'Clear measurement / close drafting' },
   ];
 
   return (

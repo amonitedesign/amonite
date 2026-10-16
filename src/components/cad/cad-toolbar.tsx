@@ -10,11 +10,13 @@ import {
   Cylinder,
   CircleDot,
   Donut,
+  Cone,
   Layers,
   Undo2,
   Redo2,
   Trash2,
   Copy,
+  PenTool,
 } from 'lucide-react';
 import { useCADStore } from '@/store/cad-store';
 import { TransformMode, PrimitiveType } from '@/lib/cad-types';
@@ -31,6 +33,8 @@ export default function CADToolbar() {
   const duplicateNode = useCADStore((s) => s.duplicateNode);
   const undo = useCADStore((s) => s.undo);
   const redo = useCADStore((s) => s.redo);
+  const draftingActive = useCADStore((s) => s.draftingActive);
+  const setDraftingActive = useCADStore((s) => s.setDraftingActive);
 
   const modes: { id: TransformMode; label: string; icon: React.ReactNode }[] = [
     { id: 'select', label: 'Select (V)', icon: <MousePointer className="w-4 h-4" /> },
@@ -44,6 +48,7 @@ export default function CADToolbar() {
     { type: 'cylinder', label: 'Cylinder', icon: <Cylinder className="w-4 h-4" /> },
     { type: 'sphere', label: 'Sphere', icon: <CircleDot className="w-4 h-4" /> },
     { type: 'torus', label: 'Torus', icon: <Donut className="w-4 h-4" /> },
+    { type: 'cone', label: 'Cone', icon: <Cone className="w-4 h-4" /> },
     { type: 'extrusion', label: '2D Extrude', icon: <Layers className="w-4 h-4" /> },
   ];
 
@@ -82,6 +87,23 @@ export default function CADToolbar() {
             <span className="hidden sm:inline">{p.label}</span>
           </button>
         ))}
+      </div>
+
+      <div className="w-[1px] h-6 bg-[#272d3b] mx-1" />
+
+      {/* 2D Drafting Overlay */}
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => setDraftingActive(!draftingActive)}
+          title="2D Drafting Overlay (P)"
+          className={`p-2 rounded-lg border transition-all flex items-center justify-center ${
+            draftingActive
+              ? 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40 shadow-[0_0_12px_rgba(6,182,212,0.25)]'
+              : 'border-[#272d3b] bg-[#161a22] hover:bg-slate-800 text-slate-400 hover:text-slate-100'
+          }`}
+        >
+          <PenTool className="w-4 h-4" />
+        </button>
       </div>
 
       <div className="w-[1px] h-6 bg-[#272d3b] mx-1" />

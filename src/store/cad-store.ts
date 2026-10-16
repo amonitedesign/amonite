@@ -18,6 +18,10 @@ interface CADStoreState {
   measurePoints: { a: { x: number; y: number; z: number }; b: { x: number; y: number; z: number } } | null;
   measureActive: boolean;
 
+  // 2D drafting overlay (XZ plane polygon → extrusion)
+  draftingActive: boolean;
+  draftPoints: Array<{ x: number; y: number }>;
+
   // Undo / Redo history
   undoStack: CADNode[][];
   redoStack: CADNode[][];
@@ -41,6 +45,9 @@ interface CADStoreState {
   setCursorCoords: (coords: { x: number; y: number; z: number }) => void;
   setMeasurePoints: (pts: { a: { x: number; y: number; z: number }; b: { x: number; y: number; z: number } } | null) => void;
   setMeasureActive: (active: boolean) => void;
+  setDraftingActive: (active: boolean) => void;
+  setDraftPoints: (pts: Array<{ x: number; y: number }>) => void;
+  commitDraftAsExtrusion: () => CADNode | null;
   undo: () => void;
   redo: () => void;
   loadProject: (project: AmoniteProject) => void;
@@ -96,6 +103,8 @@ export const useCADStore = create<CADStoreState>((set, get) => ({
   cursorCoords: { x: 0, y: 0, z: 0 },
   measurePoints: null,
   measureActive: false,
+  draftingActive: false,
+  draftPoints: [],
   undoStack: [],
   redoStack: [],
 
@@ -207,6 +216,20 @@ export const useCADStore = create<CADStoreState>((set, get) => ({
   setCursorCoords: (coords) => set({ cursorCoords: coords }),
   setMeasurePoints: (pts) => set({ measurePoints: pts }),
   setMeasureActive: (active) => set({ measureActive: active }),
+  setDraftingActive: (active) => set({ draftingActive: active }),
+  setDraftPoints: (pts) => set({ draftPoints: pts }),
+
+  commitDraftAsExtrusion: () => {
+    const pts = get().draftPoints;
+    if (pts.length < 3) return null;
+    const node = get().addNode('extrusion');
+    get().updateNode(node.id, {
+      name: `Drafted Polygon ${get().nodes.length}`,
+      extrusionPoints: pts.map((p) => ({ x: p.x, y: p.y })),
+    });
+    set({ draftPoints: [], draftingActive: false });
+    return get().nodes.find((n) => n.id === node.id) ?? null;
+  },
 
   undo: () => {
     const { undoStack, nodes } = get();

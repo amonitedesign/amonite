@@ -8,14 +8,14 @@
 - [x] Dual-mode camera projection (Perspective / Orthographic) & view orientation presets (Top, Front, Right, Isometric)
 - [x] Adaptive technical grid system with millimeter snap coordinates
 
-## Phase 2: Parametric Geometry & Transform Engine (Current)
-- [ ] Parametric 3D solid primitives (Cuboid, Cylinder, Sphere, Torus, Extruded Polygon)
-- [ ] Direct manipulation transform gizmos (Translate, Rotate, Scale)
-- [ ] Dynamic technical inspection panel with real-time numeric inputs and dimensions
-- [ ] Real-time wireframe, shaded, and technical hidden-line rendering styles
-- [ ] Undo / Redo history engine with shortcut bindings (`Ctrl+Z`, `Ctrl+Y`)
+## Phase 2: Parametric Geometry & Transform Engine (Complete)
+- [x] Parametric 3D solid primitives (Cuboid, Cylinder, Sphere, Torus, Extruded Polygon)
+- [x] Direct manipulation transform gizmos (Translate, Rotate, Scale)
+- [x] Dynamic technical inspection panel with real-time numeric inputs and dimensions
+- [x] Real-time wireframe, shaded, and technical hidden-line rendering styles
+- [x] Undo / Redo history engine with shortcut bindings (`Ctrl+Z`, `Ctrl+Y`)
 
-## Phase 3: Client-Side Parsers, Exporters & Session Memory
+## Phase 3: Client-Side Parsers, Exporters & Session Memory (Current)
 - [ ] Binary and ASCII `.stl` exporter for 3D printing
 - [ ] DXF 2D/3D parser and vector path exporter
 - [ ] SVG path parser and 3D extrusion generator

@@ -201,6 +201,23 @@ export default function CADInspector() {
             </div>
           </div>
         )}
+
+        {type === 'extrusion' && (
+          <div className="flex items-center justify-between">
+            <span className="text-slate-400">Extrude Depth:</span>
+            <input
+              type="number"
+              min="1"
+              value={dimensions.height || 20}
+              onChange={(e) =>
+                updateNode(selectedNode.id, {
+                  dimensions: { ...dimensions, height: Math.max(1, parseFloat(e.target.value) || 1) },
+                })
+              }
+              className="w-20 bg-[#161a22] border border-[#272d3b] rounded px-2 py-0.5 text-right text-xs text-white focus:outline-none focus:border-cyan-400"
+            />
+          </div>
+        )}
       </div>
 
       {/* Material & Appearance */}

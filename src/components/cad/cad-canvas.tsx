@@ -7,7 +7,7 @@ import { TransformControls } from 'three/examples/jsm/controls/TransformControls
 import { useCADStore } from '@/store/cad-store';
 import { createGeometryForNode, createAmmoniteSpiralGeometry } from '@/lib/geometry-engine';
 
-type CADTaggedObject = THREE.Object3D & { cadNodeId?: string };
+type CADTaggedObject = THREE.Object3D & { cadNodeId?: string; lastDimKey?: string };
 
 export default function CADCanvas({ className = '' }: { className?: string }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -360,6 +360,7 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
         mesh.receiveShadow = !isHiddenLine;
         mesh.visible = !isHiddenLine;
         (mesh as CADTaggedObject).cadNodeId = node.id;
+        (mesh as CADTaggedObject).lastDimKey = JSON.stringify(node.dimensions) + '-' + node.type;
         group.add(mesh);
 
         // Technical sharp edge lines for industrial look
@@ -380,6 +381,25 @@ export default function CADCanvas({ className = '' }: { className?: string }) {
         // Update existing mesh
         const mesh = group.children[0] as THREE.Mesh;
         if (mesh) {
+          const dimKey = JSON.stringify(node.dimensions) + '-' + node.type;
+          if ((mesh as CADTaggedObject).lastDimKey !== dimKey) {
+            // Dispose old geometry and regenerate
+            mesh.geometry.dispose();
+            const newGeom = createGeometryForNode(node);
+            mesh.geometry = newGeom;
+            mesh.geometry.computeBoundingBox();
+            mesh.geometry.computeBoundingSphere();
+
+            // Rebuild edges
+            const edgesLine = group.getObjectByName('edges') as THREE.LineSegments | null;
+            if (edgesLine) {
+              edgesLine.geometry.dispose();
+              edgesLine.geometry = new THREE.EdgesGeometry(newGeom, 25);
+            }
+
+            (mesh as CADTaggedObject).lastDimKey = dimKey;
+          }
+
           const mat = mesh.material as THREE.MeshStandardMaterial;
           const isHiddenLine = viewport.renderStyle === 'hidden-line';
           mat.color.set(node.color);

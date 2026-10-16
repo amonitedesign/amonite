@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Layers, Eye, EyeOff, Trash2, Box, Cylinder, CircleDot, Donut } from 'lucide-react';
+import { Layers, Eye, EyeOff, Trash2, Box, Cylinder, CircleDot, Donut, Cone } from 'lucide-react';
 import { useCADStore } from '@/store/cad-store';
 
 export default function CADTree() {
@@ -21,6 +21,10 @@ export default function CADTree() {
         return <CircleDot className="w-3.5 h-3.5 text-indigo-400" />;
       case 'torus':
         return <Donut className="w-3.5 h-3.5 text-sky-400" />;
+      case 'cone':
+        return <Cone className="w-3.5 h-3.5 text-amber-400" />;
+      case 'extrusion':
+        return <Layers className="w-3.5 h-3.5 text-emerald-400" />;
       default:
         return <Box className="w-3.5 h-3.5 text-slate-400" />;
     }
