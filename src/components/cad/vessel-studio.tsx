@@ -93,8 +93,7 @@ export default function VesselStudio(): React.JSX.Element {
 
   return (
     <div
-      className="w-80 rounded-lg border p-4 shadow-2xl backdrop-blur-md max-h-[calc(100vh-120px)] overflow-y-auto [scrollbar-width:thin]"
-      style={{ backgroundColor: t.panelBg, borderColor: t.hairline }}
+      className="flex h-full w-full flex-col p-4 overflow-y-auto [scrollbar-width:thin] select-none"
     >
       {/* Header bar with undo/redo */}
       <div className="flex items-center justify-between pb-3" style={{ borderBottom: `1px solid ${t.hairline}` }}>

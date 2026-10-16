@@ -145,36 +145,44 @@ export default function SandboxPage() {
       </header>
 
       {/* Main Studio Viewport Area */}
-      <div className="relative flex-1 w-full h-[calc(100vh-48px)] overflow-hidden">
-        {/* Fullscreen 3D Atelier Canvas */}
-        <CADCanvas className="absolute inset-0 z-0" />
-
-        {/* Left Side Base Form Menu */}
-        <div className="absolute top-20 left-4 z-20 hidden md:block">
+      <div className="relative flex-1 w-full h-[calc(100vh-48px)] flex overflow-hidden">
+        {/* Full-Height Left Sidebar: Base Forms Catalog */}
+        <aside
+          className="hidden md:flex w-64 h-full border-r z-20 shrink-0 flex-col backdrop-blur-md"
+          style={{ backgroundColor: t.panelBg, borderColor: t.hairline }}
+        >
           <VesselArchetypes />
+        </aside>
+
+        {/* Center: 3D Studio Stage */}
+        <div className="relative flex-1 h-full min-w-0">
+          <CADCanvas className="absolute inset-0 z-0" />
+
+          {/* Bottom Center Minimal View Bar */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setCameraPreset('iso')}
+              className="flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-mono text-[11px] shadow-2xl backdrop-blur-md transition-colors"
+              style={{ borderColor: t.hairline, backgroundColor: t.panelBg, color: t.inkSoft }}
+            >
+              <RotateCcw className="h-3 w-3" />
+              <span>Reset view</span>
+            </button>
+
+            <span className="hidden font-mono text-[10px] sm:inline pl-2" style={{ color: t.inkFaint }}>
+              Drag to orbit · Scroll to zoom
+            </span>
+          </div>
         </div>
 
-        {/* Right Side Parametric Studio Panel */}
-        <div className="absolute top-20 right-4 z-20 hidden md:block">
+        {/* Full-Height Right Sidebar: Parametric Shaping Studio */}
+        <aside
+          className="hidden md:flex w-80 h-full border-l z-20 shrink-0 flex-col backdrop-blur-md"
+          style={{ backgroundColor: t.panelBg, borderColor: t.hairline }}
+        >
           <VesselStudio />
-        </div>
-
-        {/* Bottom Center Minimal View Bar */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setCameraPreset('iso')}
-            className="flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-mono text-[11px] shadow-2xl backdrop-blur-md transition-colors"
-            style={{ borderColor: t.hairline, backgroundColor: t.panelBg, color: t.inkSoft }}
-          >
-            <RotateCcw className="h-3 w-3" />
-            <span>Reset view</span>
-          </button>
-
-          <span className="hidden font-mono text-[10px] sm:inline pl-2" style={{ color: t.inkFaint }}>
-            Drag to orbit · Scroll to zoom
-          </span>
-        </div>
+        </aside>
       </div>
 
       {/* Modals */}

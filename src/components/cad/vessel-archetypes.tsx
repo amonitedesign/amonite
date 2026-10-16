@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import React from 'react';
+import { Layers } from 'lucide-react';
 import { useCADStore } from '@/store/cad-store';
 import { STUDIO_THEME } from '@/lib/studio-theme';
 import { VESSEL_ARCHETYPES, vesselProfileRadius } from '@/lib/vessel-geometry';
@@ -41,7 +41,7 @@ function Silhouette({ archetype, active }: { archetype: VesselArchetype; active:
   return (
     <svg
       viewBox={`0 0 ${W} ${H}`}
-      className="h-14 w-12 shrink-0 drop-shadow-sm transition-transform duration-200 group-hover:scale-105"
+      className="h-12 w-10 shrink-0 drop-shadow-sm transition-transform duration-200 group-hover:scale-105"
       aria-hidden="true"
     >
       <defs>
@@ -70,43 +70,33 @@ export default function VesselArchetypes(): React.JSX.Element {
 
   const vessel = nodes.find((n) => n.id === vesselId);
   const active = vessel?.vessel?.archetype ?? 'fluted-vase';
-  const [isOpen, setIsOpen] = useState(false);
-
-  if (!isOpen) {
-    return (
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        aria-expanded={false}
-        className="flex items-center gap-2 rounded-full border px-3.5 py-1.5 font-mono text-[11px] shadow-2xl backdrop-blur-md transition-colors"
-        style={{ borderColor: t.hairline, backgroundColor: t.panelBg, color: t.inkSoft }}
-      >
-        <span className="font-semibold uppercase tracking-[0.18em]">Base forms</span>
-        <ChevronDown className="h-3 w-3" />
-      </button>
-    );
-  }
 
   return (
-    <div
-      className="w-60 rounded-lg border p-3 shadow-2xl backdrop-blur-md max-h-[calc(100vh-148px)] overflow-y-auto"
-      style={{ backgroundColor: t.panelBg, borderColor: t.hairline }}
-    >
-      <button
-        type="button"
-        onClick={() => setIsOpen(false)}
-        aria-expanded={true}
-        className="flex w-full items-center justify-between px-1 pb-2"
+    <div className="flex h-full w-full flex-col font-mono select-none">
+      {/* Sidebar Header */}
+      <div
+        className="flex items-center justify-between border-b px-4 py-3 shrink-0"
+        style={{ borderColor: t.hairline }}
       >
+        <div className="flex items-center gap-2">
+          <Layers className="h-4 w-4" style={{ color: t.accent }} />
+          <span
+            className="text-xs font-bold uppercase tracking-wider"
+            style={{ color: t.ink }}
+          >
+            Base forms
+          </span>
+        </div>
         <span
-          className="font-mono text-[10px] font-semibold uppercase tracking-[0.18em]"
-          style={{ color: t.inkMute }}
+          className="text-[10px] uppercase tracking-wider font-semibold px-1.5 py-0.5 rounded font-mono"
+          style={{ backgroundColor: `${t.accent}1f`, color: t.accentSoft }}
         >
-          Base forms
+          {ORDER.length} forms
         </span>
-        <ChevronUp className="h-3 w-3" style={{ color: t.inkMute }} />
-      </button>
-      <div className="flex flex-col gap-1.5">
+      </div>
+
+      {/* Archetypes List */}
+      <div className="flex-1 overflow-y-auto p-2.5 space-y-1.5 [scrollbar-width:thin]">
         {ORDER.map((key) => {
           const spec = VESSEL_ARCHETYPES[key];
           const isActive = active === key;
@@ -116,24 +106,46 @@ export default function VesselArchetypes(): React.JSX.Element {
               type="button"
               onClick={() => setVesselArchetype(key)}
               aria-pressed={isActive}
-              className="group flex items-center gap-3 rounded-lg px-2.5 py-2 text-left transition-colors"
+              className="group flex w-full items-center gap-3 rounded-lg border p-2 text-left transition-all"
               style={
                 isActive
-                  ? { backgroundColor: `${t.accent}1a`, outline: `1px solid ${t.accent}66` }
-                  : undefined
+                  ? {
+                      backgroundColor: `${t.accent}1f`,
+                      borderColor: `${t.accent}80`,
+                    }
+                  : {
+                      backgroundColor: 'transparent',
+                      borderColor: 'transparent',
+                    }
               }
-              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = t.wellBg; }}
-              onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.backgroundColor = 'transparent'; }}
+              onMouseEnter={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = t.wellBg;
+                  e.currentTarget.style.borderColor = t.hairline;
+                }
+              }}
+              onMouseLeave={(e) => {
+                if (!isActive) {
+                  e.currentTarget.style.backgroundColor = 'transparent';
+                  e.currentTarget.style.borderColor = 'transparent';
+                }
+              }}
             >
               <Silhouette archetype={key} active={isActive} />
-              <span>
-                <span className="block text-[13px] font-semibold" style={{ color: isActive ? t.ink : t.inkSoft }}>
+              <div className="min-w-0 flex-1">
+                <span
+                  className="block text-xs font-bold tracking-tight truncate font-display"
+                  style={{ color: isActive ? t.ink : t.inkSoft }}
+                >
                   {spec.label}
                 </span>
-                <span className="mt-0.5 block text-[11px] leading-4" style={{ color: t.inkFaint }}>
+                <span
+                  className="mt-0.5 block text-[10px] leading-3.5 line-clamp-2"
+                  style={{ color: t.inkFaint }}
+                >
                   {spec.blurb}
                 </span>
-              </span>
+              </div>
             </button>
           );
         })}

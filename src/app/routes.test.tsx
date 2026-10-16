@@ -60,9 +60,6 @@ describe('routes / primary smoke across the app', () => {
     expect(screen.getByText('AMONITE')).toBeInTheDocument();
     expect(screen.getByText('Files')).toBeInTheDocument();
     expect(screen.getByText('Base forms')).toBeInTheDocument();
-    // Presets ship collapsed; the rail toggle reveals them.
-    expect(screen.queryByText('Fluted Vase')).toBeNull();
-    fireEvent.click(screen.getByText('Base forms'));
     expect(screen.getByText('Fluted Vase')).toBeInTheDocument();
     expect(screen.getByText('Shape the clay')).toBeInTheDocument();
     expect(screen.getByText('Reset view')).toBeInTheDocument();
@@ -72,7 +69,6 @@ describe('routes / primary smoke across the app', () => {
   it('sandbox archetype switch reconfigures the vessel', () => {
     resetStore();
     render(<SandboxPage />);
-    fireEvent.click(screen.getByText('Base forms'));
     fireEvent.click(screen.getByText('Organic Bowl'));
     const vessel = useCADStore.getState().nodes.find((n) => n.id === 'vessel-1')!;
     expect(vessel.vessel?.archetype).toBe('organic-bowl');
