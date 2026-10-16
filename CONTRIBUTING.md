@@ -40,4 +40,4 @@ Please note that this repository is the **Public Core Repository**. As such, the
 - Submit pull requests against the `master` or `main` branch.
 
 ## Support & Questions
-For architectural questions or enterprise inquiries, contact the core team at `amoniteadmin@gmail.com`.
+For architectural questions, discussions, or inquiries, please open a GitHub Discussion or Issue on the repository.

@@ -230,14 +230,16 @@ export default function DocsPage() {
                 <span>Architecture & Privacy Segregation</span>
               </div>
               <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-                This repository contains the lightweight client-side CAD engine and zero-auth playground. No telemetry tracking, analytics cookies, or cloud databases are attached. For inquiries regarding enterprise team vaults, custom CAM post-processors, or direct support, contact:
+                This repository contains the lightweight client-side CAD engine and zero-auth playground. No telemetry tracking, analytics cookies, or cloud databases are attached. For enterprise inquiries, feature requests, or community discussions, please reach out via our GitHub repository.
               </p>
               <div className="mt-3">
                 <a
-                  href="mailto:amoniteadmin@gmail.com"
+                  href="https://github.com/jhaabhijeet864/amonite/issues"
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="text-zinc-900 dark:text-zinc-200 font-semibold underline hover:text-black dark:hover:text-white"
                 >
-                  amoniteadmin@gmail.com
+                  GitHub Issues &rarr;
                 </a>
               </div>
             </section>

@@ -28,7 +28,7 @@ export default function WaitlistModal({ isOpen, onClose, plan }: WaitlistModalPr
     e.preventDefault();
     if (!email) return;
 
-    // Simulate direct queueing to amoniteadmin@gmail.com
+    // Simulate queueing for early access intake
     setSubmitted(true);
   };
 
@@ -59,9 +59,8 @@ export default function WaitlistModal({ isOpen, onClose, plan }: WaitlistModalPr
               </div>
             )}
             <p className="text-xs text-zinc-600 dark:text-zinc-400 mt-2 leading-relaxed">
-              Queue for material libraries, joinery cut lists, and shareable
-              client rooms. Direct interiors intake routed to{' '}
-              <span className="text-zinc-900 dark:text-zinc-200 font-semibold">amoniteadmin@gmail.com</span>.
+              Queue for material libraries, batch Etsy variation exports, and shareable
+              client previews. Early access intake is prioritized for boutique makers.
             </p>
 
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">

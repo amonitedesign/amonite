@@ -12,6 +12,7 @@ import {
 import Navbar from '@/components/ui/navbar';
 import WaitlistModal from '@/components/landing/waitlist-modal';
 import DesignerShowcase from '@/components/landing/designer-showcase';
+import DynamicHeroHeadline from '@/components/landing/dynamic-hero-headline';
 
 export default function LandingPage() {
   const [isWaitlistOpen, setIsWaitlistOpen] = useState(false);
@@ -30,10 +31,8 @@ export default function LandingPage() {
             <span>PARAMETRIC DECOR STUDIO // BESPOKE VASES &amp; CERAMICS</span>
           </div>
 
-          {/* Editorial Headline */}
-          <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold text-[#141311] dark:text-[#f2efe9] tracking-tight leading-[1.06] text-left">
-            Sculpt bespoke minimal vases &amp; interior decor, right in your browser.
-          </h1>
+          {/* Dynamic Editorial Headline with Designer Typewriter Animation */}
+          <DynamicHeroHeadline />
 
           {/* Quiet Subtext */}
           <p className="mt-5 text-[#5e574d] dark:text-[#a8a194] text-sm sm:text-base leading-relaxed text-left max-w-2xl">
@@ -216,7 +215,7 @@ export default function LandingPage() {
               <Link href="/pricing" className="text-[#141311] dark:text-[#f2efe9] font-semibold underline underline-offset-4">
                 Compare plans
               </Link>
-              . Early access priority intake is handled at <span className="text-[#141311] dark:text-[#f2efe9] font-semibold">amoniteadmin@gmail.com</span>.
+              . Early access priority intake is open for boutique studios and makers.
             </p>
           </div>
 
@@ -264,12 +263,6 @@ export default function LandingPage() {
               className="hover:text-[#1e1c19] dark:hover:text-[#f2efe9] transition-colors"
             >
               GitHub Repository
-            </a>
-            <a
-              href="mailto:amoniteadmin@gmail.com"
-              className="hover:text-[#1e1c19] dark:hover:text-[#f2efe9] transition-colors"
-            >
-              amoniteadmin@gmail.com
             </a>
           </div>
         </div>

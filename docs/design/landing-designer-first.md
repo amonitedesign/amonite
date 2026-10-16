@@ -13,7 +13,7 @@
 6. **Making (collapsed one row):** `From studio to kiln — one export`, `STL / DXF / SVG` as plain text links → `/docs`. No byte/packer/slicer-model copy.
 7. **Designer proof:** 2 short quotes + studio names (currently zero — required before ship).
 8. **Final CTA:** single calm band. Remove duplicate pricing upsell from landing; link out to `/pricing`.
-9. **Footer:** product footer, GitHub + `amoniteadmin@gmail.com` low-contrast.
+9. **Footer:** product footer, GitHub + documentation links low-contrast.
 
 ## 2. Copy voice
 

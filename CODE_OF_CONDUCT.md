@@ -49,7 +49,7 @@ spaces.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to **amoniteadmin@gmail.com**. All complaints will be reviewed and
+reported to the project maintainers via GitHub Issues or private repository communication. All complaints will be reviewed and
 investigated promptly and fairly, with confidentiality respected.
 
 ## Attribution
