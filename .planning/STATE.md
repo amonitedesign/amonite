@@ -36,13 +36,13 @@ progress:
 - **Phase 6: Website Copy, Positioning & Designer Work Showcase Gallery** (Completed: 2026-10-16)
   - Plan 06-01: Website Copy, Typography & Creator Positioning Overhaul
   - Plan 06-02: Illustrating Designer Work Showcase Section
-- **Phase 7: Parametric Math Engine & Multi-Threaded Web Worker** (Pending)
-  - Plan 07-01: Procedural Waveform & Manifold Geometry Math Kernel
-  - Plan 07-02: Multi-Threaded Web Worker Pipeline
-- **Phase 8: Sculptor Studio UI & Base Archetypes** (Pending)
+- **Phase 7: Parametric Math Engine & Multi-Threaded Web Worker** (Partial — 07-01 delivered in v1.0 as `src/lib/vessel-geometry.ts` + `src/lib/mesh-verify.ts`; 07-02 Web Worker is the remaining gap)
+  - Plan 07-01: Procedural Waveform & Manifold Geometry Math Kernel — delivered under different path
+  - Plan 07-02: Multi-Threaded Web Worker Pipeline — pending
+- **Phase 8: Sculptor Studio UI & Base Archetypes** (Delivered — 10 archetypes, sliders, finishes, auto-rotate; see ROADMAP reconciliation)
   - Plan 08-01: Base Archetype Catalog & Tactile Parametric Controls
   - Plan 08-02: Fluid Studio Viewport & Ceramic Material Presets
-- **Phase 9: Print Export, Commercial Tiers & Verification** (Pending)
+- **Phase 9: Print Export, Commercial Tiers & Verification** (Partial — STL + Etsy ZIP done; slicer docs, tier enforcement, E2E/audit pending)
   - Plan 09-01: Direct-to-Print Watertight STL & Slicer Profiles
   - Plan 09-02: Documentation, E2E Verification & Milestone Audit
 
@@ -54,3 +54,4 @@ progress:
 - **Decision 14 (Vase-Mode & Clay Shrinkage First):** Prioritized continuous spiralize outer contour export and automatic ceramic clay shrinkage compensation (8%–15%) over legacy DXF/SVG formats.
 - **Decision 15 (Studio Visual Showcase):** Added dedicated illustrating gallery on the landing page presenting real-world decor designs with physical fabrication specifications (print time, weight, shrinkage factor, slicer settings).
 - **Decision 16 (Studio Viewport Fix + Affirmed Direction, 2026-10-16):** Diagnosed and fixed the invisible-vessel bug (StrictMode remount orphaned mesh groups in a disposed scene; verified by live scene traversal vs store) plus init camera framing and panel overflow — recorded in `docs/architecture/studio-viewport-record.md`. Affirmed the Parametric Decor Studio pivot, the screenshot-verify workflow, and the monetization track as correct and progressing — recorded in `docs/direction.md`. Hold this course through Phases 7–9.
+- **Decision 17 (Planning Reconciliation, 2026-10-17):** Audited ROADMAP/REQUIREMENTS Phases 7–9 against as-built `src/`. Phases 7-01 and 8 are already delivered under different paths/names (math kernel = `src/lib/vessel-geometry.ts`; manifold checker = `src/lib/mesh-verify.ts`; 10 archetypes; 4 finishes). The only true engine gap is the Web Worker (REQ-ENGINE-02); Phase 9 slicer docs, tier enforcement, and E2E/audit remain. Planning docs updated to match code; no code changed by this reconciliation.

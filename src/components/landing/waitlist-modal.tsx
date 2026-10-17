@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { X, Mail, CheckCircle2, ArrowRight, Shield } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { submitWaitlistEntry } from '@/lib/waitlist';
 import type { PlanId } from '@/components/pricing/pricing-tiles';
 
 interface WaitlistModalProps {
@@ -21,38 +22,16 @@ export default function WaitlistModal({ isOpen, onClose, plan }: WaitlistModalPr
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('Interior Designer');
   const [submitted, setSubmitted] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
-    setIsSubmitting(true);
-    const sheetWebhook = process.env.NEXT_PUBLIC_WAITLIST_SHEET_URL;
-
-    if (sheetWebhook && typeof window !== 'undefined') {
-      try {
-        await fetch(sheetWebhook, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            timestamp: new Date().toISOString(),
-            email,
-            role,
-            plan: plan ? PLAN_LABEL[plan] : 'Early Access',
-          }),
-        });
-      } catch (err) {
-        console.warn('Waitlist sync warning:', err);
-      }
-    }
-
-    setIsSubmitting(false);
+    // Optimistic: confirm immediately, deliver in the background so a blocked
+    // or offline request never traps the user on the form.
+    void submitWaitlistEntry({ email, role, tier: plan ? PLAN_LABEL[plan] : 'Early Access' });
     setSubmitted(true);
   };
 
@@ -129,10 +108,9 @@ export default function WaitlistModal({ isOpen, onClose, plan }: WaitlistModalPr
 
               <button
                 type="submit"
-                disabled={isSubmitting}
-                className="w-full py-2.5 rounded-lg bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 font-bold text-xs transition-colors flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
+                className="w-full py-2.5 rounded-lg bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-950 font-bold text-xs transition-colors flex items-center justify-center gap-2 mt-4"
               >
-                <span>{isSubmitting ? 'Queueing...' : 'Request Early Access'}</span>
+                <span>Request Early Access</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </form>

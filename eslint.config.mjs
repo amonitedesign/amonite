@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Generated Cloudflare/OpenNext adapter output:
+    ".open-next/**",
+    "cloudflare-env.d.ts",
     // Generated test artifacts:
     "coverage/**",
     "playwright-report/**",
