@@ -6,8 +6,6 @@ const nextConfig: NextConfig = {
   // (VPS, container, PaaS). Harmless under the Cloudflare/OpenNext adapter,
   // which reads .next directly.
   output: "standalone",
-  cacheComponents: true,
-  partialPrefetching: true,
   // All imagery is local static SVG/PNG, so skip Next's optimizer — avoids the
   // Cloudflare Images binding/cost and works on every host.
   images: { unoptimized: true },
