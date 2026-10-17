@@ -1,22 +1,24 @@
-# Amonite // Minimalist 3D Vessel & Ceramic Studio
-
 <p align="center">
-  <img src="public/logo-mark.svg" alt="Amonite Logo" width="96" height="96" />
+  <img src="public/logo-mark.svg" alt="Amonite Logo" width="128" height="128" />
 </p>
 
+<h1 align="center">Amonite</h1>
+
 <p align="center">
-  <strong>Sculpt bespoke minimal vases, fluted ceramics, and interior decor directly in your browser.</strong><br />
-  Zero account required. Zero telemetry. Guaranteed watertight, 3D-print-ready solids with kiln shrinkage compensation.
+  <strong>Minimalist 3D Vessel & Ceramic Studio</strong><br />
+  Sculpt bespoke minimal vases, fluted ceramics, and interior decor directly in your browser.<br />
+  Zero account required · Zero telemetry · 100% client-side WebGL · Watertight print-ready solids
 </p>
 
 <p align="center">
   <a href="#the-studio">The Studio</a> •
+  <a href="#studio-showcase">Showcase</a> •
   <a href="#key-capabilities">Capabilities</a> •
-  <a href="#screenshots">Screenshots</a> •
   <a href="#ceramic--print-standards">Ceramic & Print Standards</a> •
   <a href="#tech-stack">Tech Stack</a> •
   <a href="#quickstart">Quickstart</a> •
   <a href="#studio-controls">Controls</a> •
+  <a href="#contributors">Contributors</a> •
   <a href="#license">License</a>
 </p>
 
@@ -30,27 +32,20 @@ Every parameter—from wall thickness and rib fluting to organic waves and spira
 
 ---
 
-## Screenshots
+## Studio Showcase
 
-### 1. The 3D Atelier & Tactile Sliders
+### The 3D Atelier & Tactile Sliders
 *Full-bleed 3D viewport featuring the Brutalist Planter in raw Terracotta glaze, live parametric fluting sliders, kiln shrinkage presets, and the 1-Click Etsy Collection generator.*
 
 <p align="center">
   <img src="public/screenshots/studio-atelier.png" alt="Amonite 3D Studio Atelier" width="100%" />
 </p>
 
-### 2. Editorial Gallery & Landing
+### Editorial Gallery & Landing
 *Clean, distraction-free entry designed for interior designers and boutique makers.*
 
 <p align="center">
   <img src="public/screenshots/landing-hero.png" alt="Amonite Editorial Landing" width="100%" />
-</p>
-
-### 3. Maker Tiers & Commercial Licensing
-*Transparent tiers crafted for independent makers, ceramic studios, and design agencies.*
-
-<p align="center">
-  <img src="public/screenshots/pricing-plans.png" alt="Amonite Maker Pricing" width="100%" />
 </p>
 
 ---
@@ -153,6 +148,18 @@ npm test
 ## Architecture Segregation
 
 This repository is strictly zero-auth and zero-database with no external telemetry. All geometry generation, WebGL rendering, STL file packing, and project file parsing execute entirely inside the client's browser.
+
+---
+
+## Contributors
+
+Thank you to everyone contributing code, feedback, and design craft to Amonite:
+
+<p align="center">
+  <a href="https://github.com/jhaabhijeet864/amonite/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=jhaabhijeet864/amonite" alt="Amonite Contributors" />
+  </a>
+</p>
 
 ---
 
